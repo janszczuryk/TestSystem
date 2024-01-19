@@ -4,4 +4,7 @@ The announcement system - website for job offers, trading and other types of ann
 
 ## Blueprint
 
-To check blueprint click [here](BLUEPRINT.md)
+1. Project `AnnouncementSystem`
+    * [Blueprint](blueprint/ANNOUNCEMENT.md)
+2. Project `TestSystem`
+    * [Blueprint](blueprint/TEST.md)
