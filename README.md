@@ -1,10 +1,10 @@
-# AnnouncementSystem
+# TestSystem
 
-The announcement system - website for job offers, trading and other types of announcements
+TestSystem - system designed for making and taking tests in a school/university environment
 
 ## Blueprint
 
-1. Project `AnnouncementSystem`
-    * [Blueprint](blueprint/ANNOUNCEMENT.md)
-2. Project `TestSystem`
+1. Project `TestSystem`
     * [Blueprint](blueprint/TEST.md)
+2. Project `AnnouncementSystem`
+    * [Blueprint](blueprint/ANNOUNCEMENT.md)
