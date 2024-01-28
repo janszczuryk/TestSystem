@@ -1,7 +1,7 @@
-# AnnouncementSystem
+# TestSystem
 
 ## Description
-Backend made with Nestjs and Postgres as database
+Backend made with NestJS and Postgres as database
 
 ## Installation
 

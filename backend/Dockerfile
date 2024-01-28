@@ -2,15 +2,9 @@ FROM node:18.19
 
 WORKDIR /app
 
-COPY tsconfig*.json ./
-
-COPY package*.json ./
-
-RUN npm ci
-
 COPY . .
 
-COPY .env ./
+RUN npm ci
 
 RUN npm run build
 
