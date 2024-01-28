@@ -1,0 +1,136 @@
+Project TestSystem {
+  database_type: 'PostgreSQL'
+  Note: 'Database schema for TestSystem'
+}
+
+Enum account_type {
+  teacher
+  learner
+}
+
+Enum test_instance_status {
+  created
+  started
+  ended
+}
+
+Enum test_instance_result_status {
+  created
+  correctly_answered
+  incorrectly_answered
+}
+
+Table accounts {
+  id uuid [pk]
+  login varchar [unique]
+  password varchar
+  verified boolean
+  type account_type
+  created_at timestampz
+  updated_at timestampz
+}
+
+Table teachers {
+  id uuid [pk]
+  account_id uuid
+  created_at timestampz
+  updated_at timestampz
+}
+
+Table learners {
+  id uuid [pk]
+  account_id uuid
+  created_at timestampz
+  updated_at timestampz
+}
+
+Table subjects {
+  id uuid [pk]
+  name varchar
+  field_of_study_designation varchar
+  created_at timestampz
+  updated_at timestampz
+  
+  Indexes {
+    (name, field_of_study_designation) [unique]
+  }
+}
+
+Table tests {
+  id uuid [pk]
+  name varchar
+  subject_id uuid
+  teacher_id uuid
+  created_at timestampz
+  updated_at timestampz
+
+  Indexes {
+    (name, subject_id) [unique]
+  }
+}
+
+Table test_questions {
+  id uuid [pk]
+  question text
+  answer_list jsonb
+  correct_answer_index integer
+  test_id uuid
+  created_at timestampz
+  updated_at timestampz
+}
+
+Table test_instances {
+  id uuid [pk]
+  accessible boolean
+  status test_instance_status
+  test_id uuid
+  test_question_id uuid
+  teacher_id uuid
+  started_at timestampz
+  ended_at timestampz
+  created_at timestampz
+  updated_at timestampz
+}
+
+Table test_instance_results {
+  id uuid [pk]
+  status test_instance_result_status
+  learner_number integer
+  question text
+  answer_list jsonb
+  correct_answer_index integer
+  submitted_answer_index integer
+  learner_id uuid
+  test_instance_id uuid
+  test_question_id uuid
+  submitted_at timestampz
+  created_at timestampz
+  updated_at timestampz
+
+  Indexes {
+    (learner_number, learner_id) [unique]
+  }
+}
+
+Ref: teachers.account_id > accounts.id
+
+Ref: learners.account_id > accounts.id
+
+Ref: tests.subject_id > subjects.id
+
+Ref: tests.teacher_id > teachers.id
+
+Ref: test_questions.test_id > tests.id
+
+Ref: test_instances.test_id > tests.id
+
+Ref: test_instances.test_question_id <> test_questions.id
+
+Ref: test_instances.teacher_id > teachers.id
+
+Ref: test_instance_results.learner_id > learners.id
+
+Ref: test_instance_results.test_instance_id > test_instances.id
+
+Ref: test_instance_results.test_question_id > test_questions.id
+

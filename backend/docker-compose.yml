@@ -1,0 +1,38 @@
+version: '3.5'
+
+services:
+  test-system.nodejs:
+    container_name: test-system.nodejs
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: '${DB_HOST}'
+      DB_PORT: '${DB_PORT}'
+      DB_USERNAME: '${DB_USERNAME}'
+      DB_PASSWORD: '${DB_PASSWORD}'
+      DB_DATABASE: '${DB_DATABASE}'
+      APP_PORT: '${APP_PORT}'
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    depends_on:
+      - test-system.postgres
+
+  test-system.postgres:
+    container_name: test-system.postgres
+    image: postgres:16.1
+    environment:
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: '${DB_DATABASE}'
+    ports:
+      - '${DB_PORT}:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+
+networks:
+  test-system.network:
+    external: true
