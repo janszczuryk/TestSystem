@@ -38,7 +38,7 @@ Written down ideas for `TestSystem` project
 1. Endpoints (REST API)
 
    | METHOD | ENDPOINT                                           | SHORT DESCRIPTION                             | AUTHORISATION NEEDED |
-      |--------|----------------------------------------------------|-----------------------------------------------|----------------------|
+   |--------|----------------------------------------------------|-----------------------------------------------|----------------------|
    | POST   | /auth/login                                        | Login to an account with given credentials    | NO                   |
    | POST   | /auth/register                                     | Register a new account                        | NO                   |
    | POST   | /auth/logout                                       | Logout from an account                        | ACCOUNT              |
