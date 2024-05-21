@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import appConfig from '../config/app.config';
-import databaseConfig from '../config/database.config';
+import { AppConfig, DatabaseConfig } from '../config/index';
 import { AccountModule } from './account/account.module';
 import { TypeormConfigFactory } from './typeorm/typeorm-config.factory';
 import { SubjectModule } from './subject/subject.module';
@@ -14,7 +13,7 @@ import { TestInstanceQuestionModule } from './test-instance-question/test-instan
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, load: [appConfig, databaseConfig] }),
+    ConfigModule.forRoot({ isGlobal: true, load: [AppConfig, DatabaseConfig] }),
     TypeOrmModule.forRootAsync({ useClass: TypeormConfigFactory }),
     AccountModule,
     SubjectModule,
