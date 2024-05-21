@@ -8,3 +8,4 @@ dist
 README.md
 docker-compose.yml
 Dockerfile
+.repl_history

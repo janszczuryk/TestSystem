@@ -38,7 +38,7 @@ Written down ideas for `TestSystem` project
 1. Endpoints (REST API)
 
    | METHOD | ENDPOINT                                           | SHORT DESCRIPTION                             | AUTHORISATION NEEDED |
-      |--------|----------------------------------------------------|-----------------------------------------------|----------------------|
+   |--------|----------------------------------------------------|-----------------------------------------------|----------------------|
    | POST   | /auth/login                                        | Login to an account with given credentials    | NO                   |
    | POST   | /auth/register                                     | Register a new account                        | NO                   |
    | POST   | /auth/logout                                       | Logout from an account                        | ACCOUNT              |
@@ -72,57 +72,58 @@ Written down ideas for `TestSystem` project
    | POST   | /learner/test-instances/:test_instance_id/answer   | Answer to test instance current question      | LEARNER              |
 
 2. Domain
-    * Account
+    * Account / TeacherAccount / LearnerAccount
         * Id
         * Verified
         * AccountType (Teacher, Learner)
-        * Teacher/Learner
-
-    * Teacher
-        * Id
-        * Account
-
-    * Learner
-        * Id
-        * Account
 
     * Subject
         * Id
         * Name
-        * FieldOfStudyDesignation
-        * Test[]
+        * FieldOfStudy
+        * TestSchema[]
 
-    * Test
+    * TestSchema
         * Id
         * Name
         * Subject
-        * TestQuestion[]
+        * TestSchemaQuestion[]
         * TestInstance[]
 
-    * TestQuestion
+    * TestSchemaQuestion
         * Id
         * Question
         * Answer[]
         * CorrectAnswerIndex
-        * Test
+        * TestSchema
+        * TestQuestionInstance[]
 
     * TestInstance
         * Id
-        * Test
-        * TestQuestion[]
-        * Accessible
-        * TestStatus (Created, Started, Ended)
+        * TestSchema
+        * TestInstanceQuestion[]
+        * IsEnabled
+        * Status (Created, Started, Ended)
         * StartedAt
         * EndedAt
         * Teacher
         * TestInstanceResult[]
+
+    * TestInstanceQuestion
+        * Id
+        * TestSchemaQuestion
+        * TestInstance
+        * TestInstanceResult[]
+        * Question
+        * Answer[]
+        * CorrectAnswerIndex
 
     * TestInstanceResult
         * Id
         * TestInstance
         * Learner (Unique with LearnerNumber)
         * LearnerNumber (Unique with Learner)
-        * TestQuestion
+        * TestInstanceQuestion
         * Answer[]
         * CorrectAnswerIndex
         * SubmittedAnswerIndex
