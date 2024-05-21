@@ -1,6 +1,8 @@
 import { ChildEntity, OneToMany } from 'typeorm';
+
+import { TestInstance } from '@module/test-instance/entities/test-instance.entity';
+
 import { Account, AccountType } from './account.entity';
-import { TestInstance } from '../../test-instance/entities/test-instance.entity';
 
 export type TeacherAccountCreateProps = Pick<TeacherAccount, 'isVerified'>;
 

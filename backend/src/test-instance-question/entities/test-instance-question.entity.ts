@@ -1,7 +1,8 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
-import { TestSchemaQuestion } from '../../test-schema-question/entities/test-schema-question.entity';
-import { TestInstance } from '../../test-instance/entities/test-instance.entity';
-import { TestInstanceResult } from '../../test-instance-result/entities/test-instance-result.entity';
+
+import { TestInstance } from '@module/test-instance/entities/test-instance.entity';
+import { TestInstanceResult } from '@module/test-instance-result/entities/test-instance-result.entity';
+import { TestSchemaQuestion } from '@module/test-schema-question/entities/test-schema-question.entity';
 
 @Entity()
 export class TestInstanceQuestion {

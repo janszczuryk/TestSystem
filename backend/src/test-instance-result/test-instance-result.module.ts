@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TestInstanceResultService } from './test-instance-result.service';
-import { TestInstanceResultController } from './test-instance-result.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { TestInstanceResult } from './entities/test-instance-result.entity';
+import { TestInstanceResultController } from './test-instance-result.controller';
+import { TestInstanceResultService } from './test-instance-result.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TestInstanceResult])],

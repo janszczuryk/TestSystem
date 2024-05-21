@@ -7,9 +7,10 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { TestInstanceResultService } from './test-instance-result.service';
+
 import { CreateTestInstanceResultDto } from './dto/create-test-instance-result.dto';
 import { UpdateTestInstanceResultDto } from './dto/update-test-instance-result.dto';
+import { TestInstanceResultService } from './test-instance-result.service';
 
 @Controller('test-instance-result')
 export class TestInstanceResultController {

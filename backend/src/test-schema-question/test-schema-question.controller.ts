@@ -7,9 +7,10 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { TestSchemaQuestionService } from './test-schema-question.service';
+
 import { CreateTestSchemaQuestionDto } from './dto/create-test-schema-question.dto';
 import { UpdateTestSchemaQuestionDto } from './dto/update-test-schema-question.dto';
+import { TestSchemaQuestionService } from './test-schema-question.service';
 
 @Controller('test-schema-question')
 export class TestSchemaQuestionController {

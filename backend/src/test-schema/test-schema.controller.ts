@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { TestSchemaService } from './test-schema.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+
 import { CreateTestSchemaDto } from './dto/create-test-schema.dto';
 import { UpdateTestSchemaDto } from './dto/update-test-schema.dto';
+import { TestSchemaService } from './test-schema.service';
 
 @Controller('test-schema')
 export class TestSchemaController {
@@ -23,7 +32,10 @@ export class TestSchemaController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTestSchemaDto: UpdateTestSchemaDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTestSchemaDto: UpdateTestSchemaDto,
+  ) {
     return this.testSchemaService.update(+id, updateTestSchemaDto);
   }
 

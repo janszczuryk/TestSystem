@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { CreateTestInstanceResultDto } from './dto/create-test-instance-result.dto';
 import { UpdateTestInstanceResultDto } from './dto/update-test-instance-result.dto';
 
@@ -9,7 +10,7 @@ export class TestInstanceResultService {
   }
 
   findAll() {
-    return `This action returns all testInstanceResult`;
+    return 'This action returns all testInstanceResult';
   }
 
   findOne(id: number) {

@@ -1,7 +1,8 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
-import { TestInstance } from '../../test-instance/entities/test-instance.entity';
-import { LearnerAccount } from '../../account/entities/learner-account.entity';
-import { TestInstanceQuestion } from '../../test-instance-question/entities/test-instance-question.entity';
+
+import { LearnerAccount } from '@module/account/entities/learner-account.entity';
+import { TestInstance } from '@module/test-instance/entities/test-instance.entity';
+import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
 
 export enum TestInstanceResultStatus {
   CREATED = 'created',

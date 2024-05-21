@@ -1,6 +1,7 @@
-import { TestSchema } from '../../test-schema/entities/test-schema.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
-import { TestInstanceQuestion } from '../../test-instance-question/entities/test-instance-question.entity';
+
+import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
+import { TestSchema } from '@module/test-schema/entities/test-schema.entity';
 
 @Entity()
 export class TestSchemaQuestion {

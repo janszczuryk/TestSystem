@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { TestSchema } from '../../test-schema/entities/test-schema.entity';
+
+import { TestSchema } from '@module/test-schema/entities/test-schema.entity';
 
 @Entity()
 export class Subject {

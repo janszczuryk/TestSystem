@@ -1,11 +1,13 @@
-import { randomUUID } from 'crypto';
-import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { randomUUID } from 'crypto';
+
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { TeacherAccount } from './entities/teacher-account.entity';
 import { AccountType } from './entities/account.entity';
+import { TeacherAccount } from './entities/teacher-account.entity';
 
 @Injectable()
 export class AccountService {
@@ -28,7 +30,7 @@ export class AccountService {
   }
 
   public async findAll() {
-    return `This action returns all account`;
+    return 'This action returns all account';
   }
 
   public async findOne(id: number) {

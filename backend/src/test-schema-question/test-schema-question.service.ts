@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { CreateTestSchemaQuestionDto } from './dto/create-test-schema-question.dto';
 import { UpdateTestSchemaQuestionDto } from './dto/update-test-schema-question.dto';
 
@@ -9,7 +10,7 @@ export class TestSchemaQuestionService {
   }
 
   findAll() {
-    return `This action returns all testQuestion`;
+    return 'This action returns all testQuestion';
   }
 
   findOne(id: number) {
