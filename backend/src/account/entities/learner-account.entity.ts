@@ -4,14 +4,9 @@ import { TestInstanceResult } from '@module/test-instance-result/entities/test-i
 
 import { Account, AccountType } from './account.entity';
 
-export type LearnerAccountCreateProps = Pick<LearnerAccount, 'isVerified'>;
-
 @ChildEntity(AccountType.LEARNER)
 export class LearnerAccount extends Account {
   public type: AccountType.LEARNER;
-  @OneToMany(
-    () => TestInstanceResult,
-    (testInstanceResult) => testInstanceResult.learner,
-  )
+  @OneToMany(() => TestInstanceResult, (testInstanceResult) => testInstanceResult.learner)
   public testInstanceResults: TestInstanceResult[];
 }

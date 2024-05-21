@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
 import { CreateTestSchemaQuestionDto } from './dto/create-test-schema-question.dto';
 import { UpdateTestSchemaQuestionDto } from './dto/update-test-schema-question.dto';
@@ -14,9 +6,7 @@ import { TestSchemaQuestionService } from './test-schema-question.service';
 
 @Controller('test-schema-question')
 export class TestSchemaQuestionController {
-  constructor(
-    private readonly testQuestionService: TestSchemaQuestionService,
-  ) {}
+  constructor(private readonly testQuestionService: TestSchemaQuestionService) {}
 
   @Post()
   create(@Body() createTestQuestionDto: CreateTestSchemaQuestionDto) {
@@ -34,10 +24,7 @@ export class TestSchemaQuestionController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTestQuestionDto: UpdateTestSchemaQuestionDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateTestQuestionDto: UpdateTestSchemaQuestionDto) {
     return this.testQuestionService.update(+id, updateTestQuestionDto);
   }
 

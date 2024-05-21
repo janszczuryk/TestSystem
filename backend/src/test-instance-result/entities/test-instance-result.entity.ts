@@ -18,15 +18,9 @@ export class TestInstanceResult {
   public instance: TestInstance;
   @Column({ type: 'integer', nullable: false, unique: true })
   public learnerNumber: number;
-  @OneToMany(
-    () => LearnerAccount,
-    (learnerAccount) => learnerAccount.testInstanceResults,
-  )
+  @OneToMany(() => LearnerAccount, (learnerAccount) => learnerAccount.testInstanceResults)
   public learner: LearnerAccount;
-  @ManyToOne(
-    () => TestInstanceQuestion,
-    (instanceQuestion) => instanceQuestion.instanceResults,
-  )
+  @ManyToOne(() => TestInstanceQuestion, (instanceQuestion) => instanceQuestion.instanceResults)
   public question: TestInstanceQuestion;
   @Column({ type: 'varchar', array: true, nullable: false })
   public answers: string[];

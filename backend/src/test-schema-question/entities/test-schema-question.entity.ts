@@ -15,10 +15,7 @@ export class TestSchemaQuestion {
   public correctAnswerIndex: number;
   @ManyToOne(() => TestSchema, (schema) => schema.questions)
   public schema: TestSchema;
-  @OneToMany(
-    () => TestInstanceQuestion,
-    (instanceQuestion) => instanceQuestion.schemaQuestion,
-  )
+  @OneToMany(() => TestInstanceQuestion, (instanceQuestion) => instanceQuestion.schemaQuestion)
   public instanceQuestions: TestInstanceQuestion[];
   @Column({ type: 'timestamp', nullable: false })
   public updatedAt: Date;

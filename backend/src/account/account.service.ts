@@ -4,44 +4,39 @@ import { Repository } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
-import { AccountType } from './entities/account.entity';
-import { TeacherAccount } from './entities/teacher-account.entity';
+import { Account, AccountCreateProps, AccountUpdateProps } from './entities/account.entity';
 
 @Injectable()
 export class AccountService {
-  constructor(
-    @InjectRepository(TeacherAccount)
-    private teacherAccountRepository: Repository<TeacherAccount>,
+  public constructor(
+    @InjectRepository(Account)
+    private readonly accountRepository: Repository<Account>,
   ) {}
 
-  public async create(
-    createAccountDto: CreateAccountDto,
-  ): Promise<TeacherAccount> {
-    const teacherAccount = new TeacherAccount();
-    teacherAccount.id = randomUUID();
-    teacherAccount.isVerified = true;
-    teacherAccount.type = AccountType.TEACHER;
-
-    await this.teacherAccountRepository.save(teacherAccount);
-
-    return teacherAccount;
+  public async find(id: string): Promise<Account | null> {
+    return this.accountRepository.findOneBy({ id });
   }
 
-  public async findAll() {
-    return 'This action returns all account';
+  public async findByEmail(email: string): Promise<Account | null> {
+    return this.accountRepository.findOneBy({ email });
   }
 
-  public async findOne(id: number) {
-    return `This action returns a #${id} account`;
+  public async create(props: AccountCreateProps): Promise<Account> {
+    const now = new Date();
+
+    const account = this.accountRepository.create({
+      id: randomUUID(),
+      ...props,
+      updatedAt: now,
+      createdAt: now,
+    });
+
+    return this.accountRepository.save(account);
   }
 
-  public async update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
-  }
+  public async update(account: Account, props: AccountUpdateProps): Promise<Account> {
+    Object.assign(account, props);
 
-  public async remove(id: number) {
-    return `This action removes a #${id} account`;
+    return this.accountRepository.save(account);
   }
 }

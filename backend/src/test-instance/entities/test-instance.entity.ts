@@ -17,10 +17,7 @@ export class TestInstance {
   public id: string;
   @ManyToOne(() => TestSchema, (schema) => schema.instances)
   public schema: TestSchema;
-  @OneToMany(
-    () => TestInstanceQuestion,
-    (instanceQuestion) => instanceQuestion.instance,
-  )
+  @OneToMany(() => TestInstanceQuestion, (instanceQuestion) => instanceQuestion.instance)
   public questionsPool: TestInstanceQuestion[];
   @Column({ type: 'boolean', nullable: false })
   public isEnabled: boolean;
@@ -30,10 +27,7 @@ export class TestInstance {
   public startedAt?: Date;
   @Column({ type: 'timestamp', nullable: true })
   public endedAt?: Date;
-  @ManyToOne(
-    () => TeacherAccount,
-    (teacherAccount) => teacherAccount.testInstances,
-  )
+  @ManyToOne(() => TeacherAccount, (teacherAccount) => teacherAccount.testInstances)
   public teacher: TeacherAccount;
   @OneToMany(() => TestInstanceResult, (result) => result.instance)
   public results: TestInstanceResult[];

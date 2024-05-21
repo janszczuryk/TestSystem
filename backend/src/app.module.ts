@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AccountModule } from './account/account.module';
+import { AuthModule } from './auth/auth.module';
 import { SubjectModule } from './subject/subject.module';
 import { TestInstanceModule } from './test-instance/test-instance.module';
 import { TestInstanceQuestionModule } from './test-instance-question/test-instance-question.module';
@@ -17,6 +18,7 @@ import { TypeormConfigFactory } from './typeorm/typeorm-config.factory';
     ConfigModule.forRoot({ isGlobal: true, load: [AppConfig, DatabaseConfig] }),
     TypeOrmModule.forRootAsync({ useClass: TypeormConfigFactory }),
     AccountModule,
+    AuthModule,
     SubjectModule,
     TestInstanceModule,
     TestInstanceResultModule,
