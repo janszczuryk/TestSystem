@@ -74,6 +74,8 @@ Written down ideas for `TestSystem` project
 2. Domain
     * Account / TeacherAccount / LearnerAccount
         * Id
+        * Email
+        * Password
         * Verified
         * AccountType (Teacher, Learner)
 
