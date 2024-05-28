@@ -8,17 +8,11 @@ import { TestSchemaQuestion } from '@module/test-schema-question/entities/test-s
 export class TestInstanceQuestion {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   public id: string;
-  @ManyToOne(
-    () => TestSchemaQuestion,
-    (schemaQuestion) => schemaQuestion.instanceQuestions,
-  )
+  @ManyToOne(() => TestSchemaQuestion, (schemaQuestion) => schemaQuestion.instanceQuestions)
   public schemaQuestion: TestSchemaQuestion;
   @ManyToOne(() => TestInstance, (instance) => instance.questionsPool)
   public instance: TestInstance;
-  @OneToMany(
-    () => TestInstanceResult,
-    (instanceResult) => instanceResult.question,
-  )
+  @OneToMany(() => TestInstanceResult, (instanceResult) => instanceResult.question)
   public instanceResults: TestInstanceResult[];
   @Column({ type: 'varchar', length: 250, nullable: false })
   public question: string;

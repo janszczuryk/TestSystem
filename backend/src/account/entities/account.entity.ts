@@ -5,13 +5,19 @@ export enum AccountType {
   TEACHER = 'teacher',
 }
 
-export type AccountCreateProps = Pick<Account, 'isVerified' | 'type'>;
+export type AccountCreateProps = Pick<Account, 'email' | 'password' | 'isVerified' | 'type'>;
+
+export type AccountUpdateProps = Partial<AccountCreateProps>;
 
 @Entity()
 @TableInheritance({ column: 'type' })
 export abstract class Account {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   public id: string;
+  @Column({ type: 'varchar', length: 250, nullable: false, unique: true })
+  public email: string;
+  @Column({ type: 'varchar', length: 72, nullable: false })
+  public password: string;
   @Column({ type: 'bool', nullable: false })
   public isVerified: boolean;
   @Column({ type: 'enum', enum: AccountType, nullable: false })

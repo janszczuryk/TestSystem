@@ -17,10 +17,7 @@ export class TestInstanceQuestionService {
     return `This action returns a #${id} testInstanceQuestion`;
   }
 
-  update(
-    id: number,
-    updateTestInstanceQuestionDto: UpdateTestInstanceQuestionDto,
-  ) {
+  update(id: number, updateTestInstanceQuestionDto: UpdateTestInstanceQuestionDto) {
     return `This action updates a #${id} testInstanceQuestion`;
   }
 
