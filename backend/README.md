@@ -5,8 +5,13 @@ Back-end for TestSystem. It utilizes Node.js with NestJS as a base framework and
 
 ## Configuration
 Configure the app within the `.env` file.
+```bash
+cp .env.example .env
+```
 
-Generate your own JWT Secret key to keep it secure -- execute the command and paste it into your file.
+You can execute the below commands and paste their results into your `.env` file.
+
+Generate your own JWT Secret key to keep it secure.
 ```bash
 JWT_SECRET_KEY=$(tr -dc A-Za-z0-9 < /dev/urandom | head -c 32); echo "JWT_SECRET_KEY=$JWT_SECRET_KEY"
 ```
@@ -39,7 +44,7 @@ npm run start:shell
 npm run start:prod
 ```
 
-## Test
+## Testing the app
 
 ```bash
 # unit tests
