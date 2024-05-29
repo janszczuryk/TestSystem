@@ -26,4 +26,10 @@ export abstract class Account {
   public updatedAt: Date;
   @Column({ type: 'timestamp', nullable: false })
   public createdAt: Date;
+
+  public update(props: AccountUpdateProps): void {
+    Object.assign(this, props);
+
+    this.updatedAt = new Date();
+  }
 }
