@@ -47,12 +47,12 @@ Written down ideas for `TestSystem` project
    | GET    | /subjects                                          | Get list of subjects                          | TEACHER              |
    | POST   | /subjects                                          | Create a new subject                          | TEACHER              |
    | GET    | /subjects/:subject_id                              | Get a subject                                 | TEACHER              |
-   | PUT    | /subjects/:subject_id                              | Update a subject                              | TEACHER              |
+   | PATCH  | /subjects/:subject_id                              | Update a subject                              | TEACHER              |
    | DELETE | /subjects/:subject_id                              | Delete a subject                              | TEACHER              |
    | GET    | /tests                                             | Get list of tests                             | TEACHER              |
    | POST   | /tests                                             | Create a new test                             | TEACHER              |
    | GET    | /tests/:test_id                                    | Get a test                                    | TEACHER              |
-   | PUT    | /tests/:test_id                                    | Update a test                                 | TEACHER              |
+   | PATCH  | /tests/:test_id                                    | Update a test                                 | TEACHER              |
    | DELETE | /tests/:test_id                                    | Delete a test (cascade)                       | TEACHER              |
    | GET    | /tests/:test_id/test-questions                     | Get list of test questions                    | TEACHER              |
    | POST   | /tests/:test_id/test-questions                     | Create a new test question                    | TEACHER              |
