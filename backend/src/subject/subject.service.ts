@@ -34,15 +34,23 @@ export class SubjectService {
   }
 
   public async findAll(): Promise<Subject[]> {
-    return this.subjectRepository.find();
+    return this.subjectRepository.find({
+      loadRelationIds: true,
+    });
   }
 
   public async find(findOptions: FindOptionsWhere<Subject>): Promise<Subject | null> {
-    return this.subjectRepository.findOneBy(findOptions);
+    return this.subjectRepository.findOne({
+      where: findOptions,
+      relations: { testSchemas: true },
+    });
   }
 
   public async get(id: string): Promise<Subject | null> {
-    return this.subjectRepository.findOneBy({ id });
+    return this.subjectRepository.findOne({
+      where: { id },
+      relations: { testSchemas: true },
+    });
   }
 
   public async update(subject: Subject, props: SubjectUpdateProps): Promise<Subject> {
