@@ -8,9 +8,9 @@ import { Subject, SubjectCreateProps, SubjectUpdateProps } from './entities/subj
 
 export class SubjectServiceError extends Error {}
 
-export class SubjectServiceUpdateError extends Error {}
+export class SubjectServiceUpdateError extends SubjectServiceError {}
 
-export class SubjectServiceUpdateDuplicateError extends Error {}
+export class SubjectServiceUpdateDuplicateError extends SubjectServiceUpdateError {}
 
 @Injectable()
 export class SubjectService {
