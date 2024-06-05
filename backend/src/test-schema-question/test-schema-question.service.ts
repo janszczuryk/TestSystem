@@ -1,27 +1,67 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 
-import { CreateTestSchemaQuestionDto } from './dto/create-test-schema-question.dto';
-import { UpdateTestSchemaQuestionDto } from './dto/update-test-schema-question.dto';
+import { randomUUID } from 'crypto';
+
+import {
+  TestSchemaQuestion,
+  TestSchemaQuestionCreateProps,
+  TestSchemaQuestionUpdateProps,
+} from './entities/test-schema-question.entity';
 
 @Injectable()
 export class TestSchemaQuestionService {
-  create(createTestQuestionDto: CreateTestSchemaQuestionDto) {
-    return 'This action adds a new testQuestion';
+  public constructor(
+    @InjectRepository(TestSchemaQuestion)
+    private readonly testSchemaQuestionRepository: Repository<TestSchemaQuestion>,
+  ) {}
+
+  public async create(props: TestSchemaQuestionCreateProps): Promise<TestSchemaQuestion> {
+    const now = new Date();
+
+    const subject = this.testSchemaQuestionRepository.create({
+      id: randomUUID(),
+      ...props,
+      instanceQuestions: [],
+      updatedAt: now,
+      createdAt: now,
+    });
+
+    return this.testSchemaQuestionRepository.save(subject);
   }
 
-  findAll() {
-    return 'This action returns all testQuestion';
+  public async findAll(findAllOptions?: FindOptionsWhere<TestSchemaQuestion>): Promise<TestSchemaQuestion[]> {
+    return this.testSchemaQuestionRepository.find({
+      where: findAllOptions,
+      loadRelationIds: true,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} testQuestion`;
+  public async find(findOptions: FindOptionsWhere<TestSchemaQuestion>): Promise<TestSchemaQuestion | null> {
+    return this.testSchemaQuestionRepository.findOne({
+      where: findOptions,
+      relations: { schema: true, instanceQuestions: true },
+    });
   }
 
-  update(id: number, updateTestQuestionDto: UpdateTestSchemaQuestionDto) {
-    return `This action updates a #${id} testQuestion`;
+  public async get(id: string): Promise<TestSchemaQuestion | null> {
+    return this.testSchemaQuestionRepository.findOne({
+      where: { id },
+      relations: { schema: true, instanceQuestions: true },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} testQuestion`;
+  public async update(
+    testSchemaQuestion: TestSchemaQuestion,
+    props: TestSchemaQuestionUpdateProps,
+  ): Promise<TestSchemaQuestion> {
+    testSchemaQuestion.update(props);
+
+    return this.testSchemaQuestionRepository.save(testSchemaQuestion);
+  }
+
+  public async remove(testSchemaQuestion: TestSchemaQuestion): Promise<void> {
+    await this.testSchemaQuestionRepository.remove(testSchemaQuestion);
   }
 }

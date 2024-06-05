@@ -11,5 +11,6 @@ import { TestSchemaService } from './test-schema.service';
   imports: [TypeOrmModule.forFeature([TestSchema]), SubjectModule],
   controllers: [TestSchemaController],
   providers: [TestSchemaService],
+  exports: [TestSchemaService],
 })
 export class TestSchemaModule {}
