@@ -25,6 +25,8 @@ export class TestSchemaService {
     const testSchema = this.testSchemaRepository.create({
       id: randomUUID(),
       ...props,
+      questions: [],
+      instances: [],
       updatedAt: now,
       createdAt: now,
     });
