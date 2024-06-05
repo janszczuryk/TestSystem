@@ -1,27 +1,65 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 
-import { CreateSubjectDto } from './dto/create-subject.dto';
-import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { randomUUID } from 'crypto';
+
+import { Subject, SubjectCreateProps, SubjectUpdateProps } from './entities/subject.entity';
+
+export class SubjectServiceError extends Error {}
+
+export class SubjectServiceUpdateError extends Error {}
+
+export class SubjectServiceUpdateDuplicateError extends Error {}
 
 @Injectable()
 export class SubjectService {
-  create(createSubjectDto: CreateSubjectDto) {
-    return 'This action adds a new subject';
+  public constructor(
+    @InjectRepository(Subject)
+    private readonly subjectRepository: Repository<Subject>,
+  ) {}
+
+  public async create(props: SubjectCreateProps): Promise<Subject> {
+    const now = new Date();
+
+    const subject = this.subjectRepository.create({
+      id: randomUUID(),
+      ...props,
+      testSchemas: [],
+      updatedAt: now,
+      createdAt: now,
+    });
+
+    return this.subjectRepository.save(subject);
   }
 
-  findAll() {
-    return 'This action returns all subject';
+  public async findAll(): Promise<Subject[]> {
+    return this.subjectRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} subject`;
+  public async find(findOptions: FindOptionsWhere<Subject>): Promise<Subject | null> {
+    return this.subjectRepository.findOneBy(findOptions);
   }
 
-  update(id: number, updateSubjectDto: UpdateSubjectDto) {
-    return `This action updates a #${id} subject`;
+  public async get(id: string): Promise<Subject | null> {
+    return this.subjectRepository.findOneBy({ id });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} subject`;
+  public async update(subject: Subject, props: SubjectUpdateProps): Promise<Subject> {
+    const existingSubject = await this.subjectRepository.findOneBy({
+      name: props.name || subject.name,
+      fieldOfStudy: props.fieldOfStudy || subject.fieldOfStudy,
+    });
+    if (existingSubject && existingSubject.id !== subject.id) {
+      throw new SubjectServiceUpdateDuplicateError('Subject with these name and field of study already exists');
+    }
+
+    subject.update(props);
+
+    return this.subjectRepository.save(subject);
+  }
+
+  public async remove(subject: Subject): Promise<void> {
+    await this.subjectRepository.remove(subject);
   }
 }

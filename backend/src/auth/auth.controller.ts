@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Post, SerializeOptions, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 
 import { AccountService } from '@module/account/account.service';
 import { Account, AccountCreateProps, AccountType } from '@module/account/entities/account.entity';
@@ -30,7 +30,9 @@ export class AuthController {
 
   @Post('register')
   public async register(@Body() body: RegisterBodyDto) {
-    const existingAccount = await this.accountService.findByEmail(body.email);
+    const existingAccount = await this.accountService.find({
+      email: body.email,
+    });
     if (existingAccount) {
       throw new ConflictException('Account with given email address already exists');
     }
@@ -49,11 +51,10 @@ export class AuthController {
     return { account };
   }
 
-  @SerializeOptions({})
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   public async changePassword(@AuthJwt() { accountId }: JwtParams, @Body() body: ChangePasswordBodyDto) {
-    let account = await this.accountService.find(accountId);
+    let account = await this.accountService.get(accountId);
     if (!account) {
       throw new Error('Account does not exist');
     }
@@ -79,7 +80,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, AccountTypeGuard)
   @AccountTypes([AccountType.LEARNER])
   public async getAccount(@AuthJwt() { accountId }: JwtParams) {
-    const account = await this.accountService.find(accountId);
+    const account = await this.accountService.get(accountId);
     account && (account.password = '');
 
     return { account };

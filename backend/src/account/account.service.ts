@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
 import { Account, AccountCreateProps, AccountUpdateProps } from './entities/account.entity';
+
+export class AccountServiceError extends Error {}
+
+export class AccountServiceUpdateError extends AccountServiceError {}
+
+export class AccountServiceUpdateDuplicateError extends AccountServiceUpdateError {}
 
 @Injectable()
 export class AccountService {
@@ -13,12 +19,12 @@ export class AccountService {
     private readonly accountRepository: Repository<Account>,
   ) {}
 
-  public async find(id: string): Promise<Account | null> {
+  public async get(id: string): Promise<Account | null> {
     return this.accountRepository.findOneBy({ id });
   }
 
-  public async findByEmail(email: string): Promise<Account | null> {
-    return this.accountRepository.findOneBy({ email });
+  public async find(findOptions: FindOptionsWhere<Account>): Promise<Account | null> {
+    return this.accountRepository.findOneBy(findOptions);
   }
 
   public async create(props: AccountCreateProps): Promise<Account> {
@@ -35,7 +41,14 @@ export class AccountService {
   }
 
   public async update(account: Account, props: AccountUpdateProps): Promise<Account> {
-    Object.assign(account, props);
+    const existingAccount = await this.accountRepository.findOneBy({
+      email: props.email,
+    });
+    if (existingAccount && existingAccount.id !== account.id) {
+      throw new AccountServiceUpdateDuplicateError('Account with this email already exists');
+    }
+
+    account.update(props);
 
     return this.accountRepository.save(account);
   }

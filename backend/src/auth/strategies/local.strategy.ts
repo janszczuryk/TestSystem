@@ -20,7 +20,7 @@ export class LocalStrategy extends PassportStrategy(PassportLocalStrategy) {
   }
 
   public async validate(email: string, password: string): Promise<Account> {
-    const account = await this.accountService.findByEmail(email);
+    const account = await this.accountService.find({ email });
     if (!account) {
       throw new UnauthorizedException();
     }

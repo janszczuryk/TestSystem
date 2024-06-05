@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Migration1716491368781 implements MigrationInterface {
-    name = 'Migration1716491368781'
+export class Migration1717002617591 implements MigrationInterface {
+    name = 'Migration1717002617591'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TYPE "public"."account_type_enum" AS ENUM('learner', 'teacher')`);
@@ -9,7 +9,7 @@ export class Migration1716491368781 implements MigrationInterface {
         await queryRunner.query(`CREATE INDEX "IDX_3c76f178c5065d1ab304b5832e" ON "account" ("type") `);
         await queryRunner.query(`CREATE TYPE "public"."test_instance_result_status_enum" AS ENUM('created', 'correctly_answered', 'incorrectly_answered')`);
         await queryRunner.query(`CREATE TABLE "test_instance_result" ("id" character varying(36) NOT NULL, "learner_number" integer NOT NULL, "answers" character varying array NOT NULL, "correct_answer_index" integer NOT NULL, "submitted_answer_index" integer NOT NULL, "status" "public"."test_instance_result_status_enum" NOT NULL, "submitted_at" TIMESTAMP, "updated_at" TIMESTAMP NOT NULL, "created_at" TIMESTAMP NOT NULL, "instance_id" character varying(36), "question_id" character varying(36), CONSTRAINT "UQ_8dda9c6fd0449f68f6d52489b12" UNIQUE ("learner_number"), CONSTRAINT "PK_1c986eb96f2e27e50a6fa7174b0" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "subject" ("id" character varying(36) NOT NULL, "name" character varying(250) NOT NULL, "field_of_study" character varying(50) NOT NULL, "updated_at" TIMESTAMP NOT NULL, "created_at" TIMESTAMP NOT NULL, CONSTRAINT "PK_12eee115462e38d62e5455fc054" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "subject" ("id" character varying(36) NOT NULL, "name" character varying(250) NOT NULL, "field_of_study" character varying(50) NOT NULL, "updated_at" TIMESTAMP NOT NULL, "created_at" TIMESTAMP NOT NULL, CONSTRAINT "UQ_fbd6db36ec53c96e2e6c6cf936a" UNIQUE ("name", "field_of_study"), CONSTRAINT "PK_12eee115462e38d62e5455fc054" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "test_schema" ("id" character varying(36) NOT NULL, "name" character varying(250) NOT NULL, "updated_at" TIMESTAMP NOT NULL, "created_at" TIMESTAMP NOT NULL, "subject_id" character varying(36), CONSTRAINT "PK_81c30a9af6f0e64e39b428478da" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TYPE "public"."test_instance_status_enum" AS ENUM('created', 'started', 'ended')`);
         await queryRunner.query(`CREATE TABLE "test_instance" ("id" character varying(36) NOT NULL, "is_enabled" boolean NOT NULL, "status" "public"."test_instance_status_enum" NOT NULL, "started_at" TIMESTAMP, "ended_at" TIMESTAMP, "updated_at" TIMESTAMP NOT NULL, "created_at" TIMESTAMP NOT NULL, "schema_id" character varying(36), "teacher_id" character varying(36), CONSTRAINT "PK_43ac19e1bd2750b8e32db9e838a" PRIMARY KEY ("id"))`);
