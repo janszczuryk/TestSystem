@@ -8,9 +8,9 @@ import { Subject, SubjectCreateProps, SubjectUpdateProps } from './entities/subj
 
 export class SubjectServiceError extends Error {}
 
-export class SubjectServiceUpdateError extends Error {}
+export class SubjectServiceUpdateError extends SubjectServiceError {}
 
-export class SubjectServiceUpdateDuplicateError extends Error {}
+export class SubjectServiceUpdateDuplicateError extends SubjectServiceUpdateError {}
 
 @Injectable()
 export class SubjectService {
@@ -34,15 +34,23 @@ export class SubjectService {
   }
 
   public async findAll(): Promise<Subject[]> {
-    return this.subjectRepository.find();
+    return this.subjectRepository.find({
+      loadRelationIds: true,
+    });
   }
 
   public async find(findOptions: FindOptionsWhere<Subject>): Promise<Subject | null> {
-    return this.subjectRepository.findOneBy(findOptions);
+    return this.subjectRepository.findOne({
+      where: findOptions,
+      relations: { testSchemas: true },
+    });
   }
 
   public async get(id: string): Promise<Subject | null> {
-    return this.subjectRepository.findOneBy({ id });
+    return this.subjectRepository.findOne({
+      where: { id },
+      relations: { testSchemas: true },
+    });
   }
 
   public async update(subject: Subject, props: SubjectUpdateProps): Promise<Subject> {

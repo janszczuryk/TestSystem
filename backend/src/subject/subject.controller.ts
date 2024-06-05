@@ -10,12 +10,12 @@ import { SubjectCreateProps } from './entities/subject.entity';
 import { SubjectService, SubjectServiceUpdateDuplicateError } from './subject.service';
 
 @Controller('subjects')
+@UseGuards(JwtAuthGuard, AccountTypeGuard)
+@AccountTypes([AccountType.TEACHER])
 export class SubjectController {
   public constructor(private readonly subjectService: SubjectService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.TEACHER])
   public async create(@Body() body: CreateSubjectBodyDto) {
     const existingSubject = await this.subjectService.find({
       name: body.name,
@@ -34,15 +34,11 @@ export class SubjectController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.TEACHER])
   public async findAll() {
     return this.subjectService.findAll();
   }
 
   @Get(':subject_id')
-  @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.TEACHER])
   public async findOne(@Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string) {
     const subject = await this.subjectService.get(subjectId);
     if (!subject) {
@@ -53,16 +49,14 @@ export class SubjectController {
   }
 
   @Patch(':subject_id')
-  @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.TEACHER])
-  public async update(@Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string, @Body() updateSubjectDto: UpdateSubjectBodyDto) {
+  public async update(@Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string, @Body() body: UpdateSubjectBodyDto) {
     let subject = await this.subjectService.get(subjectId);
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
     }
 
     try {
-      subject = await this.subjectService.update(subject, updateSubjectDto);
+      subject = await this.subjectService.update(subject, body);
     } catch (error) {
       if (error instanceof SubjectServiceUpdateDuplicateError) {
         throw new ConflictException(error.message);
@@ -76,8 +70,6 @@ export class SubjectController {
 
   @Delete(':subject_id')
   @HttpCode(204)
-  @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.TEACHER])
   public async remove(@Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string) {
     const subject = await this.subjectService.get(subjectId);
     if (!subject) {
