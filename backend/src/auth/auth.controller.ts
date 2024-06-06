@@ -1,4 +1,14 @@
-import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 
 import { AccountService } from '@module/account/account.service';
 import { Account, AccountCreateProps, AccountType } from '@module/account/entities/account.entity';
