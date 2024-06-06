@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
-import { Account, AccountUpdateProps } from './entities/account.entity';
+import { Account, AccountType, AccountTypeMapping, AccountUpdateProps } from './entities/account.entity';
 
 export class AccountServiceError extends Error {}
 
@@ -17,8 +17,14 @@ export class AccountService {
     private readonly accountRepository: Repository<Account>,
   ) {}
 
-  public async get(id: string): Promise<Account | null> {
-    return this.accountRepository.findOneBy({ id });
+  public async get<T extends AccountType>(id: string, type?: T): Promise<AccountTypeMapping[T] | null> {
+    const account = await this.accountRepository.findOneBy({ id });
+
+    if (!account || (type && account.type !== type)) {
+      return null;
+    }
+
+    return account as AccountTypeMapping[T];
   }
 
   public async find(findOptions: FindOptionsWhere<Account>): Promise<Account | null> {

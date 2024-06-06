@@ -73,7 +73,7 @@ export class AuthController {
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   public async changePassword(@AuthJwt() { accountId }: JwtParams, @Body() body: ChangePasswordBodyDto) {
-    let account = await this.accountService.get(accountId);
+    let account: Account | null = await this.accountService.get(accountId);
     if (!account) {
       throw new Error('Account does not exist');
     }

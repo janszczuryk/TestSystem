@@ -1,9 +1,17 @@
 import { Column, Entity, PrimaryColumn, TableInheritance } from 'typeorm';
 
+import { LearnerAccount } from '@module/account/entities/learner-account.entity';
+import { TeacherAccount } from '@module/account/entities/teacher-account.entity';
+
 export enum AccountType {
   LEARNER = 'learner',
   TEACHER = 'teacher',
 }
+
+export type AccountTypeMapping = {
+  [AccountType.LEARNER]: LearnerAccount;
+  [AccountType.TEACHER]: TeacherAccount;
+};
 
 export type AccountCreateProps = Pick<Account, 'email' | 'password' | 'isVerified'>;
 

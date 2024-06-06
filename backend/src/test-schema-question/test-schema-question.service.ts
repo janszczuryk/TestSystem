@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
+import { TestSchema } from '@module/test-schema/entities/test-schema.entity';
+
 import { TestSchemaQuestion, TestSchemaQuestionUpdateProps } from './entities/test-schema-question.entity';
 
 @Injectable()
@@ -20,6 +22,21 @@ export class TestSchemaQuestionService {
       where: findAllOptions,
       loadRelationIds: true,
     });
+  }
+
+  public async findAllRandomized(
+    testSchema: TestSchema,
+    limit?: number,
+    offset?: number,
+  ): Promise<TestSchemaQuestion[]> {
+    return this.testSchemaQuestionRepository
+      .createQueryBuilder('question')
+      .select()
+      .where('question.schema_id = :schemaId', { schemaId: testSchema.id })
+      .orderBy('RANDOM()')
+      .take(limit)
+      .skip(offset)
+      .getMany();
   }
 
   public async find(findOptions: FindOptionsWhere<TestSchemaQuestion>): Promise<TestSchemaQuestion | null> {
