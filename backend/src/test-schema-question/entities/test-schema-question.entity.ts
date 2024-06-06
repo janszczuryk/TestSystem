@@ -3,6 +3,13 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
 import { TestSchema } from '@module/test-schema/entities/test-schema.entity';
 
+export type TestSchemaQuestionCreateProps = Pick<
+  TestSchemaQuestion,
+  'question' | 'answers' | 'correctAnswerIndex' | 'schema'
+>;
+
+export type TestSchemaQuestionUpdateProps = Partial<TestSchemaQuestionCreateProps>;
+
 @Entity()
 export class TestSchemaQuestion {
   @PrimaryColumn({ type: 'varchar', length: 36 })
@@ -21,4 +28,10 @@ export class TestSchemaQuestion {
   public updatedAt: Date;
   @Column({ type: 'timestamp', nullable: false })
   public createdAt: Date;
+
+  public update(props: TestSchemaQuestionUpdateProps): void {
+    Object.assign(this, props);
+
+    this.updatedAt = new Date();
+  }
 }

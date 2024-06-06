@@ -1,4 +1,17 @@
-import { Body, ConflictException, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { AccountType } from '@module/account/entities/account.entity';
 import { AccountTypes } from '@module/auth/decorators';
@@ -49,7 +62,10 @@ export class SubjectController {
   }
 
   @Patch(':subject_id')
-  public async update(@Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string, @Body() body: UpdateSubjectBodyDto) {
+  public async update(
+    @Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string,
+    @Body() body: UpdateSubjectBodyDto,
+  ) {
     let subject = await this.subjectService.get(subjectId);
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
