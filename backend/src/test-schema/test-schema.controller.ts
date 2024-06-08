@@ -6,8 +6,6 @@ import {
   Get,
   HttpCode,
   NotFoundException,
-  Param,
-  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -16,6 +14,7 @@ import {
 import { AccountType } from '@module/account/entities/account.entity';
 import { AccountTypes } from '@module/auth/decorators';
 import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
+import { ParamUUID } from '@module/common/decorators';
 import { SubjectService } from '@module/subject/subject.service';
 
 import { CreateTestSchemaBodyDto } from './dto/create-test-schema-body.dto';
@@ -61,7 +60,7 @@ export class TestSchemaController {
   }
 
   @Get(':schema_id')
-  public async findOne(@Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string) {
+  public async findOne(@ParamUUID('schema_id') schemaId: string) {
     const testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');
@@ -71,10 +70,7 @@ export class TestSchemaController {
   }
 
   @Patch(':schema_id')
-  public async update(
-    @Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string,
-    @Body() body: UpdateTestSchemaBodyDto,
-  ) {
+  public async update(@ParamUUID('schema_id') schemaId: string, @Body() body: UpdateTestSchemaBodyDto) {
     let testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');
@@ -106,7 +102,7 @@ export class TestSchemaController {
 
   @Delete(':schema_id')
   @HttpCode(204)
-  public async remove(@Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string) {
+  public async remove(@ParamUUID('schema_id') schemaId: string) {
     const testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');

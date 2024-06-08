@@ -6,8 +6,6 @@ import {
   Get,
   HttpCode,
   NotFoundException,
-  Param,
-  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -16,6 +14,7 @@ import {
 import { AccountType } from '@module/account/entities/account.entity';
 import { AccountTypes } from '@module/auth/decorators';
 import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
+import { ParamUUID } from '@module/common/decorators';
 
 import { CreateSubjectBodyDto } from './dto/create-subject-body.dto';
 import { UpdateSubjectBodyDto } from './dto/update-subject-body.dto';
@@ -52,7 +51,7 @@ export class SubjectController {
   }
 
   @Get(':subject_id')
-  public async findOne(@Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string) {
+  public async findOne(@ParamUUID('subject_id') subjectId: string) {
     const subject = await this.subjectService.get(subjectId);
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
@@ -62,10 +61,7 @@ export class SubjectController {
   }
 
   @Patch(':subject_id')
-  public async update(
-    @Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string,
-    @Body() body: UpdateSubjectBodyDto,
-  ) {
+  public async update(@ParamUUID('subject_id') subjectId: string, @Body() body: UpdateSubjectBodyDto) {
     let subject = await this.subjectService.get(subjectId);
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
@@ -86,7 +82,7 @@ export class SubjectController {
 
   @Delete(':subject_id')
   @HttpCode(204)
-  public async remove(@Param('subject_id', new ParseUUIDPipe({ version: '4' })) subjectId: string) {
+  public async remove(@ParamUUID('subject_id') subjectId: string) {
     const subject = await this.subjectService.get(subjectId);
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
