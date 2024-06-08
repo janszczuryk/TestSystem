@@ -16,8 +16,7 @@ import { AccountTypes } from '@module/auth/decorators';
 import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
 import { ParamUUID } from '@module/common/decorators';
 
-import { CreateSubjectBodyDto } from './dto/create-subject-body.dto';
-import { UpdateSubjectBodyDto } from './dto/update-subject-body.dto';
+import { CreateSubjectBodyDto, UpdateSubjectBodyDto } from './dto/body';
 import { Subject } from './entities/subject.entity';
 import { SubjectService, SubjectServiceUpdateDuplicateError } from './subject.service';
 

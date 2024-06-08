@@ -17,8 +17,7 @@ import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
 import { ParamUUID } from '@module/common/decorators';
 import { SubjectService } from '@module/subject/subject.service';
 
-import { CreateTestSchemaBodyDto } from './dto/create-test-schema-body.dto';
-import { UpdateTestSchemaBodyDto } from './dto/update-test-schema-body.dto';
+import { CreateTestSchemaBodyDto, UpdateTestSchemaBodyDto } from './dto/body';
 import { TestSchema } from './entities/test-schema.entity';
 import { TestSchemaService, TestSchemaServiceUpdateDuplicateError } from './test-schema.service';
 

@@ -14,12 +14,11 @@ import { AccountService } from '@module/account/account.service';
 import { Account, AccountCreateProps, AccountType } from '@module/account/entities/account.entity';
 import { LearnerAccount } from '@module/account/entities/learner-account.entity';
 import { TeacherAccount } from '@module/account/entities/teacher-account.entity';
-import { ChangePasswordBodyDto } from '@module/auth/dto/change-password-body.dto';
 
 import { AuthService } from './auth.service';
 import { JwtParams } from './auth.type';
 import { AccountTypes, AuthAccount, AuthJwt } from './decorators';
-import { RegisterBodyDto } from './dto/register-body.dto';
+import { ChangePasswordBodyDto, RegisterBodyDto } from './dto/body';
 import { AccountTypeGuard, JwtAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
