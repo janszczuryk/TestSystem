@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
-import { randomUUID } from 'crypto';
-
-import {
-  TestSchemaQuestion,
-  TestSchemaQuestionCreateProps,
-  TestSchemaQuestionUpdateProps,
-} from './entities/test-schema-question.entity';
+import { TestSchemaQuestion, TestSchemaQuestionUpdateProps } from './entities/test-schema-question.entity';
 
 @Injectable()
 export class TestSchemaQuestionService {
@@ -17,18 +11,8 @@ export class TestSchemaQuestionService {
     private readonly testSchemaQuestionRepository: Repository<TestSchemaQuestion>,
   ) {}
 
-  public async create(props: TestSchemaQuestionCreateProps): Promise<TestSchemaQuestion> {
-    const now = new Date();
-
-    const subject = this.testSchemaQuestionRepository.create({
-      id: randomUUID(),
-      ...props,
-      instanceQuestions: [],
-      updatedAt: now,
-      createdAt: now,
-    });
-
-    return this.testSchemaQuestionRepository.save(subject);
+  public async create(testSchemaQuestion: TestSchemaQuestion): Promise<TestSchemaQuestion> {
+    return this.testSchemaQuestionRepository.save(testSchemaQuestion);
   }
 
   public async findAll(findAllOptions?: FindOptionsWhere<TestSchemaQuestion>): Promise<TestSchemaQuestion[]> {

@@ -5,7 +5,7 @@ export enum AccountType {
   TEACHER = 'teacher',
 }
 
-export type AccountCreateProps = Pick<Account, 'email' | 'password' | 'isVerified' | 'type'>;
+export type AccountCreateProps = Pick<Account, 'email' | 'password' | 'isVerified'>;
 
 export type AccountUpdateProps = Partial<AccountCreateProps>;
 

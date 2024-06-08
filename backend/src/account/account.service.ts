@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
-import { randomUUID } from 'crypto';
-
-import { Account, AccountCreateProps, AccountUpdateProps } from './entities/account.entity';
+import { Account, AccountUpdateProps } from './entities/account.entity';
 
 export class AccountServiceError extends Error {}
 
@@ -27,16 +25,7 @@ export class AccountService {
     return this.accountRepository.findOneBy(findOptions);
   }
 
-  public async create(props: AccountCreateProps): Promise<Account> {
-    const now = new Date();
-
-    const account = this.accountRepository.create({
-      id: randomUUID(),
-      ...props,
-      updatedAt: now,
-      createdAt: now,
-    });
-
+  public async create(account: Account): Promise<Account> {
     return this.accountRepository.save(account);
   }
 

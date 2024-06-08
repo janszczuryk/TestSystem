@@ -1,5 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 
+import { randomUUID } from 'crypto';
+
 import { TestSchema } from '@module/test-schema/entities/test-schema.entity';
 
 export type SubjectCreateProps = Pick<Subject, 'name' | 'fieldOfStudy'>;
@@ -21,6 +23,22 @@ export class Subject {
   public updatedAt: Date;
   @Column({ type: 'timestamp', nullable: false })
   public createdAt: Date;
+
+  public static create(props: SubjectCreateProps): Subject {
+    const now = new Date();
+    const subject = new Subject();
+
+    Object.assign(subject, {
+      id: randomUUID(),
+      name: props.name,
+      fieldOfStudy: props.fieldOfStudy,
+      testSchemas: [],
+      updatedAt: now,
+      createdAt: now,
+    });
+
+    return subject;
+  }
 
   public update(props: SubjectUpdateProps): void {
     Object.assign(this, props);

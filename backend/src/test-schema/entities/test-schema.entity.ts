@@ -1,5 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
+import { randomUUID } from 'crypto';
+
 import { Subject } from '@module/subject/entities/subject.entity';
 import { TestInstance } from '@module/test-instance/entities/test-instance.entity';
 import { TestSchemaQuestion } from '@module/test-schema-question/entities/test-schema-question.entity';
@@ -24,6 +26,23 @@ export class TestSchema {
   public updatedAt: Date;
   @Column({ type: 'timestamp', nullable: false })
   public createdAt: Date;
+
+  public static create(props: TestSchemaCreateProps): TestSchema {
+    const now = new Date();
+    const testSchema = new TestSchema();
+
+    Object.assign(testSchema, {
+      id: randomUUID(),
+      name: props.name,
+      subject: props.subject,
+      questions: [],
+      instances: [],
+      updatedAt: now,
+      createdAt: now,
+    });
+
+    return testSchema;
+  }
 
   public update(props: TestSchemaUpdateProps): void {
     Object.assign(this, props);

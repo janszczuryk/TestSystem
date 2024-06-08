@@ -12,6 +12,8 @@ import {
 
 import { AccountService } from '@module/account/account.service';
 import { Account, AccountCreateProps, AccountType } from '@module/account/entities/account.entity';
+import { LearnerAccount } from '@module/account/entities/learner-account.entity';
+import { TeacherAccount } from '@module/account/entities/teacher-account.entity';
 import { ChangePasswordBodyDto } from '@module/auth/dto/change-password-body.dto';
 
 import { AuthService } from './auth.service';
@@ -52,10 +54,19 @@ export class AuthController {
     const createAccountProps: AccountCreateProps = {
       email: body.email,
       password: encryptedPassword,
-      type: body.type,
       isVerified: false,
     };
-    const account = await this.accountService.create(createAccountProps);
+
+    let account: Account;
+    if (body.type === AccountType.LEARNER) {
+      account = LearnerAccount.create(createAccountProps);
+    } else if (body.type === AccountType.TEACHER) {
+      account = TeacherAccount.create(createAccountProps);
+    } else {
+      throw new Error('Unsupported account type');
+    }
+
+    account = await this.accountService.create(account);
     account && (account.password = '');
 
     return { account };
@@ -88,7 +99,7 @@ export class AuthController {
   // TODO: Remove
   @Get('account')
   @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.LEARNER])
+  @AccountTypes([AccountType.LEARNER, AccountType.TEACHER])
   public async getAccount(@AuthJwt() { accountId }: JwtParams) {
     const account = await this.accountService.get(accountId);
     account && (account.password = '');

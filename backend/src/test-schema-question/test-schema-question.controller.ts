@@ -19,7 +19,7 @@ import { TestSchemaService } from '@module/test-schema/test-schema.service';
 
 import { CreateTestSchemaQuestionBodyDto } from './dto/create-test-schema-question-body.dto';
 import { UpdateTestSchemaQuestionBodyDto } from './dto/update-test-schema-question-body.dto';
-import { TestSchemaQuestionCreateProps, TestSchemaQuestionUpdateProps } from './entities/test-schema-question.entity';
+import { TestSchemaQuestion } from './entities/test-schema-question.entity';
 import { TestSchemaQuestionService } from './test-schema-question.service';
 
 @Controller('schemas/:schema_id/questions')
@@ -38,14 +38,14 @@ export class TestSchemaQuestionController {
       throw new NotFoundException('Schema does not exist');
     }
 
-    const props: TestSchemaQuestionCreateProps = {
+    const testSchemaQuestion = TestSchemaQuestion.create({
       question: body.question,
       answers: body.answers,
       correctAnswerIndex: body.correctAnswerIndex,
       schema: testSchema,
-    };
+    });
 
-    return this.testSchemaQuestionService.create(props);
+    return this.testSchemaQuestionService.create(testSchemaQuestion);
   }
 
   @Get()
@@ -89,14 +89,12 @@ export class TestSchemaQuestionController {
       throw new NotFoundException('Schema does not exist');
     }
 
-    const props: TestSchemaQuestionUpdateProps = {
+    testSchemaQuestion = await this.testSchemaQuestionService.update(testSchemaQuestion, {
       question: body.question,
       answers: body.answers,
       correctAnswerIndex: body.correctAnswerIndex,
       schema: testSchema,
-    };
-
-    testSchemaQuestion = await this.testSchemaQuestionService.update(testSchemaQuestion, props);
+    });
 
     return testSchemaQuestion;
   }

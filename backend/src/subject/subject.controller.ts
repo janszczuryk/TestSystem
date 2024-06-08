@@ -18,7 +18,7 @@ import { ParamUUID } from '@module/common/decorators';
 
 import { CreateSubjectBodyDto } from './dto/create-subject-body.dto';
 import { UpdateSubjectBodyDto } from './dto/update-subject-body.dto';
-import { SubjectCreateProps } from './entities/subject.entity';
+import { Subject } from './entities/subject.entity';
 import { SubjectService, SubjectServiceUpdateDuplicateError } from './subject.service';
 
 @Controller('subjects')
@@ -37,12 +37,12 @@ export class SubjectController {
       throw new ConflictException('Subject with these name and field of study already exists');
     }
 
-    const props: SubjectCreateProps = {
+    const subject = Subject.create({
       name: body.name,
       fieldOfStudy: body.fieldOfStudy,
-    };
+    });
 
-    return this.subjectService.create(props);
+    return this.subjectService.create(subject);
   }
 
   @Get()

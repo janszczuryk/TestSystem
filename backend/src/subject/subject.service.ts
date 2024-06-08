@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
-import { randomUUID } from 'crypto';
-
-import { Subject, SubjectCreateProps, SubjectUpdateProps } from './entities/subject.entity';
+import { Subject, SubjectUpdateProps } from './entities/subject.entity';
 
 export class SubjectServiceError extends Error {}
 
@@ -19,17 +17,7 @@ export class SubjectService {
     private readonly subjectRepository: Repository<Subject>,
   ) {}
 
-  public async create(props: SubjectCreateProps): Promise<Subject> {
-    const now = new Date();
-
-    const subject = this.subjectRepository.create({
-      id: randomUUID(),
-      ...props,
-      testSchemas: [],
-      updatedAt: now,
-      createdAt: now,
-    });
-
+  public async create(subject: Subject): Promise<Subject> {
     return this.subjectRepository.save(subject);
   }
 

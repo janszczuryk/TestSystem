@@ -19,7 +19,7 @@ import { SubjectService } from '@module/subject/subject.service';
 
 import { CreateTestSchemaBodyDto } from './dto/create-test-schema-body.dto';
 import { UpdateTestSchemaBodyDto } from './dto/update-test-schema-body.dto';
-import { TestSchemaCreateProps } from './entities/test-schema.entity';
+import { TestSchema } from './entities/test-schema.entity';
 import { TestSchemaService, TestSchemaServiceUpdateDuplicateError } from './test-schema.service';
 
 @Controller('schemas')
@@ -41,17 +41,16 @@ export class TestSchemaController {
     }
 
     const subject = await this.subjectService.get(body.subjectId);
-
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
     }
 
-    const props: TestSchemaCreateProps = {
+    const testSchema = TestSchema.create({
       name: body.name,
       subject: subject,
-    };
+    });
 
-    return this.testSchemaService.create(props);
+    return this.testSchemaService.create(testSchema);
   }
 
   @Get()
@@ -77,18 +76,15 @@ export class TestSchemaController {
     }
 
     const subject = await this.subjectService.get(body.subjectId);
-
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
     }
 
-    const props: TestSchemaCreateProps = {
-      name: body.name,
-      subject: subject,
-    };
-
     try {
-      testSchema = await this.testSchemaService.update(testSchema, props);
+      testSchema = await this.testSchemaService.update(testSchema, {
+        name: body.name,
+        subject: subject,
+      });
     } catch (error) {
       if (error instanceof TestSchemaServiceUpdateDuplicateError) {
         throw new ConflictException(error.message);
