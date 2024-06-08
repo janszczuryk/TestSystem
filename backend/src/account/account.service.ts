@@ -31,7 +31,7 @@ export class AccountService {
 
   public async update(account: Account, props: AccountUpdateProps): Promise<Account> {
     const existingAccount = await this.accountRepository.findOneBy({
-      email: props.email,
+      email: props.email || account.email,
     });
     if (existingAccount && existingAccount.id !== account.id) {
       throw new AccountServiceUpdateDuplicateError('Account with this email already exists');

@@ -18,6 +18,7 @@ import { ParamUUID } from '@module/common/decorators';
 import { TestSchemaService } from '@module/test-schema/test-schema.service';
 
 import { CreateTestSchemaQuestionBodyDto, UpdateTestSchemaQuestionBodyDto } from './dto/body';
+import { TestSchemaQuestionResponseDto } from './dto/response';
 import { TestSchemaQuestion } from './entities/test-schema-question.entity';
 import { TestSchemaQuestionService } from './test-schema-question.service';
 
@@ -37,21 +38,24 @@ export class TestSchemaQuestionController {
       throw new NotFoundException('Schema does not exist');
     }
 
-    const testSchemaQuestion = TestSchemaQuestion.create({
+    let testSchemaQuestion = TestSchemaQuestion.create({
       question: body.question,
       answers: body.answers,
       correctAnswerIndex: body.correctAnswerIndex,
       schema: testSchema,
     });
+    testSchemaQuestion = await this.testSchemaQuestionService.create(testSchemaQuestion);
 
-    return this.testSchemaQuestionService.create(testSchemaQuestion);
+    return new TestSchemaQuestionResponseDto(testSchemaQuestion);
   }
 
   @Get()
   public async findAll(@ParamUUID('schema_id') schemaId: string) {
-    return this.testSchemaQuestionService.findAll({
+    const testSchemaQuestions = await this.testSchemaQuestionService.findAll({
       schema: { id: schemaId },
     });
+
+    return testSchemaQuestions.map((testSchemaQuestion) => new TestSchemaQuestionResponseDto(testSchemaQuestion));
   }
 
   @Get(':question_id')
@@ -65,7 +69,7 @@ export class TestSchemaQuestionController {
       throw new ConflictException('This schema does not contain such question');
     }
 
-    return testSchemaQuestion;
+    return new TestSchemaQuestionResponseDto(testSchemaQuestion);
   }
 
   @Patch(':question_id')
@@ -95,7 +99,7 @@ export class TestSchemaQuestionController {
       schema: testSchema,
     });
 
-    return testSchemaQuestion;
+    return new TestSchemaQuestionResponseDto(testSchemaQuestion);
   }
 
   @Delete(':question_id')

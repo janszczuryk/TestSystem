@@ -17,6 +17,7 @@ import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
 import { ParamUUID } from '@module/common/decorators';
 
 import { CreateSubjectBodyDto, UpdateSubjectBodyDto } from './dto/body';
+import { SubjectResponseDto } from './dto/response';
 import { Subject } from './entities/subject.entity';
 import { SubjectService, SubjectServiceUpdateDuplicateError } from './subject.service';
 
@@ -36,17 +37,20 @@ export class SubjectController {
       throw new ConflictException('Subject with these name and field of study already exists');
     }
 
-    const subject = Subject.create({
+    let subject = Subject.create({
       name: body.name,
       fieldOfStudy: body.fieldOfStudy,
     });
+    subject = await this.subjectService.create(subject);
 
-    return this.subjectService.create(subject);
+    return new SubjectResponseDto(subject);
   }
 
   @Get()
   public async findAll() {
-    return this.subjectService.findAll();
+    const subjects = await this.subjectService.findAll();
+
+    return subjects.map((subject) => new SubjectResponseDto(subject));
   }
 
   @Get(':subject_id')
@@ -56,7 +60,7 @@ export class SubjectController {
       throw new NotFoundException('Subject does not exist');
     }
 
-    return subject;
+    return new SubjectResponseDto(subject);
   }
 
   @Patch(':subject_id')
@@ -76,7 +80,7 @@ export class SubjectController {
       throw error;
     }
 
-    return subject;
+    return new SubjectResponseDto(subject);
   }
 
   @Delete(':subject_id')
@@ -87,6 +91,7 @@ export class SubjectController {
       throw new NotFoundException('Subject does not exist');
     }
 
+    // TODO: Handle cascade
     await this.subjectService.remove(subject);
   }
 }

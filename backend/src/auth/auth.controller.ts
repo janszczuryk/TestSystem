@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 
 import { AccountService } from '@module/account/account.service';
+import { AccountResponseDto } from '@module/account/dto/response';
 import { Account, AccountCreateProps, AccountType } from '@module/account/entities/account.entity';
 import { LearnerAccount } from '@module/account/entities/learner-account.entity';
 import { TeacherAccount } from '@module/account/entities/teacher-account.entity';
@@ -19,6 +20,7 @@ import { AuthService } from './auth.service';
 import { JwtParams } from './auth.type';
 import { AccountTypes, AuthAccount, AuthJwt } from './decorators';
 import { ChangePasswordBodyDto, RegisterBodyDto } from './dto/body';
+import { LoginResponseDto } from './dto/response';
 import { AccountTypeGuard, JwtAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
@@ -34,9 +36,7 @@ export class AuthController {
   public async login(@AuthAccount() account: Account) {
     const jwtToken = await this.authService.generateJwtToken(account);
 
-    return {
-      token: jwtToken,
-    };
+    return new LoginResponseDto({ jwtToken });
   }
 
   @Post('register')
@@ -66,9 +66,8 @@ export class AuthController {
     }
 
     account = await this.accountService.create(account);
-    account && (account.password = '');
 
-    return { account };
+    return new AccountResponseDto(account);
   }
 
   @Post('change-password')
@@ -90,9 +89,7 @@ export class AuthController {
       password: encryptedNewPassword,
     });
 
-    account && (account.password = '');
-
-    return { account };
+    return new AccountResponseDto(account);
   }
 
   // TODO: Remove
@@ -101,8 +98,7 @@ export class AuthController {
   @AccountTypes([AccountType.LEARNER, AccountType.TEACHER])
   public async getAccount(@AuthJwt() { accountId }: JwtParams) {
     const account = await this.accountService.get(accountId);
-    account && (account.password = '');
 
-    return { account };
+    return new AccountResponseDto(account as Account);
   }
 }

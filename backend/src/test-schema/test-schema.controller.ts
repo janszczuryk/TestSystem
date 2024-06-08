@@ -18,6 +18,7 @@ import { ParamUUID } from '@module/common/decorators';
 import { SubjectService } from '@module/subject/subject.service';
 
 import { CreateTestSchemaBodyDto, UpdateTestSchemaBodyDto } from './dto/body';
+import { TestSchemaResponseDto } from './dto/response';
 import { TestSchema } from './entities/test-schema.entity';
 import { TestSchemaService, TestSchemaServiceUpdateDuplicateError } from './test-schema.service';
 
@@ -44,17 +45,20 @@ export class TestSchemaController {
       throw new NotFoundException('Subject does not exist');
     }
 
-    const testSchema = TestSchema.create({
+    let testSchema = TestSchema.create({
       name: body.name,
       subject: subject,
     });
+    testSchema = await this.testSchemaService.create(testSchema);
 
-    return this.testSchemaService.create(testSchema);
+    return new TestSchemaResponseDto(testSchema);
   }
 
   @Get()
   public async findAll() {
-    return this.testSchemaService.findAll();
+    const testSchemas = await this.testSchemaService.findAll();
+
+    return testSchemas.map((testSchema) => new TestSchemaResponseDto(testSchema));
   }
 
   @Get(':schema_id')
@@ -64,7 +68,7 @@ export class TestSchemaController {
       throw new NotFoundException('Schema does not exist');
     }
 
-    return testSchema;
+    return new TestSchemaResponseDto(testSchema);
   }
 
   @Patch(':schema_id')
@@ -92,7 +96,7 @@ export class TestSchemaController {
       throw error;
     }
 
-    return testSchema;
+    return new TestSchemaResponseDto(testSchema);
   }
 
   @Delete(':schema_id')
