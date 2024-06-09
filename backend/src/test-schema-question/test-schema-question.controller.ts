@@ -1,15 +1,4 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  NotFoundException,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Patch, Post, UseGuards } from '@nestjs/common';
 
 import { AccountType } from '@module/account/entities/account.entity';
 import { AccountTypes } from '@module/auth/decorators';
@@ -51,6 +40,11 @@ export class TestSchemaQuestionController {
 
   @Get()
   public async findAll(@ParamUUID('schema_id') schemaId: string) {
+    const testSchema = await this.testSchemaService.get(schemaId);
+    if (!testSchema) {
+      throw new NotFoundException('Schema does not exist');
+    }
+
     const testSchemaQuestions = await this.testSchemaQuestionService.findAll({
       schema: { id: schemaId },
     });
@@ -66,7 +60,7 @@ export class TestSchemaQuestionController {
     }
 
     if (testSchemaQuestion.schema.id !== schemaId) {
-      throw new ConflictException('This schema does not contain such question');
+      throw new NotFoundException('Question does not exist for this schema');
     }
 
     return new TestSchemaQuestionResponseDto(testSchemaQuestion);
@@ -84,19 +78,13 @@ export class TestSchemaQuestionController {
     }
 
     if (testSchemaQuestion.schema.id !== schemaId) {
-      throw new ConflictException('This schema does not contain such question');
-    }
-
-    const testSchema = await this.testSchemaService.get(schemaId);
-    if (!testSchema) {
-      throw new NotFoundException('Schema does not exist');
+      throw new NotFoundException('Question does not exist for this schema');
     }
 
     testSchemaQuestion = await this.testSchemaQuestionService.update(testSchemaQuestion, {
       question: body.question,
       answers: body.answers,
       correctAnswerIndex: body.correctAnswerIndex,
-      schema: testSchema,
     });
 
     return new TestSchemaQuestionResponseDto(testSchemaQuestion);
@@ -111,7 +99,7 @@ export class TestSchemaQuestionController {
     }
 
     if (testSchemaQuestion.schema.id !== schemaId) {
-      throw new ConflictException('This schema does not contain such question');
+      throw new NotFoundException('Question does not exist for this schema');
     }
 
     await this.testSchemaQuestionService.remove(testSchemaQuestion);
