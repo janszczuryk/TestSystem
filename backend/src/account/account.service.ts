@@ -18,7 +18,9 @@ export class AccountService {
   ) {}
 
   public async get<T extends AccountType>(id: string, type?: T): Promise<AccountTypeMapping[T] | null> {
-    const account = await this.accountRepository.findOneBy({ id });
+    const account = await this.accountRepository.findOne({
+      where: { id },
+    });
 
     if (!account || (type && account.type !== type)) {
       return null;
@@ -28,7 +30,9 @@ export class AccountService {
   }
 
   public async find(findOptions: FindOptionsWhere<Account>): Promise<Account | null> {
-    return this.accountRepository.findOneBy(findOptions);
+    return this.accountRepository.findOne({
+      where: findOptions,
+    });
   }
 
   public async create(account: Account): Promise<Account> {
