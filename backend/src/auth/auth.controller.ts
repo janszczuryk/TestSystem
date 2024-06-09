@@ -2,7 +2,6 @@ import {
   Body,
   ConflictException,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -18,10 +17,10 @@ import { TeacherAccount } from '@module/account/entities/teacher-account.entity'
 
 import { AuthService } from './auth.service';
 import { JwtParams } from './auth.type';
-import { AccountTypes, AuthAccount, AuthJwt } from './decorators';
+import { AuthAccount, AuthJwt } from './decorators';
 import { ChangePasswordBodyDto, RegisterBodyDto } from './dto/body';
 import { LoginResponseDto } from './dto/response';
-import { AccountTypeGuard, JwtAuthGuard, LocalAuthGuard } from './guards';
+import { JwtAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -90,15 +89,5 @@ export class AuthController {
     });
 
     return new AccountResponseDto(account);
-  }
-
-  // TODO: Remove
-  @Get('account')
-  @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.LEARNER, AccountType.TEACHER])
-  public async getAccount(@AuthJwt() { accountId }: JwtParams) {
-    const account = await this.accountService.get(accountId);
-
-    return new AccountResponseDto(account as Account);
   }
 }
