@@ -1,26 +1,14 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  NotFoundException,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Patch, Post, UseGuards } from '@nestjs/common';
 
 import { AccountType } from '@module/account/entities/account.entity';
 import { AccountTypes } from '@module/auth/decorators';
 import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
+import { ParamUUID } from '@module/common/decorators';
 import { TestSchemaService } from '@module/test-schema/test-schema.service';
 
-import { CreateTestSchemaQuestionBodyDto } from './dto/create-test-schema-question-body.dto';
-import { UpdateTestSchemaQuestionBodyDto } from './dto/update-test-schema-question-body.dto';
-import { TestSchemaQuestionCreateProps, TestSchemaQuestionUpdateProps } from './entities/test-schema-question.entity';
+import { CreateTestSchemaQuestionBodyDto, UpdateTestSchemaQuestionBodyDto } from './dto/body';
+import { TestSchemaQuestionResponseDto } from './dto/response';
+import { TestSchemaQuestion } from './entities/test-schema-question.entity';
 import { TestSchemaQuestionService } from './test-schema-question.service';
 
 @Controller('schemas/:schema_id/questions')
@@ -33,53 +21,55 @@ export class TestSchemaQuestionController {
   ) {}
 
   @Post()
-  public async create(
-    @Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string,
-    @Body() body: CreateTestSchemaQuestionBodyDto,
-  ) {
+  public async create(@ParamUUID('schema_id') schemaId: string, @Body() body: CreateTestSchemaQuestionBodyDto) {
     const testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');
     }
 
-    const props: TestSchemaQuestionCreateProps = {
+    let testSchemaQuestion = TestSchemaQuestion.create({
       question: body.question,
       answers: body.answers,
       correctAnswerIndex: body.correctAnswerIndex,
       schema: testSchema,
-    };
+    });
+    testSchemaQuestion = await this.testSchemaQuestionService.create(testSchemaQuestion);
 
-    return this.testSchemaQuestionService.create(props);
+    return new TestSchemaQuestionResponseDto(testSchemaQuestion);
   }
 
   @Get()
-  public async findAll(@Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string) {
-    return this.testSchemaQuestionService.findAll({
+  public async findAll(@ParamUUID('schema_id') schemaId: string) {
+    const testSchema = await this.testSchemaService.get(schemaId);
+    if (!testSchema) {
+      throw new NotFoundException('Schema does not exist');
+    }
+
+    const testSchemaQuestions = await this.testSchemaQuestionService.findAll({
       schema: { id: schemaId },
     });
+
+    return testSchemaQuestions.map((testSchemaQuestion) => new TestSchemaQuestionResponseDto(testSchemaQuestion));
   }
 
   @Get(':question_id')
-  public async findOne(
-    @Param('question_id', new ParseUUIDPipe({ version: '4' })) questionId: string,
-    @Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string,
-  ) {
+  public async findOne(@ParamUUID('question_id') questionId: string, @ParamUUID('schema_id') schemaId: string) {
     const testSchemaQuestion = await this.testSchemaQuestionService.get(questionId);
     if (!testSchemaQuestion) {
       throw new NotFoundException('Schema question does not exist');
     }
 
     if (testSchemaQuestion.schema.id !== schemaId) {
-      throw new ConflictException('This schema does not contain such question');
+      throw new NotFoundException('Question does not exist for this schema');
     }
 
-    return testSchemaQuestion;
+    return new TestSchemaQuestionResponseDto(testSchemaQuestion);
   }
 
   @Patch(':question_id')
   public async update(
-    @Param('question_id', new ParseUUIDPipe({ version: '4' })) questionId: string,
-    @Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string,
+    @ParamUUID('question_id') questionId: string,
+    @ParamUUID('schema_id') schemaId: string,
     @Body() body: UpdateTestSchemaQuestionBodyDto,
   ) {
     let testSchemaQuestion = await this.testSchemaQuestionService.get(questionId);
@@ -88,39 +78,28 @@ export class TestSchemaQuestionController {
     }
 
     if (testSchemaQuestion.schema.id !== schemaId) {
-      throw new ConflictException('This schema does not contain such question');
+      throw new NotFoundException('Question does not exist for this schema');
     }
 
-    const testSchema = await this.testSchemaService.get(schemaId);
-    if (!testSchema) {
-      throw new NotFoundException('Schema does not exist');
-    }
-
-    const props: TestSchemaQuestionUpdateProps = {
+    testSchemaQuestion = await this.testSchemaQuestionService.update(testSchemaQuestion, {
       question: body.question,
       answers: body.answers,
       correctAnswerIndex: body.correctAnswerIndex,
-      schema: testSchema,
-    };
+    });
 
-    testSchemaQuestion = await this.testSchemaQuestionService.update(testSchemaQuestion, props);
-
-    return testSchemaQuestion;
+    return new TestSchemaQuestionResponseDto(testSchemaQuestion);
   }
 
   @Delete(':question_id')
   @HttpCode(204)
-  public async remove(
-    @Param('question_id', new ParseUUIDPipe({ version: '4' })) questionId: string,
-    @Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string,
-  ) {
+  public async remove(@ParamUUID('question_id') questionId: string, @ParamUUID('schema_id') schemaId: string) {
     const testSchemaQuestion = await this.testSchemaQuestionService.get(questionId);
     if (!testSchemaQuestion) {
       throw new NotFoundException('Schema question does not exist');
     }
 
     if (testSchemaQuestion.schema.id !== schemaId) {
-      throw new ConflictException('This schema does not contain such question');
+      throw new NotFoundException('Question does not exist for this schema');
     }
 
     await this.testSchemaQuestionService.remove(testSchemaQuestion);

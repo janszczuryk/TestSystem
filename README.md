@@ -6,7 +6,7 @@ TestSystem - system designed for making and taking tests in a school/university 
 
 Blueprint contains ideas, assumptions and more detailed information about the project.
 
-Click [here](blueprint/TEST-SYSTEM.md) to check it out.
+Click [here](blueprint/README.md) to check it out.
 
 ## Backend
 

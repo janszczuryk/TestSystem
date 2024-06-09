@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
-import { randomUUID } from 'crypto';
-
-import { TestSchema, TestSchemaCreateProps, TestSchemaUpdateProps } from './entities/test-schema.entity';
+import { TestSchema, TestSchemaUpdateProps } from './entities/test-schema.entity';
 
 export class TestSchemaServiceError extends Error {}
 
@@ -19,18 +17,7 @@ export class TestSchemaService {
     private readonly testSchemaRepository: Repository<TestSchema>,
   ) {}
 
-  public async create(props: TestSchemaCreateProps): Promise<TestSchema> {
-    const now = new Date();
-
-    const testSchema = this.testSchemaRepository.create({
-      id: randomUUID(),
-      ...props,
-      questions: [],
-      instances: [],
-      updatedAt: now,
-      createdAt: now,
-    });
-
+  public async create(testSchema: TestSchema): Promise<TestSchema> {
     return this.testSchemaRepository.save(testSchema);
   }
 

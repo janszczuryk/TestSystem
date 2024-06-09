@@ -1,27 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { CreateTestInstanceQuestionDto } from './dto/create-test-instance-question.dto';
-import { UpdateTestInstanceQuestionDto } from './dto/update-test-instance-question.dto';
+import { TestInstanceQuestion } from './entities/test-instance-question.entity';
 
 @Injectable()
 export class TestInstanceQuestionService {
-  create(createTestInstanceQuestionDto: CreateTestInstanceQuestionDto) {
-    return 'This action adds a new testInstanceQuestion';
+  public constructor(
+    @InjectRepository(TestInstanceQuestion)
+    private readonly testInstanceQuestionRepository: Repository<TestInstanceQuestion>,
+  ) {}
+
+  public async create(testInstanceQuestion: TestInstanceQuestion): Promise<TestInstanceQuestion> {
+    return this.testInstanceQuestionRepository.save(testInstanceQuestion);
   }
 
-  findAll() {
-    return 'This action returns all testInstanceQuestion';
+  public async createMany(testInstanceQuestions: TestInstanceQuestion[]): Promise<TestInstanceQuestion[]> {
+    return this.testInstanceQuestionRepository.save(testInstanceQuestions);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} testInstanceQuestion`;
+  public async remove(testInstanceQuestion: TestInstanceQuestion): Promise<void> {
+    await this.testInstanceQuestionRepository.remove(testInstanceQuestion);
   }
 
-  update(id: number, updateTestInstanceQuestionDto: UpdateTestInstanceQuestionDto) {
-    return `This action updates a #${id} testInstanceQuestion`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} testInstanceQuestion`;
+  public async removeMany(testInstanceQuestions: TestInstanceQuestion[]): Promise<void> {
+    await this.testInstanceQuestionRepository.remove(testInstanceQuestions);
   }
 }

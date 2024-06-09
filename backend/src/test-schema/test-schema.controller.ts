@@ -6,8 +6,6 @@ import {
   Get,
   HttpCode,
   NotFoundException,
-  Param,
-  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -16,11 +14,12 @@ import {
 import { AccountType } from '@module/account/entities/account.entity';
 import { AccountTypes } from '@module/auth/decorators';
 import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
+import { ParamUUID } from '@module/common/decorators';
 import { SubjectService } from '@module/subject/subject.service';
 
-import { CreateTestSchemaBodyDto } from './dto/create-test-schema-body.dto';
-import { UpdateTestSchemaBodyDto } from './dto/update-test-schema-body.dto';
-import { TestSchemaCreateProps } from './entities/test-schema.entity';
+import { CreateTestSchemaBodyDto, UpdateTestSchemaBodyDto } from './dto/body';
+import { TestSchemaResponseDto } from './dto/response';
+import { TestSchema } from './entities/test-schema.entity';
 import { TestSchemaService, TestSchemaServiceUpdateDuplicateError } from './test-schema.service';
 
 @Controller('schemas')
@@ -42,57 +41,53 @@ export class TestSchemaController {
     }
 
     const subject = await this.subjectService.get(body.subjectId);
-
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
     }
 
-    const props: TestSchemaCreateProps = {
+    let testSchema = TestSchema.create({
       name: body.name,
       subject: subject,
-    };
+    });
+    testSchema = await this.testSchemaService.create(testSchema);
 
-    return this.testSchemaService.create(props);
+    return new TestSchemaResponseDto(testSchema);
   }
 
   @Get()
   public async findAll() {
-    return this.testSchemaService.findAll();
+    const testSchemas = await this.testSchemaService.findAll();
+
+    return testSchemas.map((testSchema) => new TestSchemaResponseDto(testSchema));
   }
 
   @Get(':schema_id')
-  public async findOne(@Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string) {
+  public async findOne(@ParamUUID('schema_id') schemaId: string) {
     const testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');
     }
 
-    return testSchema;
+    return new TestSchemaResponseDto(testSchema);
   }
 
   @Patch(':schema_id')
-  public async update(
-    @Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string,
-    @Body() body: UpdateTestSchemaBodyDto,
-  ) {
+  public async update(@ParamUUID('schema_id') schemaId: string, @Body() body: UpdateTestSchemaBodyDto) {
     let testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');
     }
 
     const subject = await this.subjectService.get(body.subjectId);
-
     if (!subject) {
       throw new NotFoundException('Subject does not exist');
     }
 
-    const props: TestSchemaCreateProps = {
-      name: body.name,
-      subject: subject,
-    };
-
     try {
-      testSchema = await this.testSchemaService.update(testSchema, props);
+      testSchema = await this.testSchemaService.update(testSchema, {
+        name: body.name,
+        subject: subject,
+      });
     } catch (error) {
       if (error instanceof TestSchemaServiceUpdateDuplicateError) {
         throw new ConflictException(error.message);
@@ -101,12 +96,12 @@ export class TestSchemaController {
       throw error;
     }
 
-    return testSchema;
+    return new TestSchemaResponseDto(testSchema);
   }
 
   @Delete(':schema_id')
   @HttpCode(204)
-  public async remove(@Param('schema_id', new ParseUUIDPipe({ version: '4' })) schemaId: string) {
+  public async remove(@ParamUUID('schema_id') schemaId: string) {
     const testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');

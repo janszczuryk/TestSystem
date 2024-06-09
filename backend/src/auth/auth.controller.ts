@@ -11,13 +11,16 @@ import {
 } from '@nestjs/common';
 
 import { AccountService } from '@module/account/account.service';
+import { AccountResponseDto } from '@module/account/dto/response';
 import { Account, AccountCreateProps, AccountType } from '@module/account/entities/account.entity';
-import { ChangePasswordBodyDto } from '@module/auth/dto/change-password-body.dto';
+import { LearnerAccount } from '@module/account/entities/learner-account.entity';
+import { TeacherAccount } from '@module/account/entities/teacher-account.entity';
 
 import { AuthService } from './auth.service';
 import { JwtParams } from './auth.type';
 import { AccountTypes, AuthAccount, AuthJwt } from './decorators';
-import { RegisterBodyDto } from './dto/register-body.dto';
+import { ChangePasswordBodyDto, RegisterBodyDto } from './dto/body';
+import { LoginResponseDto } from './dto/response';
 import { AccountTypeGuard, JwtAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
@@ -33,9 +36,7 @@ export class AuthController {
   public async login(@AuthAccount() account: Account) {
     const jwtToken = await this.authService.generateJwtToken(account);
 
-    return {
-      token: jwtToken,
-    };
+    return new LoginResponseDto({ jwtToken });
   }
 
   @Post('register')
@@ -52,19 +53,27 @@ export class AuthController {
     const createAccountProps: AccountCreateProps = {
       email: body.email,
       password: encryptedPassword,
-      type: body.type,
       isVerified: false,
     };
-    const account = await this.accountService.create(createAccountProps);
-    account && (account.password = '');
 
-    return { account };
+    let account: Account;
+    if (body.type === AccountType.LEARNER) {
+      account = LearnerAccount.create(createAccountProps);
+    } else if (body.type === AccountType.TEACHER) {
+      account = TeacherAccount.create(createAccountProps);
+    } else {
+      throw new Error('Unsupported account type');
+    }
+
+    account = await this.accountService.create(account);
+
+    return new AccountResponseDto(account);
   }
 
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   public async changePassword(@AuthJwt() { accountId }: JwtParams, @Body() body: ChangePasswordBodyDto) {
-    let account = await this.accountService.get(accountId);
+    let account: Account | null = await this.accountService.get(accountId);
     if (!account) {
       throw new Error('Account does not exist');
     }
@@ -80,19 +89,16 @@ export class AuthController {
       password: encryptedNewPassword,
     });
 
-    account && (account.password = '');
-
-    return { account };
+    return new AccountResponseDto(account);
   }
 
   // TODO: Remove
   @Get('account')
   @UseGuards(JwtAuthGuard, AccountTypeGuard)
-  @AccountTypes([AccountType.LEARNER])
+  @AccountTypes([AccountType.LEARNER, AccountType.TEACHER])
   public async getAccount(@AuthJwt() { accountId }: JwtParams) {
     const account = await this.accountService.get(accountId);
-    account && (account.password = '');
 
-    return { account };
+    return new AccountResponseDto(account as Account);
   }
 }
