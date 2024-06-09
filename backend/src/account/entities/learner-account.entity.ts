@@ -2,15 +2,15 @@ import { ChildEntity, OneToMany } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { TestInstanceResult } from '@module/test-instance-result/entities/test-instance-result.entity';
+import { TestInstanceLearner } from '@module/test-instance-learner/entities/test-instance-learner.entity';
 
 import { Account, AccountCreateProps, AccountType } from './account.entity';
 
 @ChildEntity(AccountType.LEARNER)
 export class LearnerAccount extends Account {
   public type: AccountType.LEARNER;
-  @OneToMany(() => TestInstanceResult, (testInstanceResult) => testInstanceResult.learner)
-  public testInstanceResults: TestInstanceResult[];
+  @OneToMany(() => TestInstanceLearner, (testInstanceLearner) => testInstanceLearner.learner)
+  public testInstanceLearners: TestInstanceLearner[];
 
   public static create(props: AccountCreateProps): LearnerAccount {
     const now = new Date();
@@ -22,7 +22,6 @@ export class LearnerAccount extends Account {
       password: props.password,
       isVerified: props.isVerified,
       type: AccountType.LEARNER,
-      testInstanceResults: [],
       updatedAt: now,
       createdAt: now,
     });

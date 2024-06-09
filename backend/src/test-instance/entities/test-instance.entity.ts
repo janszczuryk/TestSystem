@@ -3,8 +3,8 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { randomUUID } from 'crypto';
 
 import { TeacherAccount } from '@module/account/entities/teacher-account.entity';
+import { TestInstanceLearner } from '@module/test-instance-learner/entities/test-instance-learner.entity';
 import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
-import { TestInstanceResult } from '@module/test-instance-result/entities/test-instance-result.entity';
 import { TestSchema } from '@module/test-schema/entities/test-schema.entity';
 
 export type TestInstanceCreateProps = Pick<TestInstance, 'schema' | 'questionsCount' | 'isEnabled' | 'teacher'>;
@@ -37,8 +37,8 @@ export class TestInstance {
   public endedAt?: Date;
   @ManyToOne(() => TeacherAccount, (teacherAccount) => teacherAccount.testInstances)
   public teacher: TeacherAccount;
-  @OneToMany(() => TestInstanceResult, (result) => result.instance)
-  public results: TestInstanceResult[];
+  @OneToMany(() => TestInstanceLearner, (learner) => learner.instance)
+  public learners: TestInstanceLearner[];
   @Column({ type: 'timestamp', nullable: false })
   public updatedAt: Date;
   @Column({ type: 'timestamp', nullable: false })
@@ -56,7 +56,7 @@ export class TestInstance {
       isEnabled: props.isEnabled,
       status: TestInstanceStatus.CREATED,
       teacher: props.teacher,
-      results: [],
+      learners: [],
       updatedAt: now,
       createdAt: now,
     });
