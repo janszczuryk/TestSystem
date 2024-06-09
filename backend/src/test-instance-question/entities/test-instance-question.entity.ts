@@ -17,9 +17,12 @@ export type TestInstanceQuestionUpdateProps = Partial<TestInstanceQuestionCreate
 export class TestInstanceQuestion {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   public id: string;
-  @ManyToOne(() => TestSchemaQuestion, (schemaQuestion) => schemaQuestion.instanceQuestions)
-  public schemaQuestion: TestSchemaQuestion;
-  @ManyToOne(() => TestInstance, (instance) => instance.questionsPool)
+  @ManyToOne(() => TestSchemaQuestion, (schemaQuestion) => schemaQuestion.instanceQuestions, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  public schemaQuestion?: TestSchemaQuestion;
+  @ManyToOne(() => TestInstance, (instance) => instance.questionsPool, { onDelete: 'CASCADE' })
   public instance: TestInstance;
   @OneToMany(() => TestInstanceResult, (instanceResult) => instanceResult.question)
   public instanceResults: TestInstanceResult[];

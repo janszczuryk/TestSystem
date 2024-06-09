@@ -21,8 +21,8 @@ export enum TestInstanceStatus {
 export class TestInstance {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   public id: string;
-  @ManyToOne(() => TestSchema, (schema) => schema.instances)
-  public schema: TestSchema;
+  @ManyToOne(() => TestSchema, (schema) => schema.instances, { nullable: true, onDelete: 'SET NULL' })
+  public schema?: TestSchema;
   @Column({ type: 'integer', nullable: false })
   public questionsCount: number;
   @OneToMany(() => TestInstanceQuestion, (instanceQuestion) => instanceQuestion.instance)

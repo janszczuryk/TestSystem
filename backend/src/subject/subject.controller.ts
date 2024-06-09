@@ -91,7 +91,6 @@ export class SubjectController {
       throw new NotFoundException('Subject does not exist');
     }
 
-    // TODO: Handle cascade
     await this.subjectService.remove(subject);
   }
 }

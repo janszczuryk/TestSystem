@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Migration1717851923472 implements MigrationInterface {
-    name = 'Migration1717851923472'
+export class Migration1717963309516 implements MigrationInterface {
+    name = 'Migration1717963309516'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TYPE "public"."account_type_enum" AS ENUM('learner', 'teacher')`);
@@ -17,12 +17,12 @@ export class Migration1717851923472 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "test_schema_question" ("id" character varying(36) NOT NULL, "question" character varying(250) NOT NULL, "answers" character varying array NOT NULL, "correct_answer_index" integer NOT NULL, "updated_at" TIMESTAMP NOT NULL, "created_at" TIMESTAMP NOT NULL, "schema_id" character varying(36), CONSTRAINT "PK_a088610c9f1f9ba8c67b55913aa" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "test_instance_result" ADD CONSTRAINT "FK_5b2915c8d153ffac12814ff5eb7" FOREIGN KEY ("instance_id") REFERENCES "test_instance"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "test_instance_result" ADD CONSTRAINT "FK_af106ba444d67d6099139c832e0" FOREIGN KEY ("question_id") REFERENCES "test_instance_question"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "test_schema" ADD CONSTRAINT "FK_aa57982f09928b366b872b5b722" FOREIGN KEY ("subject_id") REFERENCES "subject"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "test_instance" ADD CONSTRAINT "FK_0ae84da977d220acee276481834" FOREIGN KEY ("schema_id") REFERENCES "test_schema"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "test_schema" ADD CONSTRAINT "FK_aa57982f09928b366b872b5b722" FOREIGN KEY ("subject_id") REFERENCES "subject"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "test_instance" ADD CONSTRAINT "FK_0ae84da977d220acee276481834" FOREIGN KEY ("schema_id") REFERENCES "test_schema"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "test_instance" ADD CONSTRAINT "FK_7f7baca170f115c8dbe39dfcd4d" FOREIGN KEY ("teacher_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "test_instance_question" ADD CONSTRAINT "FK_93c5d5e70566f765a6ba7cc7b37" FOREIGN KEY ("schema_question_id") REFERENCES "test_schema_question"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "test_instance_question" ADD CONSTRAINT "FK_080f2330839eb2c5738dcfa24da" FOREIGN KEY ("instance_id") REFERENCES "test_instance"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "test_schema_question" ADD CONSTRAINT "FK_35b99b4cfbe45213893eee66dbf" FOREIGN KEY ("schema_id") REFERENCES "test_schema"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "test_instance_question" ADD CONSTRAINT "FK_93c5d5e70566f765a6ba7cc7b37" FOREIGN KEY ("schema_question_id") REFERENCES "test_schema_question"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "test_instance_question" ADD CONSTRAINT "FK_080f2330839eb2c5738dcfa24da" FOREIGN KEY ("instance_id") REFERENCES "test_instance"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "test_schema_question" ADD CONSTRAINT "FK_35b99b4cfbe45213893eee66dbf" FOREIGN KEY ("schema_id") REFERENCES "test_schema"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

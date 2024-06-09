@@ -16,7 +16,7 @@ export class TestSchema {
   public id: string;
   @Column({ type: 'varchar', length: 250, nullable: false, unique: true })
   public name: string;
-  @ManyToOne(() => Subject, (subject) => subject.testSchemas)
+  @ManyToOne(() => Subject, (subject) => subject.testSchemas, { onDelete: 'CASCADE' })
   public subject: Subject;
   @OneToMany(() => TestSchemaQuestion, (question) => question.schema)
   public questions: TestSchemaQuestion[];

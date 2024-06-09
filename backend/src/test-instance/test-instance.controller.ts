@@ -100,7 +100,7 @@ export class TestInstanceController {
       throw new NotFoundException('Instance does not exist');
     }
 
-    if (testInstance.schema.id !== schemaId) {
+    if (testInstance.schema?.id !== schemaId) {
       throw new NotFoundException('Instance does not exist for this schema');
     }
 
@@ -119,7 +119,7 @@ export class TestInstanceController {
       throw new NotFoundException('Instance does not exist');
     }
 
-    if (testInstance.schema.id !== schemaId) {
+    if (!testInstance.schema || testInstance.schema.id !== schemaId) {
       throw new NotFoundException('Instance does not exist for this schema');
     }
 
@@ -160,7 +160,7 @@ export class TestInstanceController {
       throw new NotFoundException('Instance does not exist');
     }
 
-    if (testInstance.schema.id !== schemaId) {
+    if (testInstance.schema?.id !== schemaId) {
       throw new NotFoundException('Instance does not exist for this schema');
     }
 
@@ -188,7 +188,7 @@ export class TestInstanceController {
       throw new NotFoundException('Instance does not exist');
     }
 
-    if (testInstance.schema.id !== schemaId) {
+    if (testInstance.schema?.id !== schemaId) {
       throw new NotFoundException('Instance does not exist for this schema');
     }
 
@@ -222,7 +222,7 @@ export class TestInstanceController {
       throw new NotFoundException('Instance does not exist');
     }
 
-    if (testInstance.schema.id !== schemaId) {
+    if (testInstance.schema?.id !== schemaId) {
       throw new NotFoundException('Instance does not exist for this schema');
     }
 

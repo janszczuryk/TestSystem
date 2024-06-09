@@ -22,7 +22,7 @@ export class TestSchemaQuestion {
   public answers: string[];
   @Column({ type: 'integer', nullable: false })
   public correctAnswerIndex: number;
-  @ManyToOne(() => TestSchema, (schema) => schema.questions)
+  @ManyToOne(() => TestSchema, (schema) => schema.questions, { onDelete: 'CASCADE' })
   public schema: TestSchema;
   @OneToMany(() => TestInstanceQuestion, (instanceQuestion) => instanceQuestion.schemaQuestion)
   public instanceQuestions: TestInstanceQuestion[];

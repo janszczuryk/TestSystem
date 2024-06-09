@@ -28,6 +28,10 @@ export class TestInstanceService {
   ) {}
 
   public async create(testInstance: TestInstance): Promise<TestInstance> {
+    if (!testInstance.schema) {
+      throw new TestInstanceServiceCreateError('Schema must be defined');
+    }
+
     const schemaQuestions = await this.testSchemaQuestionService.findAllRandomized(
       testInstance.schema,
       testInstance.questionsCount,
@@ -77,6 +81,10 @@ export class TestInstanceService {
     testInstance.update(props);
 
     if (props.questionsCount) {
+      if (!testInstance.schema) {
+        throw new TestInstanceServiceCreateError('Schema must be defined');
+      }
+
       const newSchemaQuestions = await this.testSchemaQuestionService.findAllRandomized(
         testInstance.schema,
         testInstance.questionsCount,
