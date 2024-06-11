@@ -71,17 +71,19 @@ export class TestInstance {
   }
 
   public start(): void {
-    this.status = TestInstanceStatus.STARTED;
-    this.startedAt = new Date();
+    const now = new Date();
 
-    this.updatedAt = new Date();
+    this.status = TestInstanceStatus.STARTED;
+    this.startedAt = now;
+    this.updatedAt = now;
   }
 
   public end(): void {
-    this.status = TestInstanceStatus.ENDED;
-    this.endedAt = new Date();
+    const now = new Date();
 
-    this.updatedAt = new Date();
+    this.status = TestInstanceStatus.ENDED;
+    this.endedAt = now;
+    this.updatedAt = now;
   }
 
   public isCreated(): boolean {
