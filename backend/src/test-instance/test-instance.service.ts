@@ -59,6 +59,7 @@ export class TestInstanceService {
   public async findAll(findAllOptions?: FindOptionsWhere<TestInstance>): Promise<TestInstance[]> {
     return this.testInstanceRepository.find({
       where: findAllOptions,
+      order: { createdAt: 'ASC' },
       loadRelationIds: true,
     });
   }

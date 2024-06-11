@@ -35,6 +35,7 @@ export class SubjectService {
 
   public async findAll(): Promise<Subject[]> {
     return this.subjectRepository.find({
+      order: { createdAt: 'ASC' },
       loadRelationIds: true,
     });
   }
