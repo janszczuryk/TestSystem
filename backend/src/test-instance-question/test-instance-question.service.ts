@@ -19,6 +19,20 @@ export class TestInstanceQuestionService {
     return this.testInstanceQuestionRepository.save(testInstanceQuestions);
   }
 
+  public async findRandomized(testInstanceId: string, excludeIds: string[] = []): Promise<TestInstanceQuestion | null> {
+    const queryBuilder = this.testInstanceQuestionRepository
+      .createQueryBuilder('instance_question')
+      .select()
+      .where('instance_question.instance_id = :instanceId', { instanceId: testInstanceId });
+
+    excludeIds.length &&
+      queryBuilder.andWhere('instance_question.id NOT IN (:...ids)', {
+        ids: excludeIds,
+      });
+
+    return queryBuilder.orderBy('RANDOM()').getOne();
+  }
+
   public async remove(testInstanceQuestion: TestInstanceQuestion): Promise<void> {
     await this.testInstanceQuestionRepository.remove(testInstanceQuestion);
   }

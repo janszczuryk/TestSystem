@@ -1,7 +1,5 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 
-import { randomUUID } from 'crypto';
-
 import { LearnerAccount } from '@module/account/entities/learner-account.entity';
 import { TestInstance } from '@module/test-instance/entities/test-instance.entity';
 import { TestInstanceLearnerAnswer } from '@module/test-instance-learner-answer/entities/test-instance-learner-answer.entity';
@@ -47,11 +45,12 @@ export class TestInstanceLearner {
     const testInstanceLearner = new TestInstanceLearner();
 
     Object.assign(testInstanceLearner, {
-      id: randomUUID(),
+      instanceId: props.instance.id,
+      learnerId: props.learner.id,
       instance: props.instance,
-      answers: [],
       learner: props.learner,
       learnerNumber: props.learnerNumber,
+      answers: [],
       status: TestInstanceLearnerStatus.JOINED,
       updatedAt: now,
       createdAt: now,
@@ -80,5 +79,17 @@ export class TestInstanceLearner {
     this.status = TestInstanceLearnerStatus.FINISHED;
     this.finishedAt = now;
     this.updatedAt = now;
+  }
+
+  public isJoined(): boolean {
+    return this.status === TestInstanceLearnerStatus.JOINED;
+  }
+
+  public isStarted(): boolean {
+    return this.status === TestInstanceLearnerStatus.STARTED;
+  }
+
+  public isFinished(): boolean {
+    return this.status === TestInstanceLearnerStatus.FINISHED;
   }
 }
