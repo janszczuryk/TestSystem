@@ -20,6 +20,7 @@ export class TestSchemaQuestionService {
   public async findAll(findAllOptions?: FindOptionsWhere<TestSchemaQuestion>): Promise<TestSchemaQuestion[]> {
     return this.testSchemaQuestionRepository.find({
       where: findAllOptions,
+      order: { createdAt: 'ASC' },
       loadRelationIds: true,
     });
   }

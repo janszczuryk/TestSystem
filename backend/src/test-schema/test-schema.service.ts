@@ -23,6 +23,7 @@ export class TestSchemaService {
 
   public async findAll(): Promise<TestSchema[]> {
     return this.testSchemaRepository.find({
+      order: { createdAt: 'ASC' },
       loadRelationIds: true,
     });
   }

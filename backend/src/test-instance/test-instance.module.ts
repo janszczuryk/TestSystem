@@ -20,5 +20,6 @@ import { TestInstanceService } from './test-instance.service';
   ],
   controllers: [TestInstanceController],
   providers: [TestInstanceService],
+  exports: [TestInstanceService],
 })
 export class TestInstanceModule {}

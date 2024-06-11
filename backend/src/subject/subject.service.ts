@@ -6,6 +6,10 @@ import { Subject, SubjectUpdateProps } from './entities/subject.entity';
 
 export class SubjectServiceError extends Error {}
 
+export class SubjectServiceCreateError extends SubjectServiceError {}
+
+export class SubjectServiceCreateDuplicateError extends SubjectServiceCreateError {}
+
 export class SubjectServiceUpdateError extends SubjectServiceError {}
 
 export class SubjectServiceUpdateDuplicateError extends SubjectServiceUpdateError {}
@@ -18,11 +22,20 @@ export class SubjectService {
   ) {}
 
   public async create(subject: Subject): Promise<Subject> {
+    const existingSubject = await this.subjectRepository.findOneBy({
+      name: subject.name,
+      fieldOfStudy: subject.fieldOfStudy,
+    });
+    if (existingSubject) {
+      throw new SubjectServiceCreateDuplicateError('Subject with these name and field of study already exists');
+    }
+
     return this.subjectRepository.save(subject);
   }
 
   public async findAll(): Promise<Subject[]> {
     return this.subjectRepository.find({
+      order: { createdAt: 'ASC' },
       loadRelationIds: true,
     });
   }

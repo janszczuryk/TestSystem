@@ -37,39 +37,44 @@ Written down ideas for `TestSystem` project.
 
 1. Endpoints (REST API)
 
-   | METHOD   | ENDPOINT                                   | SHORT DESCRIPTION                                | AUTHORISATION NEEDED |
-   |----------|--------------------------------------------|--------------------------------------------------|----------------------|
-   | POST     | /auth/login                                | Login to an account with given credentials       | NO                   |
-   | POST     | /auth/register                             | Register a new account                           | NO                   |
-   | ~~POST~~ | ~~/auth/logout~~                           | ~~Logout from an account~~                       | ~~ACCOUNT~~          |
-   | POST     | /auth/change-password                      | Change an account password                       | ACCOUNT              |
-   | GET      | /accounts/learner/@me                      | Get a learner account for current authentication | LEARNER              |
-   | GET      | /accounts/teacher/@me                      | Get a teacher account for current authentication | TEACHER              |
-   | GET      | /subjects                                  | Get list of subjects                             | TEACHER              |
-   | POST     | /subjects                                  | Create a new subject                             | TEACHER              |
-   | GET      | /subjects/:subject_id                      | Get a subject                                    | TEACHER              |
-   | PATCH    | /subjects/:subject_id                      | Update a subject                                 | TEACHER              |
-   | DELETE   | /subjects/:subject_id                      | Delete a subject                                 | TEACHER              |
-   | GET      | /schemas                                   | Get list of test schemas                         | TEACHER              |
-   | POST     | /schemas                                   | Create a new test schema                         | TEACHER              |
-   | GET      | /schemas/:schema_id                        | Get a test schema                                | TEACHER              |
-   | PATCH    | /schemas/:schema_id                        | Update a test schema                             | TEACHER              |
-   | DELETE   | /schemas/:schema_id                        | Delete a test schema (cascade)                   | TEACHER              |
-   | GET      | /schemas/:schema_id/questions              | Get list of test questions                       | TEACHER              |
-   | POST     | /schemas/:schema_id/questions              | Create a new test question                       | TEACHER              |
-   | GET      | /schemas/:schema_id/questions/:question_id | Get a test question                              | TEACHER              |
-   | PATCH    | /schemas/:schema_id/questions/:question_id | Update a test question                           | TEACHER              |
-   | DELETE   | /schemas/:schema_id/questions/:question_id | Delete a test question (cascade)                 | TEACHER              |
-   | GET      | /schemas/:schema_id/instances              | Get list of test instances                       | TEACHER              |
-   | POST     | /schemas/:schema_id/instances              | Create a new test instance                       | TEACHER              |
-   | GET      | /schemas/:schema_id/instances/:instance_id | Get a test instance                              | TEACHER              |
-   | PATCH    | /schemas/:schema_id/instances/:instance_id | Update a test instance                           | TEACHER              |
-   | DELETE   | /schemas/:schema_id/instances/:instance_id | Delete a test instance (cascade)                 | TEACHER              |
-   | GET      | /learner/instances                         | Get list of test instances enabled for learner   | LEARNER              |
-   | GET      | /learner/instances/:instance_id            | Get a test instance enabled for learner          | LEARNER              |
-   | POST     | /learner/instances/:instance_id/join       | Join to a test instance as learner               | LEARNER              |
-   | GET      | /learner/instances/:instance_id/question   | Get a test instance current question             | LEARNER              |
-   | POST     | /learner/instances/:instance_id/answer     | Answer to test instance current question         | LEARNER              |
+   | METHOD   | ENDPOINT                                     | SHORT DESCRIPTION                                | AUTHORISATION NEEDED |
+   |----------|----------------------------------------------|--------------------------------------------------|----------------------|
+   | POST     | /auth/login                                  | Login to an account with given credentials       | NO                   |
+   | POST     | /auth/register                               | Register a new account                           | NO                   |
+   | ~~POST~~ | ~~/auth/logout~~                             | ~~Logout from an account~~                       | ~~ACCOUNT~~          |
+   | POST     | /auth/change-password                        | Change an account password                       | ACCOUNT              |
+   | GET      | /accounts/learner/@me                        | Get a learner account for current authentication | LEARNER              |
+   | GET      | /accounts/teacher/@me                        | Get a teacher account for current authentication | TEACHER              |
+   | GET      | /subjects                                    | Get list of subjects                             | TEACHER              |
+   | POST     | /subjects                                    | Create a new subject                             | TEACHER              |
+   | GET      | /subjects/:subject_id                        | Get a subject                                    | TEACHER              |
+   | PATCH    | /subjects/:subject_id                        | Update a subject                                 | TEACHER              |
+   | DELETE   | /subjects/:subject_id                        | Delete a subject                                 | TEACHER              |
+   | GET      | /schemas                                     | Get list of test schemas                         | TEACHER              |
+   | POST     | /schemas                                     | Create a new test schema                         | TEACHER              |
+   | GET      | /schemas/:schema_id                          | Get a test schema                                | TEACHER              |
+   | PATCH    | /schemas/:schema_id                          | Update a test schema                             | TEACHER              |
+   | DELETE   | /schemas/:schema_id                          | Delete a test schema (cascade)                   | TEACHER              |
+   | GET      | /schemas/:schema_id/questions                | Get list of test questions                       | TEACHER              |
+   | POST     | /schemas/:schema_id/questions                | Create a new test question                       | TEACHER              |
+   | GET      | /schemas/:schema_id/questions/:question_id   | Get a test question                              | TEACHER              |
+   | PATCH    | /schemas/:schema_id/questions/:question_id   | Update a test question                           | TEACHER              |
+   | DELETE   | /schemas/:schema_id/questions/:question_id   | Delete a test question (cascade)                 | TEACHER              |
+   | GET      | /schemas/:schema_id/instances                | Get list of test instances                       | TEACHER              |
+   | POST     | /schemas/:schema_id/instances                | Create a new test instance                       | TEACHER              |
+   | GET      | /schemas/:schema_id/instances/:instance_id   | Get a test instance                              | TEACHER              |
+   | PATCH    | /schemas/:schema_id/instances/:instance_id   | Update a test instance                           | TEACHER              |
+   | DELETE   | /schemas/:schema_id/instances/:instance_id   | Delete a test instance (cascade)                 | TEACHER              |
+   | GET      | /instances/:instance_id/learners             | Get list of test instance learners               | TEACHER              |
+   | POST     | /instances/:instance_id/learners             | Create a new test instance learner               | TEACHER              |
+   | GET      | /instances/:instance_id/learners/:learner_id | Get a test instance learner                      | TEACHER              |
+   | PATCH    | /instances/:instance_id/learners/:learner_id | Update a test instance learner                   | TEACHER              |
+   | DELETE   | /instances/:instance_id/learners/:learner_id | Delete a test instance learner (cascade)         | TEACHER              |
+   | GET      | /learner/instances                           | Get list of test instances enabled for learner   | LEARNER              |
+   | GET      | /learner/instances/:instance_id              | Get a test instance enabled for learner          | LEARNER              |
+   | POST     | /learner/instances/:instance_id/join         | Join to a test instance as learner               | LEARNER              |
+   | GET      | /learner/instances/:instance_id/question     | Get a test instance current question             | LEARNER              |
+   | POST     | /learner/instances/:instance_id/answer       | Answer to test instance current question         | LEARNER              |
 
 2. Domain
     * Account / TeacherAccount / LearnerAccount
@@ -110,28 +115,35 @@ Written down ideas for `TestSystem` project.
         * StartedAt
         * EndedAt
         * Teacher
-        * TestInstanceResult[]
+        * TestInstanceLearner[]
 
     * TestInstanceQuestion
         * Id
         * TestSchemaQuestion
         * TestInstance
-        * TestInstanceResult[]
+        * TestInstanceLearnerAnswer[]
         * Question
         * Answer[]
         * CorrectAnswerIndex
 
-    * TestInstanceResult
+    * TestInstanceLearner
         * Id
         * TestInstance
-        * Learner (Unique with LearnerNumber)
-        * LearnerNumber (Unique with Learner)
+        * TestInstanceLearnerAnswer[]
+        * Learner (Unique with TestInstance)
+        * LearnerNumber (Unique with TestInstance)
+        * Status (Joined, Started, Finished)
+        * StartedAt
+        * FinishedAt
+
+   * TestInstanceLeanerAnswer
+        * Id
+        * TestInstanceLearner
         * TestInstanceQuestion
-        * Answer[]
-        * CorrectAnswerIndex
+        * Status (Created, Shown, CorrectAnswerSubmitted, IncorrectAnswerSubmitted)
         * SubmittedAnswerIndex
-        * Status (Created, CorrectlyAnswered, IncorrectlyAnswered)
-        * SubmittedAt
+        * ShownAt
+        * AnswerSubmittedAt
 
 3. Database (outdated with current domain)
     * DBML file - [click here](database/schema.dbml)

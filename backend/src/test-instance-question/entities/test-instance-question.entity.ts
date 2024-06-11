@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { randomUUID } from 'crypto';
 
 import { TestInstance } from '@module/test-instance/entities/test-instance.entity';
-import { TestInstanceResult } from '@module/test-instance-result/entities/test-instance-result.entity';
+import { TestInstanceLearnerAnswer } from '@module/test-instance-learner-answer/entities/test-instance-learner-answer.entity';
 import { TestSchemaQuestion } from '@module/test-schema-question/entities/test-schema-question.entity';
 
 export type TestInstanceQuestionCreateProps = Pick<
@@ -24,14 +24,14 @@ export class TestInstanceQuestion {
   public schemaQuestion?: TestSchemaQuestion;
   @ManyToOne(() => TestInstance, (instance) => instance.questionsPool, { onDelete: 'CASCADE' })
   public instance: TestInstance;
-  @OneToMany(() => TestInstanceResult, (instanceResult) => instanceResult.question)
-  public instanceResults: TestInstanceResult[];
   @Column({ type: 'varchar', length: 250, nullable: false })
   public question: string;
   @Column({ type: 'varchar', array: true, nullable: false })
   public answers: string[];
   @Column({ type: 'integer', nullable: false })
   public correctAnswerIndex: number;
+  @OneToMany(() => TestInstanceLearnerAnswer, (testInstanceLeanerAnswer) => testInstanceLeanerAnswer.instanceQuestion)
+  public instanceLearnerAnswers: TestInstanceLearnerAnswer[];
   @Column({ type: 'timestamp', nullable: false })
   public updatedAt: Date;
   @Column({ type: 'timestamp', nullable: false })
@@ -45,10 +45,10 @@ export class TestInstanceQuestion {
       id: randomUUID(),
       schemaQuestion: props.schemaQuestion,
       instance: props.instance,
-      instanceResults: [],
       question: props.question,
       answers: props.answers,
       correctAnswerIndex: props.correctAnswerIndex,
+      instanceLearnerAnswers: [],
       updatedAt: now,
       createdAt: now,
     });

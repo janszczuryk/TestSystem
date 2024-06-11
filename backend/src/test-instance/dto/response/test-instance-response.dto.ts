@@ -14,7 +14,6 @@ export class TestInstanceResponseDto {
   public readonly startedAt: Date | null;
   public readonly endedAt: Date | null;
   public readonly teacher: ResponseEntityOrId<AccountResponseDto>;
-  public readonly results: ResponseEntityOrId<object>[];
   public readonly updatedAt: Date;
   public readonly createdAt: Date;
 
@@ -37,10 +36,6 @@ export class TestInstanceResponseDto {
     this.teacher = testInstance.teacher?.id
       ? new AccountResponseDto(testInstance.teacher)
       : { id: String(testInstance.teacher) };
-    this.results =
-      testInstance.results?.map((testInstanceResult) =>
-        testInstanceResult?.id ? new Object(testInstanceResult) : { id: String(testInstanceResult) },
-      ) ?? null;
     this.updatedAt = testInstance.updatedAt;
     this.createdAt = testInstance.createdAt;
   }
