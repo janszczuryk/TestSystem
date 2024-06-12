@@ -73,6 +73,8 @@ Written down ideas for `TestSystem` project.
    | GET      | /learner/instances                           | Get list of test instances enabled for learner   | LEARNER              |
    | GET      | /learner/instances/:instance_id              | Get a test instance enabled for learner          | LEARNER              |
    | POST     | /learner/instances/:instance_id/join         | Join to a test instance as learner               | LEARNER              |
+   | POST     | /learner/instances/:instance_id/start        | Start a test instance attempt as learner         | LEARNER              |
+   | POST     | /learner/instances/:instance_id/finish       | Finish  a test instance attempt as learner       | LEARNER              |
    | GET      | /learner/instances/:instance_id/question     | Get a test instance current question             | LEARNER              |
    | POST     | /learner/instances/:instance_id/answer       | Answer to test instance current question         | LEARNER              |
 
