@@ -1,0 +1,1291 @@
+{
+	"info": {
+		"_postman_id": "2c60a47a-6694-4908-bc2d-db90201b3bc0",
+		"name": "TestSystem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "/api/v1/auth/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jan.szczuryk@gmail.com\",\n    \"password\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/auth/login",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/auth/register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jan.szczuryk@gmail.com\",\n    \"password\": \"12345678\",\n    \"type\": \"learner\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/auth/register",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/auth/change-password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"12345678x\",\n    \"newPassword\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/auth/change-password",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "/api/v1/accounts/learner/@me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/accounts/learner/@me",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"learner",
+								"@me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/accounts/teacher/@me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/accounts/teacher/@me",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"teacher",
+								"@me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subjects",
+			"item": [
+				{
+					"name": "/api/v1/subjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/subjects",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subjects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/subjects",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sieci komputerowe 1\",\n    \"fieldOfStudy\": \"4EF-DI\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/subjects",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subjects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/subjects/:subject_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/subjects/:subject_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subjects",
+								":subject_id"
+							],
+							"variable": [
+								{
+									"key": "subject_id",
+									"value": "{{subject_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/subjects/:subject_id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sieci komputerowe 1\",\n    \"fieldOfStudy\": \"4EF-DI\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/subjects/:subject_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subjects",
+								":subject_id"
+							],
+							"variable": [
+								{
+									"key": "subject_id",
+									"value": "{{subject_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/subjects/:subject_id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/subjects/:subject_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subjects",
+								":subject_id"
+							],
+							"variable": [
+								{
+									"key": "subject_id",
+									"value": "{{subject_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Schemas",
+			"item": [
+				{
+					"name": "/api/v1/schemas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Kolokwium nr 1\",\n    \"subjectId\": \"{{subject_id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Kolokwium nr 1\",\n    \"subjectId\": \"e06c98b4-b35b-4e0f-88c5-5405dcece1ed\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SchemaQuestions",
+			"item": [
+				{
+					"name": "/api/v1/schemas/:schema_id/questions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/questions",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"questions"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/questions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"Gdzie leży Polska?\",\n    \"answers\": [\n        \"W Europie\",\n        \"W Azji\",\n        \"W Afryce\",\n        \"A Ameryce Płd.\"\n    ],\n    \"correctAnswerIndex\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/questions",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"questions"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/questions/:question_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/questions/:question_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"questions",
+								":question_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "question_id",
+									"value": "{{question_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/questions/:question_id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"Gdzie leżą Niemcy?\",\n    \"answers\": [\n        \"W Europie\",\n        \"W Azji\",\n        \"W Afryce\",\n        \"A Ameryce Płd.\"\n    ],\n    \"correctAnswerIndex\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/questions/:question_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"questions",
+								":question_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "question_id",
+									"value": "{{question_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/questions/:question_id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/questions/:question_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"questions",
+								":question_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "question_id",
+									"value": "{{question_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Instances",
+			"item": [
+				{
+					"name": "/api/v1/schemas/:schema_id/instances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/instances",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"instances"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/instances",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isEnabled\": true,\n    \"questionsCount\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/instances",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"instances"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/instances/:instance_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/instances/:instance_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"instances",
+								":instance_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/instances/:instance_id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isEnabled\": true,\n    \"questionsCount\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/instances/:instance_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"instances",
+								":instance_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/instances/:instance_id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/instances/:instance_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"instances",
+								":instance_id"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/instances/:instance_id/start",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/instances/:instance_id/start",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"instances",
+								":instance_id",
+								"start"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/schemas/:schema_id/instances/:instance_id/end",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/schemas/:schema_id/instances/:instance_id/end",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schemas",
+								":schema_id",
+								"instances",
+								":instance_id",
+								"end"
+							],
+							"variable": [
+								{
+									"key": "schema_id",
+									"value": "{{schema_id}}"
+								},
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "InstanceLearners",
+			"item": [
+				{
+					"name": "/api/v1/instances/:instance_id/learners",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/instances/:instance_id/learners",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"instances",
+								":instance_id",
+								"learners"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/instances/:instance_id/learners",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"learnerId\": \"{{learner_id}}\",\n    \"learnerNumber\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/instances/:instance_id/learners",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"instances",
+								":instance_id",
+								"learners"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/instances/:instance_id/learners/:learner_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/instances/:instance_id/learners/:learner_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"instances",
+								":instance_id",
+								"learners",
+								":learner_id"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								},
+								{
+									"key": "learner_id",
+									"value": "{{learner_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/instances/:instance_id/learners/:learner_id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"learnerNumber\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/instances/:instance_id/learners/:learner_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"instances",
+								":instance_id",
+								"learners",
+								":learner_id"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								},
+								{
+									"key": "learner_id",
+									"value": "{{learner_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/instances/:instance_id/learners/:learner_id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/instances/:instance_id/learners/:learner_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"instances",
+								":instance_id",
+								"learners",
+								":learner_id"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								},
+								{
+									"key": "learner_id",
+									"value": "{{learner_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Learner",
+			"item": [
+				{
+					"name": "/api/v1/learner/instances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/learner/instances/:instance_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances/:instance_id",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances",
+								":instance_id"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/learner/instances/:instance_id/join",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"learnerNumber\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances/:instance_id/join",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances",
+								":instance_id",
+								"join"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/learner/instances/:instance_id/start",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances/:instance_id/start",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances",
+								":instance_id",
+								"start"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/learner/instances/:instance_id/finish",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances/:instance_id/finish",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances",
+								":instance_id",
+								"finish"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/learner/instances/:instance_id/question",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances/:instance_id/question",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances",
+								":instance_id",
+								"question"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/v1/learner/instances/:instance_id/answer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answerIndex\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances/:instance_id/answer",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances",
+								":instance_id",
+								"answer"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{learner_jwt}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
