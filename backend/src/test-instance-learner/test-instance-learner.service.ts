@@ -14,6 +14,10 @@ export class TestInstanceLearnerServiceUpdateError extends TestInstanceLearnerSe
 
 export class TestInstanceLearnerServiceUpdateDuplicateError extends TestInstanceLearnerServiceUpdateError {}
 
+export class TestInstanceLearnerServiceStartError extends TestInstanceLearnerServiceError {}
+
+export class TestInstanceLearnerServiceFinishError extends TestInstanceLearnerServiceError {}
+
 @Injectable()
 export class TestInstanceLearnerService {
   public constructor(
@@ -88,5 +92,25 @@ export class TestInstanceLearnerService {
 
   public async remove(testInstanceLearner: TestInstanceLearner): Promise<void> {
     await this.testInstanceLearnerRepository.remove(testInstanceLearner);
+  }
+
+  public async start(testInstanceLearner: TestInstanceLearner): Promise<TestInstanceLearner> {
+    if (!testInstanceLearner.isJoined()) {
+      throw new TestInstanceLearnerServiceStartError('Instance learner must be joined status');
+    }
+
+    testInstanceLearner.start();
+
+    return this.testInstanceLearnerRepository.save(testInstanceLearner);
+  }
+
+  public async finish(testInstanceLearner: TestInstanceLearner): Promise<TestInstanceLearner> {
+    if (!testInstanceLearner.isStarted()) {
+      throw new TestInstanceLearnerServiceFinishError('Instance learner must be started status');
+    }
+
+    testInstanceLearner.finish();
+
+    return this.testInstanceLearnerRepository.save(testInstanceLearner);
   }
 }

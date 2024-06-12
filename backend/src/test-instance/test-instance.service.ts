@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsWhere, In, IsNull, Not, Repository } from 'typeorm';
 
 import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
 import { TestInstanceQuestionService } from '@module/test-instance-question/test-instance-question.service';
 import { TestSchemaQuestionService } from '@module/test-schema-question/test-schema-question.service';
 
-import { TestInstance, TestInstanceUpdateProps } from './entities/test-instance.entity';
+import { TestInstance, TestInstanceStatus, TestInstanceUpdateProps } from './entities/test-instance.entity';
 
 export class TestInstanceServiceError extends Error {}
 
@@ -64,6 +64,18 @@ export class TestInstanceService {
     });
   }
 
+  public async findAllForLearner(): Promise<TestInstance[]> {
+    return this.testInstanceRepository.find({
+      where: {
+        isEnabled: true,
+        status: In([TestInstanceStatus.CREATED, TestInstanceStatus.STARTED]),
+        schema: Not(IsNull()),
+      },
+      order: { createdAt: 'ASC' },
+      relations: { schema: { subject: true }, teacher: true },
+    });
+  }
+
   public async find(findOptions: FindOptionsWhere<TestInstance>): Promise<TestInstance | null> {
     return this.testInstanceRepository.findOne({
       where: findOptions,
@@ -75,6 +87,13 @@ export class TestInstanceService {
     return this.testInstanceRepository.findOne({
       where: { id },
       relations: { schema: true, questionsPool: true, teacher: true },
+    });
+  }
+
+  public async getForLearner(id: string): Promise<TestInstance | null> {
+    return this.testInstanceRepository.findOne({
+      where: { id },
+      relations: { schema: { subject: true }, teacher: true },
     });
   }
 

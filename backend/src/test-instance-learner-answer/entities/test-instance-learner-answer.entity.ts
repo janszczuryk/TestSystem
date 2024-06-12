@@ -1,7 +1,14 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 
+import { randomUUID } from 'crypto';
+
 import { TestInstanceLearner } from '@module/test-instance-learner/entities/test-instance-learner.entity';
 import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
+
+export type TestInstanceLearnerAnswerCreateProps = Pick<
+  TestInstanceLearnerAnswer,
+  'instanceLearner' | 'instanceQuestion'
+>;
 
 export enum TestInstanceLearnerAnswerStatus {
   CREATED = 'created',
@@ -36,4 +43,42 @@ export class TestInstanceLearnerAnswer {
   public updatedAt: Date;
   @Column({ type: 'timestamp', nullable: false })
   public createdAt: Date;
+
+  public static create(props: TestInstanceLearnerAnswerCreateProps): TestInstanceLearnerAnswer {
+    const now = new Date();
+    const testInstanceLearnerAnswer = new TestInstanceLearnerAnswer();
+
+    Object.assign(testInstanceLearnerAnswer, {
+      id: randomUUID(),
+      instanceLearnerInstanceId: props.instanceLearner.instanceId,
+      instanceLearnerLearnerId: props.instanceLearner.learnerId,
+      instanceLearner: props.instanceLearner,
+      instanceQuestion: props.instanceQuestion,
+      status: TestInstanceLearnerAnswerStatus.CREATED,
+      updatedAt: now,
+      createdAt: now,
+    });
+
+    return testInstanceLearnerAnswer;
+  }
+
+  public show(): void {
+    const now = new Date();
+
+    this.status = TestInstanceLearnerAnswerStatus.SHOWN;
+    this.shownAt = now;
+    this.updatedAt = now;
+  }
+
+  public submitAnswer(correctAnswerIndex: number, submittedAnswerIndex: number): void {
+    const now = new Date();
+
+    this.submittedAnswerIndex = submittedAnswerIndex;
+    this.status =
+      correctAnswerIndex === submittedAnswerIndex
+        ? TestInstanceLearnerAnswerStatus.CORRECT_ANSWER_SUBMITTED
+        : TestInstanceLearnerAnswerStatus.INCORRECT_ANSWER_SUBMITTED;
+    this.answerSubmittedAt = now;
+    this.updatedAt = now;
+  }
 }
