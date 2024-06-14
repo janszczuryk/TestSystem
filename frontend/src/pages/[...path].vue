@@ -1,13 +1,45 @@
+<script setup lang="ts">
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
+
+const breadcrumbs = [
+  {
+    title: 'Test System',
+    disabled: true,
+    href: '/',
+  },
+  {
+    title: 'Błąd',
+    disabled: true,
+    href: '/tests',
+  },
+];
+</script>
+
 <template>
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-card class="mx-auto my-6 py-4" color="accent3" max-width="960">
+        <Breadcrumbs :breadcrumbs="breadcrumbs"/>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-card class="mx-auto py-4" color="accent3" max-width="960">
           <template #title>
-            <h1 class="text-h5 font-weight-bold text-center">Nie znaleziono żądanej zawartości (404)!</h1>
+            <h1 class="text-h5 font-weight-bold text-center">Nie znaleziono żądanej zawartości!</h1>
+          </template>
+          <template #text>
+            <p class="text-center mt-4"><a class="link" @click="$router.go(-1)">Powrót</a></p>
           </template>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+.link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+</style>

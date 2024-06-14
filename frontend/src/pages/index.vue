@@ -1,8 +1,30 @@
+<script lang="ts" setup>
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
+
+const breadcrumbs = [
+  {
+    title: 'Test System',
+    disabled: true,
+    href: '/',
+  },
+  {
+    title: 'Ogłoszenia',
+    disabled: false,
+    href: '/',
+  },
+];
+</script>
+
 <template>
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-card class="mx-auto mt-6 py-4" color="accent3" max-width="960">
+        <Breadcrumbs :breadcrumbs="breadcrumbs"/>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-card class="mx-auto py-4" color="accent3" max-width="960">
           <template #title>
             <h1 class="text-h5 font-weight-bold text-center">Ogłoszenia</h1>
           </template>
@@ -35,6 +57,3 @@
   </v-container>
 </template>
 
-<script lang="ts" setup>
-//
-</script>
