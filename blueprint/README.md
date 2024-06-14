@@ -154,4 +154,13 @@ Written down ideas for `TestSystem` project.
 
 ## Frontend
 
-1. To be done.
+1. Pages
+   - `/index` - Announcements (start page)
+   - `/login`
+   - `/logout`
+   - `/tests`
+   - `/tests/:id`
+   - `/tests/:id/attempt`
+   - `/tests/:id/results`
+   - `/teacher`
+   - `/account`
