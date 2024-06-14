@@ -1,6 +1,10 @@
 {
   "name": "frontend",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "TestSystem frontend",
+  "author": "Jan Szczuryk",
+  "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
