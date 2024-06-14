@@ -1,0 +1,15 @@
+services:
+  test-system.frontend:
+    container_name: test-system.frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '80:8000'
+    networks:
+      - test-system.network
+
+networks:
+  test-system.network:
+    name: test-system
+    external: true

@@ -1,6 +1,6 @@
 services:
-  test-system.nodejs:
-    container_name: test-system.nodejs
+  test-system.backend:
+    container_name: test-system.backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,6 +16,8 @@ services:
       - '${APP_PORT:-8080}:${APP_PORT:-8080}'
     depends_on:
       - test-system.postgres
+    networks:
+      - test-system.network
 
   test-system.postgres:
     container_name: test-system.postgres
@@ -28,10 +30,12 @@ services:
       - '${DB_PORT}:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
+    networks:
+      - test-system.network
 
 volumes:
   postgres:
 
 networks:
   test-system.network:
-    external: true
+    name: test-system

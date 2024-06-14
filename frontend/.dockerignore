@@ -1,0 +1,10 @@
+node_modules
+dist
+.browserslistrc
+.git
+.gitignore
+.editorconfig
+.eslintrc.js
+README.md
+docker-compose.yml
+Dockerfile
