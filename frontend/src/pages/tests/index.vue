@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import {TestInstanceStatus} from "@/types/test-instance";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import {TestInstanceStatus} from "@/types/test-instance";
+import {getStatusName} from "@/utils/test-instance";
 
 const breadcrumbs = [
   {
@@ -16,17 +17,6 @@ const breadcrumbs = [
   },
 ];
 
-const getStatusName = (status: TestInstanceStatus): string => {
-  const statusMap: Record<TestInstanceStatus, string> = {
-    [TestInstanceStatus.CREATED]: 'Oczekiwanie',
-    [TestInstanceStatus.STARTED]: 'Rozpoczęto',
-    [TestInstanceStatus.ENDED]: 'Zakończono',
-  };
-
-  return statusMap[status] ?? '';
-};
-
-
 const subjects = [
   {
     subjectName: 'Sieci komputerowe 1',
@@ -37,7 +27,7 @@ const subjects = [
         status: 'created',
         schemaName: 'Kolokwium nr 1',
         startedAt: null,
-        finishedAt: null,
+        endedAt: null,
       }
     ]
   },
@@ -50,7 +40,7 @@ const subjects = [
         status: 'ended',
         schemaName: 'Kolokwium nr 1',
         startedAt: new Date(),
-        finishedAt: new Date(),
+        endedAt: new Date(),
       }
     ]
   },
@@ -63,13 +53,14 @@ const subjects = [
         status: 'started',
         schemaName: 'Kolokwium nr 1',
         startedAt: new Date(),
-        finishedAt: null,
+        endedAt: null,
       }
     ]
   },
 ];
 
 const panel = ref(subjects.map((_, index) => index));
+const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceStatus.CREATED, TestInstanceStatus.STARTED].includes(instanceStatus);
 
 </script>
 
@@ -130,14 +121,14 @@ const panel = ref(subjects.map((_, index) => index));
                       <v-col>
                         <p class="text-grey-darken-1">
                           <v-icon icon="mdi-clock-time-eight"/>
-                          Zakończono: {{ instance.finishedAt ? instance.finishedAt.toLocaleString() : '&mdash;' }}
+                          Zakończono: {{ instance.endedAt ? instance.endedAt.toLocaleString() : '&mdash;' }}
                         </p>
                       </v-col>
                     </v-row>
                   </v-container>
                 </v-card-text>
 
-                <v-container>
+                <v-container v-if="canJoinInstance(instance.status as TestInstanceStatus)">
                   <v-row>
                     <v-col cols="4">
                       <v-text-field type="number" density="compact" variant="outlined" label="Numer uczestnika"/>
