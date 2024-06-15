@@ -105,6 +105,14 @@ breadcrumbs.push({
               <v-row>
                 <v-col>
                   <p class="text-grey-darken-1">
+                    <v-icon icon="mdi-help-box"/>
+                    Ilość pytań: {{ instance.questionsCount }}
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <p class="text-grey-darken-1">
                     <v-icon icon="mdi-human-male-board"/>
                     Prowadzący: {{ instance.teacher.email }}
                   </p>
