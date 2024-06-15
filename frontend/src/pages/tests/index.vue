@@ -81,8 +81,8 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceSta
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col cols="6">
-        <v-expansion-panels multiple v-model="panel">
+      <v-col>
+        <v-expansion-panels multiple v-model="panel" class="mx-auto">
           <v-expansion-panel
               v-for="(subject, subjectIndex) in subjects"
               :key="subjectIndex"
@@ -96,7 +96,7 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceSta
                   v-for="(instance, instanceIndex) in subject.instances"
                   :key="instanceIndex"
                   class="mx-auto my-4 py-4"
-                  max-width="960"
+
               >
                 <v-card-item>
                   <v-card-title>{{ instance.schemaName }}</v-card-title>
@@ -148,5 +148,7 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceSta
 </template>
 
 <style scoped>
-
+.v-expansion-panels {
+  max-width: 960px;
+}
 </style>
