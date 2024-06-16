@@ -124,9 +124,7 @@ const save = () => {
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
-            <v-btn class="mb-2" color="primary" variant="elevated" v-bind="props">
-              Dodaj nowy
-            </v-btn>
+            <v-btn class="mb-2" color="primary" variant="elevated" v-bind="props">Dodaj nowy</v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -152,12 +150,8 @@ const save = () => {
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="close">
-                Anuluj
-              </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">
-                Zapisz
-              </v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="close">Anuluj</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="save">Zapisz</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>

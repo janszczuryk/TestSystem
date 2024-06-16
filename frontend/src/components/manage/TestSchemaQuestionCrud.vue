@@ -140,9 +140,7 @@ const save = () => {
         </v-select>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
-            <v-btn class="mb-2 ml-4" color="primary" variant="elevated" v-bind="props" :disabled="!chosenTestSchema">
-              Dodaj nowe
-            </v-btn>
+            <v-btn class="mb-2 ml-4" color="primary" variant="elevated" v-bind="props" :disabled="!chosenTestSchema">Dodaj nowe</v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -152,7 +150,7 @@ const save = () => {
               <v-container>
                 <v-row>
                   <v-col>
-                    <v-text-field variant="outlined" v-model="editedItem.question" label="Question"></v-text-field>
+                    <v-text-field variant="outlined" v-model="editedItem.question" label="Pytanie"></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -160,7 +158,8 @@ const save = () => {
                     <v-combobox
                       v-model="editedItem.answers"
                       :hide-no-data="false"
-                      label="Pytania"
+                      label="Odpowiedzi"
+                      variant="outlined"
                       hide-selected
                       multiple
                       small-chips
@@ -168,7 +167,7 @@ const save = () => {
                       <template v-slot:no-data>
                         <v-list-item>
                           <v-list-item-title>
-                            Naciśnij <kbd>enter</kbd> aby dodać nowe pytanie.
+                            Naciśnij <kbd>enter</kbd> aby dodać nową odpowiedź.
                           </v-list-item-title>
                         </v-list-item>
                       </template>
@@ -201,6 +200,15 @@ const save = () => {
           </v-card>
         </v-dialog>
       </v-toolbar>
+    </template>
+    <template v-slot:item.answers="{ item }">
+      |&nbsp;
+      <span
+        v-for="(answer, i) in item.answers"
+        :key="i"
+      >
+        <span>{{ answer }}</span>&nbsp;|
+      </span>
     </template>
     <template v-slot:item.actions="{ item }">
       <v-icon class="me-2" size="small" @click="editItem(item)">
