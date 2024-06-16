@@ -15,5 +15,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SubjectCrud: typeof import('./src/components/manage/SubjectCrud.vue')['default']
     TestSchemaCrud: typeof import('./src/components/manage/TestSchemaCrud.vue')['default']
+    TestSchemaQuestionCrud: typeof import('./src/components/manage/TestSchemaQuestionCrud.vue')['default']
   }
 }
