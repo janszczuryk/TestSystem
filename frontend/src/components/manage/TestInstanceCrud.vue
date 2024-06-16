@@ -1,16 +1,22 @@
 <script setup>
 import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
+import {TestInstanceStatus} from "@/types/test-instance";
 import {getStatusName} from "@/utils/test-instance";
 import {getLocalizedDate} from "@/utils/date";
-import {TestInstanceStatus} from "@/types/test-instance";
+import TestInstanceQuestionTable from './TestInstanceQuestionTable.vue';
 
 const testSchemas = ref([]);
 const chosenTestSchema = ref(null);
 
+const testInstanceQuestions = ref([]);
+const dialogQuestionsInstanceId = ref(null);
+
 const dialog = ref(false);
 const dialogDelete = ref(false);
+const dialogQuestions = ref(false);
 const headers = [
   {title: 'Ilość pytań', key: 'questionsCount'},
+  {title: 'Pytania', key: 'questionsDialog', sortable: false},
   {title: 'Włączona', key: 'isEnabled'},
   {title: 'Status', key: 'status'},
   {title: 'Rozpoczęto', key: 'startedAt'},
@@ -35,6 +41,9 @@ watch(dialog, (value) => {
 });
 watch(dialogDelete, (value) => {
   if (!value) closeDelete();
+});
+watch(dialogQuestions, (value) => {
+  if (!value) closeQuestions();
 });
 
 watch(chosenTestSchema, (value) => {
@@ -68,6 +77,28 @@ watch(chosenTestSchema, (value) => {
     },
   ];
 });
+
+watch(dialogQuestionsInstanceId, (value) => {
+  if (!value) {
+    testInstanceQuestions.value = [];
+    return;
+  }
+
+  testInstanceQuestions.value = [
+    {
+      id: '46d86b76-0458-4832-815b-422ae15f97ef',
+      question: 'Gdzie leży Polska?',
+      answers: [ 'W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.' ],
+      correctAnswerIndex: 0,
+    },
+    {
+      id: '46d86b76-0458-4832-815b-422ae15f97f0',
+      question: 'Gdzie leżą Czechy?',
+      answers: [ 'W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.' ],
+      correctAnswerIndex: 0,
+    },
+  ];
+})
 
 onMounted(() => {
   initialize();
@@ -116,6 +147,11 @@ const endInstance = (item) => {
   save();
 }
 
+const showInstanceQuestions = (item) => {
+  dialogQuestionsInstanceId.value = item.id;
+  dialogQuestions.value = true;
+};
+
 const deleteItemConfirm = () => {
   testInstances.value.splice(editedIndex.value, 1);
   closeDelete();
@@ -134,6 +170,13 @@ const closeDelete = () => {
   nextTick(() => {
     Object.assign(editedItem, defaultItem);
     editedIndex.value = -1;
+  });
+};
+
+const closeQuestions = () => {
+  dialogQuestions.value = false;
+  nextTick(() => {
+    dialogQuestionsInstanceId.value = null;
   });
 };
 
@@ -166,6 +209,7 @@ const save = () => {
           density="compact"
           label="Schemat testu"
           hide-details
+          max-width="360"
         >
         </v-select>
         <v-dialog v-model="dialog" max-width="500px">
@@ -211,7 +255,22 @@ const save = () => {
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <v-dialog v-model="dialogQuestions" max-width="960px">
+          <v-card>
+            <v-card-title class="text-h5">Pytania</v-card-title>
+            <v-card-text>
+              <TestInstanceQuestionTable :testInstanceQuestions="testInstanceQuestions"/>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue-darken-1" variant="text" @click="closeQuestions">Zamknij</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-toolbar>
+    </template>
+    <template v-slot:item.questionsDialog="{ item }">
+      <v-btn density="compact" @click="showInstanceQuestions(item)">Zobacz</v-btn>
     </template>
     <template v-slot:item.isEnabled="{ item }">
       {{ item.isEnabled ? 'Tak' : 'Nie' }}

@@ -1,5 +1,6 @@
 <script setup>
 import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
+import {getAnswerLetter} from "@/utils/test-instance-question";
 
 const testSchemas = ref([]);
 const chosenTestSchema = ref(null);
@@ -136,6 +137,7 @@ const save = () => {
           density="compact"
           label="Schemat testu"
           hide-details
+          max-width="360"
         >
         </v-select>
         <v-dialog v-model="dialog" max-width="500px">
@@ -202,12 +204,11 @@ const save = () => {
       </v-toolbar>
     </template>
     <template v-slot:item.answers="{ item }">
-      |&nbsp;
       <span
-        v-for="(answer, i) in item.answers"
-        :key="i"
+        v-for="(answer, answerIndex) in item.answers"
+        :key="answerIndex"
       >
-        <span>{{ answer }}</span>&nbsp;|
+        <span>{{ getAnswerLetter(answerIndex)}}) {{ answer }}</span>&nbsp;
       </span>
     </template>
     <template v-slot:item.actions="{ item }">
