@@ -3,6 +3,7 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import SubjectCrud from "@/components/manage/SubjectCrud.vue";
 import TestSchemaCrud from "@/components/manage/TestSchemaCrud.vue";
 import TestSchemaQuestionCrud from "@/components/manage/TestSchemaQuestionCrud.vue";
+import TestInstanceCrud from "@/components/manage/TestInstanceCrud.vue";
 
 const breadcrumbs = [
   {
@@ -52,6 +53,13 @@ const breadcrumbs = [
       <v-col cols="12">
         <v-card class="mx-auto my-4 py-4" max-width="960">
           <TestSchemaQuestionCrud/>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-card class="mx-auto my-4 py-4" max-width="960">
+          <TestInstanceCrud/>
         </v-card>
       </v-col>
     </v-row>
