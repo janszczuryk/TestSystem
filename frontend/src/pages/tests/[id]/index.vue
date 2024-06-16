@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {TestInstanceStatus} from "@/types/test-instance";
-import {getStatusName} from "@/utils/test-instance";
+import {getTestInstanceStatusName} from "@/utils/test-instance";
+import {getLocalizedDate} from "@/utils/date";
 
 const instance = {
   id: '123-123-123-123',
@@ -86,19 +87,19 @@ breadcrumbs.push({
                 <v-col>
                   <p class="text-grey-darken-1">
                     <v-icon icon="mdi-information"/>
-                    Status: {{ getStatusName(instance.status as TestInstanceStatus) }}
+                    Status: {{ getTestInstanceStatusName(instance.status as TestInstanceStatus) }}
                   </p>
                 </v-col>
                 <v-col>
                   <p class="text-grey-darken-1">
                     <v-icon icon="mdi-clock-time-three"/>
-                    Rozpoczęto: {{ instance.startedAt ? instance.startedAt.toLocaleString() : '&mdash;' }}
+                    Rozpoczęto: {{ getLocalizedDate(instance.startedAt) }}
                   </p>
                 </v-col>
                 <v-col>
                   <p class="text-grey-darken-1">
                     <v-icon icon="mdi-clock-time-eight"/>
-                    Zakończono: {{ instance.endedAt ? instance.endedAt.toLocaleString() : '&mdash;' }}
+                    Zakończono: {{ getLocalizedDate(instance.endedAt) }}
                   </p>
                 </v-col>
               </v-row>

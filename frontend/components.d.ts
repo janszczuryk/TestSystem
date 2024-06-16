@@ -13,5 +13,12 @@ declare module 'vue' {
     Layout: typeof import('./src/components/Layout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SubjectCrud: typeof import('./src/components/manage/SubjectCrud.vue')['default']
+    TestInstanceCrud: typeof import('./src/components/manage/TestInstanceCrud.vue')['default']
+    TestInstanceLearnerAnswerTable: typeof import('./src/components/manage/TestInstanceLearnerAnswerTable.vue')['default']
+    TestInstanceLearnerCrud: typeof import('./src/components/manage/TestInstanceLearnerCrud.vue')['default']
+    TestInstanceQuestionTable: typeof import('./src/components/manage/TestInstanceQuestionTable.vue')['default']
+    TestSchemaCrud: typeof import('./src/components/manage/TestSchemaCrud.vue')['default']
+    TestSchemaQuestionCrud: typeof import('./src/components/manage/TestSchemaQuestionCrud.vue')['default']
   }
 }
