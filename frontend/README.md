@@ -3,6 +3,13 @@
 ## Description
 Front-end for TestSystem. It is built on Vue.js with Vite on top of that. Also, the Vuetify is used as the Vue component framework.
 
+## Configuration
+Configure the app within the `.env` file.
+```bash
+cp .env.example .env
+```
+
+
 ## Installation
 
 ```bash
