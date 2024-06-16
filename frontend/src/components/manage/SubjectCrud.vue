@@ -8,7 +8,7 @@ const headers = [
   {title: 'Kierunek studiów', key: 'fieldOfStudy'},
   {title: 'Akcje', key: 'actions', sortable: false},
 ];
-const items = ref([]);
+const subjects = ref([]);
 const editedIndex = ref(-1);
 const editedItem = reactive({
   name: '',
@@ -33,7 +33,7 @@ onMounted(() => {
 });
 
 const initialize = () => {
-  items.value = [
+  subjects.value = [
     {
       id: '103b07a3-e67b-4e25-95f4-6a6061add688',
       name: 'Sieci komputerowe 1',
@@ -53,19 +53,19 @@ const initialize = () => {
 };
 
 const editItem = (item) => {
-  editedIndex.value = items.value.indexOf(item);
+  editedIndex.value = subjects.value.indexOf(item);
   Object.assign(editedItem, item);
   dialog.value = true;
 };
 
 const deleteItem = (item) => {
-  editedIndex.value = items.value.indexOf(item);
+  editedIndex.value = subjects.value.indexOf(item);
   Object.assign(editedItem, item);
   dialogDelete.value = true;
 };
 
 const deleteItemConfirm = () => {
-  items.value.splice(editedIndex.value, 1);
+  subjects.value.splice(editedIndex.value, 1);
   closeDelete();
 };
 
@@ -87,9 +87,9 @@ const closeDelete = () => {
 
 const save = () => {
   if (editedIndex.value > -1) {
-    Object.assign(items.value[editedIndex.value], editedItem);
+    Object.assign(subjects.value[editedIndex.value], editedItem);
   } else {
-    items.value.push({...editedItem});
+    subjects.value.push({...editedItem});
   }
   close();
 };
@@ -98,7 +98,7 @@ const save = () => {
 <template>
   <v-data-table
     :headers="headers"
-    :items="items"
+    :items="subjects"
     :sort-by="[{ key: 'name', order: 'asc' }]"
   >
     <template v-slot:top>

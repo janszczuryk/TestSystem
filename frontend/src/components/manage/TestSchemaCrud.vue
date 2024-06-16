@@ -10,7 +10,7 @@ const headers = [
   {title: 'Przedmiot', key: 'subject'},
   {title: 'Akcje', key: 'actions', sortable: false},
 ];
-const items = ref([]);
+const testSchemas = ref([]);
 const editedIndex = ref(-1);
 const editedItem = reactive({
   name: '',
@@ -35,7 +35,7 @@ onMounted(() => {
 });
 
 const initialize = () => {
-  items.value = [
+  testSchemas.value = [
     {
       id: '83c630f4-a4a6-452a-8bd3-7cd9b0ba7fa1',
       name: 'Kolokwium nr 1',
@@ -69,19 +69,19 @@ const initialize = () => {
 };
 
 const editItem = (item) => {
-  editedIndex.value = items.value.indexOf(item);
+  editedIndex.value = testSchemas.value.indexOf(item);
   Object.assign(editedItem, item);
   dialog.value = true;
 };
 
 const deleteItem = (item) => {
-  editedIndex.value = items.value.indexOf(item);
+  editedIndex.value = testSchemas.value.indexOf(item);
   Object.assign(editedItem, item);
   dialogDelete.value = true;
 };
 
 const deleteItemConfirm = () => {
-  items.value.splice(editedIndex.value, 1);
+  testSchemas.value.splice(editedIndex.value, 1);
   closeDelete();
 };
 
@@ -103,9 +103,9 @@ const closeDelete = () => {
 
 const save = () => {
   if (editedIndex.value > -1) {
-    Object.assign(items.value[editedIndex.value], editedItem);
+    Object.assign(testSchemas.value[editedIndex.value], editedItem);
   } else {
-    items.value.push({...editedItem});
+    testSchemas.value.push({...editedItem});
   }
   close();
 };
@@ -114,7 +114,7 @@ const save = () => {
 <template>
   <v-data-table
     :headers="headers"
-    :items="items"
+    :items="testSchemas"
     :sort-by="[{ key: 'name', order: 'asc' }]"
   >
     <template v-slot:top>
