@@ -3,6 +3,7 @@ import {ref} from "vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {TestInstanceStatus} from "@/types/test-instance";
 import {getStatusName} from "@/utils/test-instance";
+import {getLocalizedDate} from "@/utils/date";
 
 const breadcrumbs = [
   {
@@ -115,13 +116,13 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceSta
                       <v-col>
                         <p class="text-grey-darken-1">
                           <v-icon icon="mdi-clock-time-three"/>
-                          Rozpoczęto: {{ instance.startedAt ? instance.startedAt.toLocaleString() : '&mdash;' }}
+                          Rozpoczęto: {{ getLocalizedDate(instance.startedAt) }}
                         </p>
                       </v-col>
                       <v-col>
                         <p class="text-grey-darken-1">
                           <v-icon icon="mdi-clock-time-eight"/>
-                          Zakończono: {{ instance.endedAt ? instance.endedAt.toLocaleString() : '&mdash;' }}
+                          Zakończono: {{ getLocalizedDate(instance.endedAt) }}
                         </p>
                       </v-col>
                     </v-row>
