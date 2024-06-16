@@ -1,7 +1,7 @@
 <script setup>
 import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
 import {TestInstanceStatus} from "@/types/test-instance";
-import {getStatusName} from "@/utils/test-instance";
+import {getTestInstanceStatusName} from "@/utils/test-instance";
 import {getLocalizedDate} from "@/utils/date";
 import TestInstanceQuestionTable from './TestInstanceQuestionTable.vue';
 
@@ -276,7 +276,7 @@ const save = () => {
       {{ item.isEnabled ? 'Tak' : 'Nie' }}
     </template>
     <template v-slot:item.status="{ item }">
-      {{ getStatusName(item.status) }}
+      {{ getTestInstanceStatusName(item.status) }}
     </template>
     <template v-slot:item.startedAt="{ item }">
       {{ getLocalizedDate(item.startedAt) }}
