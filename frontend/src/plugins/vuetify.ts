@@ -12,6 +12,9 @@ import colors from 'vuetify/util/colors'
 // Composables
 import {createVuetify} from 'vuetify'
 
+// Translations
+import {pl} from 'vuetify/locale'
+
 /*
 Color palette:
 '#009688'
@@ -39,4 +42,9 @@ export default createVuetify({
       }
     }
   },
+  locale: {
+    locale: 'pl',
+    fallback: 'en',
+    messages: { pl },
+  }
 })
