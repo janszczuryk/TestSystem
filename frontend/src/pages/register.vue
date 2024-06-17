@@ -1,8 +1,53 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
+import {useAccount} from "@/composables/account";
+import {ApiClientHttpStatusError, useApiClient} from "@/utils/api";
+import {AccountType} from "@/types/account";
+
+const api = useApiClient();
+const router = useRouter();
+const {isLoggedAccount} = useAccount();
 
 const isPasswordVisible = ref(false);
 const isPasswordSecondVisible = ref(false);
+const inputEmail = ref('');
+const inputPassword = ref('');
+const inputPasswordSecond = ref('');
+const inputEmailError = ref('');
+
+const onFormSubmit = async () => {
+  const body = {
+    email: inputEmail.value,
+    password: inputPassword.value,
+    type: AccountType.LEARNER,
+  };
+
+  try {
+    await api.post('auth/register', {body});
+  } catch (error) {
+    if (error instanceof ApiClientHttpStatusError) {
+      if (error.statusCode === 409) {
+        inputEmailError.value = 'Istnieje już konto z takim adresem e-mail.';
+        return;
+      }
+    }
+
+    throw error;
+  }
+
+  await router.push('/login');
+};
+
+const redirectLoggedIn = () => {
+  if (isLoggedAccount()) {
+    router.push('/');
+  }
+}
+
+onMounted(() => {
+  redirectLoggedIn();
+});
 </script>
 
 <template>
@@ -19,43 +64,50 @@ const isPasswordSecondVisible = ref(false);
     <v-row>
       <v-col cols="12">
         <v-card class="mx-auto pa-12 pb-8" elevation="2" max-width="480">
-          <v-text-field
-            density="compact"
-            label="Adres e-mail"
-            prepend-inner-icon="mdi-email-outline"
-            type="email"
-            variant="outlined"
-          ></v-text-field>
+          <v-form @submit.prevent="onFormSubmit">
+            <v-text-field
+              density="compact"
+              label="Adres e-mail"
+              prepend-inner-icon="mdi-email-outline"
+              type="email"
+              variant="outlined"
+              v-model="inputEmail"
+              :error-messages="inputEmailError"
+            ></v-text-field>
 
-          <v-text-field
-            :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-            :type="isPasswordVisible ? 'text' : 'password'"
-            density="compact"
-            label="Hasło"
-            prepend-inner-icon="mdi-lock-outline"
-            variant="outlined"
-            @click:append-inner="isPasswordVisible = !isPasswordVisible"
-          ></v-text-field>
+            <v-text-field
+              :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+              :type="isPasswordVisible ? 'text' : 'password'"
+              density="compact"
+              label="Hasło"
+              prepend-inner-icon="mdi-lock-outline"
+              variant="outlined"
+              @click:append-inner="isPasswordVisible = !isPasswordVisible"
+              v-model="inputPassword"
+            ></v-text-field>
 
-          <v-text-field
-            :append-inner-icon="isPasswordSecondVisible ? 'mdi-eye-off' : 'mdi-eye'"
-            :type="isPasswordSecondVisible ? 'text' : 'password'"
-            density="compact"
-            label="Powtórz hasło"
-            prepend-inner-icon="mdi-lock-outline"
-            variant="outlined"
-            @click:append-inner="isPasswordSecondVisible = !isPasswordSecondVisible"
-          ></v-text-field>
+            <v-text-field
+              :append-inner-icon="isPasswordSecondVisible ? 'mdi-eye-off' : 'mdi-eye'"
+              :type="isPasswordSecondVisible ? 'text' : 'password'"
+              density="compact"
+              label="Powtórz hasło"
+              prepend-inner-icon="mdi-lock-outline"
+              variant="outlined"
+              @click:append-inner="isPasswordSecondVisible = !isPasswordSecondVisible"
+              v-model="inputPasswordSecond"
+            ></v-text-field>
 
-          <v-btn
-            class="my-4"
-            color="primary"
-            size="large"
-            variant="elevated"
-            block
-          >
-            Zarejestruj
-          </v-btn>
+            <v-btn
+              type="submit"
+              class="my-4"
+              color="primary"
+              size="large"
+              variant="elevated"
+              block
+            >
+              Zarejestruj
+            </v-btn>
+          </v-form>
 
           <v-card-text class="text-center">
             <RouterLink to="login" class="text-blue text-decoration-none">
