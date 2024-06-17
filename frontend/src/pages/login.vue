@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
-import {ApiClientHttpStatusError, useApiClient, useResponse} from "@/utils/api";
 import {Account} from "@/types/account";
+import {ApiClientHttpStatusError, useApiClient, useResponse} from "@/utils/api";
+import {setAccount, setAuthToken} from "@/utils/local-storage";
+import {useAccount} from "@/composables/account";
 
 const api = useApiClient();
 const router = useRouter();
+const {isLoggedAccount, loginAccount} = useAccount();
 
 const isPasswordVisible = ref(false);
 const inputEmail = ref('');
 const inputPassword = ref('');
 const inputsError = ref('');
 
-const loginAccount = async () => {
+const onFormSubmit = async () => {
   const body = {
     email: inputEmail.value,
     password: inputPassword.value,
@@ -41,18 +44,15 @@ const loginAccount = async () => {
     type: data.type,
   };
 
-  localStorage.setItem('jwtToken', jwtToken);
-  localStorage.setItem('accountId', account.id);
-  localStorage.setItem('accountEmail', account.email);
-  localStorage.setItem('accountIsVerified', account.isVerified ? '1' : '0');
-  localStorage.setItem('accountType', account.type);
+  setAuthToken(jwtToken);
+  setAccount(account);
+  loginAccount(Object.assign(account, { jwtToken }));
 
   await router.push('/');
 };
 
 const redirectLoggedIn = () => {
-  const isLoggedIn = localStorage.getItem('jwtToken') !== null;
-  if (isLoggedIn) {
+  if (isLoggedAccount()) {
     router.push('/');
   }
 }
@@ -76,7 +76,7 @@ onMounted(() => {
     <v-row>
       <v-col cols="12">
         <v-card class="mx-auto pa-12 pb-8" elevation="2" max-width="480">
-          <v-form @submit.prevent="loginAccount">
+          <v-form @submit.prevent="onFormSubmit">
             <v-text-field
               density="compact"
               label="Adres e-mail"

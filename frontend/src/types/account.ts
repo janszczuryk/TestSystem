@@ -8,4 +8,8 @@ export type Account = {
   email: string;
   isVerified: boolean;
   type: AccountType,
-}
+};
+
+export type AccountAuthorized = Account & {
+  jwtToken: string;
+};
