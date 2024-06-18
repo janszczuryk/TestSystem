@@ -1,28 +1,33 @@
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
-import {useRouter} from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {useAccount} from "@/composables/account";
-import {TestInstanceStatus} from "@/types/test-instance";
-import {getTestInstanceStatusName} from "@/utils/test-instance";
-import {getLocalizedDate} from "@/utils/date";
-import {useApiClient, useResponse} from "@/utils/api";
-import {TestInstance} from "@/types/learner/test-instance";
-import {Subject} from "@/types/learner/subject";
+import { useAccount } from "@/composables/account";
+import { TestInstanceStatus } from "@/types/test-instance";
+import { ApiClientHttpStatusError, useApiClient, useResponse } from "@/utils/api";
+import { TestInstance } from "@/types/learner/test-instance";
+import { Subject } from "@/types/learner/subject";
+import { rules } from "@/utils/form-validation";
+import { TestInstanceLearnerStatus } from "@/types/test-instance-learner";
+import { getLocalizedDate } from "@/utils/date";
+import { getTestInstanceStatusName } from "@/utils/test-instance";
 
 const breadcrumbs = [
-  {title: 'Test System', disabled: true, href: '/'},
-  {title: 'Testy', disabled: false, href: '/tests'},
+  { title: 'Test System', disabled: true, href: '/' },
+  { title: 'Testy', disabled: false, href: '/tests' },
 ];
 
 const api = useApiClient();
 const router = useRouter();
-const {account, isLoggedAccount, isAccountLearner} = useAccount();
+const { account, isLoggedAccount, isAccountLearner } = useAccount();
 
 const subjects = ref<Subject[]>([]);
 const expandedSubjects = ref<number[]>([]);
+const isJoinFormValid = ref(false);
+const inputLearnerNumber = ref('');
+const inputLearnerNumberError = ref('');
 
-const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceStatus.CREATED, TestInstanceStatus.STARTED].includes(instanceStatus);
+const canJoinInstance = (instanceStatus: TestInstanceStatus) => [ TestInstanceStatus.CREATED, TestInstanceStatus.STARTED ].includes(instanceStatus);
 
 const redirectIfNotLearner = () => {
   if (!isLoggedAccount() || !isAccountLearner) {
@@ -32,7 +37,7 @@ const redirectIfNotLearner = () => {
 
 const fetchSubjects = async () => {
   const auth = { token: account.value!.jwtToken };
-  const response = await api.get('learner/instances', {auth});
+  const response = await api.get('learner/instances', { auth });
   const testInstances = await useResponse<TestInstance[]>(response);
 
   subjects.value = mapTestInstancesToSubjects(testInstances);
@@ -68,9 +73,69 @@ const mapTestInstancesToSubjects = (testInstances: TestInstance[]): Subject[] =>
   return Array.from(subjectsMap.values());
 };
 
+const onJoinFormSubmit = async (instanceId: string) => {
+  const testInstance = await getTestInstance(instanceId);
+
+  // FIXME: This should be checked when fetchSubjects happens
+  //        However, backend does not handle learner property
+  //        on an instance list.
+  if (testInstance.learner) {
+    let redirectPath: string;
+
+    switch (testInstance.learner.status) {
+      case TestInstanceLearnerStatus.JOINED:
+        redirectPath = `/tests/${ instanceId }`;
+        break;
+      case TestInstanceLearnerStatus.STARTED:
+        redirectPath = `/tests/${ instanceId }/attempt`;
+        break;
+      case TestInstanceLearnerStatus.FINISHED:
+        redirectPath = `/tests/${ instanceId }/results`;
+        break;
+    }
+
+    await router.push(redirectPath);
+    return;
+  }
+
+  await joinTestInstance(instanceId);
+};
+
+const getTestInstance = async (instanceId: string) => {
+  const url = `learner/instances/${ instanceId }`;
+  const auth = { token: account.value!.jwtToken };
+
+  const response = await api.get(url, { auth });
+  return await useResponse<TestInstance>(response);
+}
+
+const joinTestInstance = async (instanceId: string) => {
+  const url = `learner/instances/${ instanceId }/join`;
+  const auth = { token: account.value!.jwtToken };
+  const body = { learnerNumber: parseInt(inputLearnerNumber.value) };
+
+  try {
+    await api.post(url, { auth, body });
+  } catch (error) {
+    if (error instanceof ApiClientHttpStatusError) {
+      if (error.statusCode === 409) {
+        inputLearnerNumberError.value = 'Numer uczestnika jest już zajęty';
+        return;
+      }
+    }
+
+    throw error;
+  }
+
+  await router.push(`/tests/${ instanceId }`);
+}
+
 watch(subjects, (value) => {
   expandedSubjects.value = value.map((_, index) => index);
-})
+});
+watch(inputLearnerNumber, () => {
+  inputLearnerNumberError.value = '';
+});
 
 onMounted(() => {
   redirectIfNotLearner();
@@ -142,14 +207,31 @@ onMounted(() => {
                 </v-card-text>
 
                 <v-container v-if="canJoinInstance(instance.status as TestInstanceStatus)">
-                  <v-row>
-                    <v-col cols="4">
-                      <v-text-field type="number" density="compact" variant="outlined" label="Numer uczestnika"/>
-                    </v-col>
-                    <v-col cols="8">
-                      <v-btn variant="elevated" color="primary" block>Dołącz do testu</v-btn>
-                    </v-col>
-                  </v-row>
+                  <v-form v-model="isJoinFormValid" @submit.prevent="onJoinFormSubmit(instance.id)">
+                    <v-row>
+                      <v-col cols="4">
+                        <v-text-field
+                          v-model="inputLearnerNumber"
+                          type="number"
+                          density="compact"
+                          variant="outlined"
+                          label="Numer uczestnika"
+                          :rules="[rules.required, rules.isInteger, rules.learnerNumber]"
+                          :error-messages="inputLearnerNumberError"
+                        />
+                      </v-col>
+                      <v-col cols="8">
+                        <v-btn
+                          type="submit"
+                          variant="elevated"
+                          color="primary"
+                          block
+                          :disabled="!isJoinFormValid"
+                        >Dołącz do testu
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-form>
                 </v-container>
               </v-card>
             </v-expansion-panel-text>
