@@ -49,6 +49,7 @@ class SubjectResponseDto {
   public constructor(subject: Subject) {
     this.id = subject.id;
     this.name = subject.name;
+    this.fieldOfStudy = subject.fieldOfStudy;
   }
 }
 
