@@ -50,7 +50,7 @@ export class ApiClient {
     return this.checkResponseStatus(response);
   }
 
-  public async get(url: string, options?: RequestOptions & { body: never }): Promise<Response> {
+  public async get(url: string, options?: RequestOptions & { body?: never }): Promise<Response> {
     const fullUrl = this.buildFullUrl(url, options?.queryParams);
     const headers = this.buildHeaders(options?.auth);
 

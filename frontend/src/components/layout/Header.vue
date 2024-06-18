@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from 'vue-router'
-import {computed} from "vue";
-import {AccountType} from "@/types/account";
 import {useAccount} from "@/composables/account";
 
 const router = useRouter();
 const route: any = useRoute();
-const {account, isLoggedAccount} = useAccount();
-
-const isAccountTeacher = computed(() => account.value?.type === AccountType.TEACHER);
+const {account, isLoggedAccount, isAccountTeacher, isAccountLearner} = useAccount();
 
 const handleRoute = (path: string): void => {
   router.push(path);
@@ -32,6 +28,7 @@ const isCurrentRoute = (path: string): boolean => {
         Ogłoszenia
       </v-btn>
       <v-btn
+        v-if="isAccountLearner"
         prepend-icon="mdi-school"
         variant="text"
         :class="{ active: isCurrentRoute('/tests') }"
