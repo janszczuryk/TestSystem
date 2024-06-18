@@ -55,7 +55,10 @@ export class LearnerController {
   }
 
   @Get('instances/:instance_id')
-  public async findOneInstance(@ParamUUID('instance_id') instanceId: string) {
+  public async findOneInstance(
+    @ParamUUID('instance_id') instanceId: string,
+    @AuthJwt() { accountId: learnerId }: JwtParams,
+  ) {
     const testInstance = await this.testInstanceService.getForLearner(instanceId);
     if (!testInstance) {
       throw new NotFoundException('Instance does not exist');
@@ -64,7 +67,9 @@ export class LearnerController {
       throw new ForbiddenException('Instance is not enabled');
     }
 
-    return new TestInstanceResponseDto(testInstance);
+    const testInstanceLearner = await this.testInstanceLearnerService.get(instanceId, learnerId);
+
+    return new TestInstanceResponseDto(Object.assign(testInstance, { learner: testInstanceLearner ?? undefined }));
   }
 
   @Post('instances/:instance_id/join')
