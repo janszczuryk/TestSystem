@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, IsNull, Not, Repository } from 'typeorm';
+import { FindOptionsWhere, In, IsNull, Not, Repository } from 'typeorm';
 
+import { TestInstanceLearnerStatus } from '@module/test-instance-learner/entities/test-instance-learner.entity';
+import { TestInstanceLearnerService } from '@module/test-instance-learner/test-instance-learner.service';
 import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
 import { TestInstanceQuestionService } from '@module/test-instance-question/test-instance-question.service';
 import { TestSchemaQuestionService } from '@module/test-schema-question/test-schema-question.service';
@@ -25,6 +27,7 @@ export class TestInstanceService {
     private readonly testInstanceRepository: Repository<TestInstance>,
     private readonly testSchemaQuestionService: TestSchemaQuestionService,
     private readonly testInstanceQuestionService: TestInstanceQuestionService,
+    private readonly testInstanceLearnerService: TestInstanceLearnerService,
   ) {}
 
   public async create(testInstance: TestInstance): Promise<TestInstance> {
@@ -145,6 +148,23 @@ export class TestInstanceService {
 
   public async end(testInstance: TestInstance): Promise<TestInstance> {
     testInstance.end();
+
+    const testInstanceLearnersToFinish = await this.testInstanceLearnerService.findAll(
+      {
+        instance: { id: testInstance.id },
+        status: In([TestInstanceLearnerStatus.JOINED, TestInstanceLearnerStatus.STARTED]),
+      },
+      false,
+    );
+
+    await Promise.all(
+      testInstanceLearnersToFinish.map(async (testInstanceLearner) => {
+        if (testInstanceLearner.status === TestInstanceLearnerStatus.JOINED) {
+          await this.testInstanceLearnerService.start(testInstanceLearner);
+        }
+        await this.testInstanceLearnerService.finish(testInstanceLearner);
+      }),
+    );
 
     return this.testInstanceRepository.save(testInstance);
   }
