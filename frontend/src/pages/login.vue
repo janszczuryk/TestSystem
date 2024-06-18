@@ -5,11 +5,13 @@ import {Account} from "@/types/account";
 import {ApiClientHttpStatusError, useApiClient, useResponse} from "@/utils/api";
 import {setAccount, setAuthToken} from "@/utils/local-storage";
 import {useAccount} from "@/composables/account";
+import {rules} from "@/utils/form-validation";
 
 const api = useApiClient();
 const router = useRouter();
 const {isLoggedAccount, loginAccount} = useAccount();
 
+const isFormValid = ref(false);
 const isPasswordVisible = ref(false);
 const inputEmail = ref('');
 const inputPassword = ref('');
@@ -76,7 +78,7 @@ onMounted(() => {
     <v-row>
       <v-col cols="12">
         <v-card class="mx-auto pa-12 pb-8" elevation="2" max-width="480">
-          <v-form @submit.prevent="onFormSubmit">
+          <v-form v-model="isFormValid" @submit.prevent="onFormSubmit">
             <v-text-field
               density="compact"
               label="Adres e-mail"
@@ -85,6 +87,7 @@ onMounted(() => {
               variant="outlined"
               v-model="inputEmail"
               :error="!!inputsError.length"
+              :rules="[rules.required, rules.isEmail]"
             ></v-text-field>
 
             <v-text-field
@@ -97,6 +100,7 @@ onMounted(() => {
               @click:append-inner="isPasswordVisible = !isPasswordVisible"
               v-model="inputPassword"
               :error-messages="inputsError"
+              :rules="[rules.required, rules.passwordLength]"
             ></v-text-field>
 
             <v-btn
@@ -106,6 +110,7 @@ onMounted(() => {
               size="large"
               variant="elevated"
               block
+              :disabled="!isFormValid"
             >
               Zaloguj się
             </v-btn>

@@ -4,17 +4,20 @@ import {useRouter} from "vue-router";
 import {useAccount} from "@/composables/account";
 import {ApiClientHttpStatusError, useApiClient} from "@/utils/api";
 import {AccountType} from "@/types/account";
+import {rules} from "@/utils/form-validation";
 
 const api = useApiClient();
 const router = useRouter();
 const {isLoggedAccount} = useAccount();
 
+const isFormValid = ref(false);
 const isPasswordVisible = ref(false);
 const isPasswordSecondVisible = ref(false);
 const inputEmail = ref('');
 const inputPassword = ref('');
 const inputPasswordSecond = ref('');
 const inputEmailError = ref('');
+const inputPasswordError = ref('');
 
 const onFormSubmit = async () => {
   const body = {
@@ -45,6 +48,14 @@ const redirectLoggedIn = () => {
   }
 }
 
+const onFormChange = () => {
+  if (inputPassword.value !== inputPasswordSecond.value) {
+    inputPasswordError.value = 'Hasła muszą być identyczne';
+  } else {
+    inputPasswordError.value = '';
+  }
+};
+
 onMounted(() => {
   redirectLoggedIn();
 });
@@ -64,7 +75,7 @@ onMounted(() => {
     <v-row>
       <v-col cols="12">
         <v-card class="mx-auto pa-12 pb-8" elevation="2" max-width="480">
-          <v-form @submit.prevent="onFormSubmit">
+          <v-form v-model="isFormValid" @submit.prevent="onFormSubmit" @change="onFormChange">
             <v-text-field
               density="compact"
               label="Adres e-mail"
@@ -73,6 +84,7 @@ onMounted(() => {
               variant="outlined"
               v-model="inputEmail"
               :error-messages="inputEmailError"
+              :rules="[rules.required, rules.isEmail]"
             ></v-text-field>
 
             <v-text-field
@@ -84,6 +96,8 @@ onMounted(() => {
               variant="outlined"
               @click:append-inner="isPasswordVisible = !isPasswordVisible"
               v-model="inputPassword"
+              :error-messages="inputPasswordError"
+              :rules="[rules.required, rules.passwordLength]"
             ></v-text-field>
 
             <v-text-field
@@ -95,6 +109,7 @@ onMounted(() => {
               variant="outlined"
               @click:append-inner="isPasswordSecondVisible = !isPasswordSecondVisible"
               v-model="inputPasswordSecond"
+              :rules="[rules.required, rules.passwordLength]"
             ></v-text-field>
 
             <v-btn
@@ -104,6 +119,7 @@ onMounted(() => {
               size="large"
               variant="elevated"
               block
+              :disabled="!isFormValid"
             >
               Zarejestruj
             </v-btn>
