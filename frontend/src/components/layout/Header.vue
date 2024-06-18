@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from 'vue-router'
-import {ref} from "vue";
+import {computed} from "vue";
+import {AccountType} from "@/types/account";
+import {useAccount} from "@/composables/account";
 
 const router = useRouter();
 const route: any = useRoute();
-const isAccountLoggedIn = ref(false);
-const isAccountTeacher = ref(true);
-const accountEmail = ref('jan.szczuryk+learner@gmail.com');
+const {account, isLoggedAccount} = useAccount();
+
+const isAccountTeacher = computed(() => account.value?.type === AccountType.TEACHER);
 
 const handleRoute = (path: string): void => {
   router.push(path);
@@ -49,9 +51,9 @@ const isCurrentRoute = (path: string): boolean => {
     </template>
 
     <template #append>
-      <span v-if="isAccountLoggedIn">{{ accountEmail }}</span>
+      <span v-if="isLoggedAccount()">{{ account?.email }}</span>
       <v-btn
-        v-if="isAccountLoggedIn"
+        v-if="isLoggedAccount()"
         prepend-icon="mdi-logout"
         variant="text"
         :class="{ active: isCurrentRoute('/logout') }"

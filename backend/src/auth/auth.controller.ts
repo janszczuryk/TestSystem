@@ -35,7 +35,9 @@ export class AuthController {
   public async login(@AuthAccount() account: Account) {
     const jwtToken = await this.authService.generateJwtToken(account);
 
-    return new LoginResponseDto({ jwtToken });
+    const response = Object.assign(account, { jwtToken });
+
+    return new LoginResponseDto(response);
   }
 
   @Post('register')
