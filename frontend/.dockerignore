@@ -1,10 +1,15 @@
 node_modules
 dist
+.dockerignore
 .browserslistrc
+.env
+.env.example
 .git
 .gitignore
 .editorconfig
 .eslintrc.js
+.nvmrc
 README.md
+**/README.md
 docker-compose.yml
 Dockerfile
