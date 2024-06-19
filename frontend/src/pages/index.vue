@@ -1,17 +1,9 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
 const breadcrumbs = [
-  {
-    title: 'Test System',
-    disabled: true,
-    href: '/',
-  },
-  {
-    title: 'Ogłoszenia',
-    disabled: false,
-    href: '/',
-  },
+  { title: 'Test System', href: '/', disabled: true },
+  { title: 'Ogłoszenia', href: '/', disabled: false },
 ];
 </script>
 

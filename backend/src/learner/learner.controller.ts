@@ -19,6 +19,7 @@ import { AccountTypes, AuthJwt } from '@module/auth/decorators';
 import { AccountTypeGuard, JwtAuthGuard } from '@module/auth/guards';
 import { ParamUUID } from '@module/common/decorators';
 import { TestInstanceService } from '@module/test-instance/test-instance.service';
+import { ResultSummaryResponseDto } from '@module/test-instance-learner/dto/response';
 import { TestInstanceLearner } from '@module/test-instance-learner/entities/test-instance-learner.entity';
 import {
   TestInstanceLearnerService,
@@ -55,7 +56,10 @@ export class LearnerController {
   }
 
   @Get('instances/:instance_id')
-  public async findOneInstance(@ParamUUID('instance_id') instanceId: string) {
+  public async findOneInstance(
+    @ParamUUID('instance_id') instanceId: string,
+    @AuthJwt() { accountId: learnerId }: JwtParams,
+  ) {
     const testInstance = await this.testInstanceService.getForLearner(instanceId);
     if (!testInstance) {
       throw new NotFoundException('Instance does not exist');
@@ -64,7 +68,9 @@ export class LearnerController {
       throw new ForbiddenException('Instance is not enabled');
     }
 
-    return new TestInstanceResponseDto(testInstance);
+    const testInstanceLearner = await this.testInstanceLearnerService.get(instanceId, learnerId);
+
+    return new TestInstanceResponseDto(Object.assign(testInstance, { learner: testInstanceLearner ?? undefined }));
   }
 
   @Post('instances/:instance_id/join')
@@ -220,11 +226,35 @@ export class LearnerController {
       throw new ConflictException('Learner instance must be started status');
     }
 
-    const testInstance = testInstanceLearner.instance;
-    if (body.answerIndex > testInstance.questionsCount - 1) {
+    const possibleAnswersCount = pendingLearnerAnswer.instanceQuestion.answers.length;
+    if (body.answerIndex > possibleAnswersCount - 1) {
       throw new BadRequestException('Answer index is invalid');
     }
 
     await this.testInstanceLearnerAnswerService.submitAnswer(pendingLearnerAnswer, body.answerIndex);
+  }
+
+  @Get('instances/:instance_id/results')
+  public async getInstanceResults(
+    @ParamUUID('instance_id') instanceId: string,
+    @AuthJwt() { accountId: learnerId }: JwtParams,
+  ) {
+    const testInstanceLearner = await this.testInstanceLearnerService.get(instanceId, learnerId);
+    if (!testInstanceLearner) {
+      throw new NotFoundException('Learner instance does not exist');
+    }
+
+    if (!testInstanceLearner.isFinished()) {
+      throw new ConflictException('Learner instance must be finished status');
+    }
+
+    const testInstance = await this.testInstanceService.get(instanceId);
+    if (!testInstance) {
+      throw new Error('Instance does not exist');
+    }
+
+    const resultSummary = await this.testInstanceService.getResultSummary(testInstance, testInstanceLearner);
+
+    return new ResultSummaryResponseDto(resultSummary);
   }
 }

@@ -1,12 +1,12 @@
-<script setup>
-import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
+<script setup lang="ts">
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 
 const dialog = ref(false);
 const dialogDelete = ref(false);
 const headers = [
-  {title: 'Nazwa', key: 'name'},
-  {title: 'Kierunek studiów', key: 'fieldOfStudy'},
-  {title: 'Akcje', key: 'actions', sortable: false},
+  { title: 'Nazwa', key: 'name' },
+  { title: 'Kierunek studiów', key: 'fieldOfStudy' },
+  { title: 'Akcje', key: 'actions', sortable: false },
 ];
 const subjects = ref([]);
 const editedIndex = ref(-1);
@@ -89,7 +89,7 @@ const save = () => {
   if (editedIndex.value > -1) {
     Object.assign(subjects.value[editedIndex.value], editedItem);
   } else {
-    subjects.value.push({...editedItem});
+    subjects.value.push({ ...editedItem });
   }
   close();
 };
@@ -123,7 +123,11 @@ const save = () => {
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field variant="outlined" v-model="editedItem.fieldOfStudy" label="Kierunek studiów"></v-text-field>
+                    <v-text-field
+                      variant="outlined"
+                      v-model="editedItem.fieldOfStudy"
+                      label="Kierunek studiów"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>

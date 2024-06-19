@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {useRouter} from "vue-router";
-import {Account} from "@/types/account";
-import {ApiClientHttpStatusError, useApiClient, useResponse} from "@/utils/api";
-import {setAccount, setAuthToken} from "@/utils/local-storage";
-import {useAccount} from "@/composables/account";
-import {rules} from "@/utils/form-validation";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { Account } from "@/types/account";
+import { ApiClientHttpStatusError, useApiClient, useResponse } from "@/utils/api";
+import { setAccount, setAuthToken } from "@/utils/local-storage";
+import { useAccount } from "@/composables/account";
+import { rules } from "@/utils/form-validation";
 
 const api = useApiClient();
 const router = useRouter();
-const {isLoggedAccount, loginAccount} = useAccount();
+const { isLoggedAccount, loginAccount } = useAccount();
 
 const isFormValid = ref(false);
 const isPasswordVisible = ref(false);
@@ -25,7 +25,7 @@ const onFormSubmit = async () => {
 
   let response: Response;
   try {
-    response = await api.post('auth/login', {body});
+    response = await api.post('auth/login', { body });
   } catch (error) {
     if (error instanceof ApiClientHttpStatusError) {
       if (error.statusCode === 401) {
@@ -37,7 +37,7 @@ const onFormSubmit = async () => {
     throw error;
   }
 
-  const data = await useResponse<Account & {jwtToken: string}>(response);
+  const data = await useResponse<Account & { jwtToken: string }>(response);
   const jwtToken = data.jwtToken;
   const account: Account = {
     id: data.id,

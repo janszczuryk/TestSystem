@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn, Unique } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
@@ -18,6 +18,7 @@ export enum TestInstanceLearnerAnswerStatus {
 }
 
 @Entity()
+@Unique(['instanceLearnerInstanceId', 'instanceLearnerLearnerId', 'questionNumber'])
 export class TestInstanceLearnerAnswer {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   public id: string;
@@ -31,6 +32,8 @@ export class TestInstanceLearnerAnswer {
     onDelete: 'CASCADE',
   })
   public instanceQuestion: TestInstanceQuestion;
+  @Column({ type: 'integer', nullable: false })
+  public questionNumber: number;
   @Column({ type: 'enum', enum: TestInstanceLearnerAnswerStatus, nullable: false })
   public status: TestInstanceLearnerAnswerStatus;
   @Column({ type: 'integer', nullable: true })
@@ -54,6 +57,7 @@ export class TestInstanceLearnerAnswer {
       instanceLearnerLearnerId: props.instanceLearner.learnerId,
       instanceLearner: props.instanceLearner,
       instanceQuestion: props.instanceQuestion,
+      questionNumber: 0,
       status: TestInstanceLearnerAnswerStatus.CREATED,
       updatedAt: now,
       createdAt: now,

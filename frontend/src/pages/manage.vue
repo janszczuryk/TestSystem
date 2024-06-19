@@ -7,16 +7,8 @@ import TestInstanceCrud from "@/components/manage/TestInstanceCrud.vue";
 import TestInstanceLearnerCrud from "@/components/manage/TestInstanceLearnerCrud.vue";
 
 const breadcrumbs = [
-  {
-    title: 'Test System',
-    disabled: true,
-    href: '/',
-  },
-  {
-    title: 'Zarządzanie',
-    disabled: false,
-    href: '/manage',
-  },
+  { title: 'Test System', href: '/', disabled: true },
+  { title: 'Zarządzanie', href: '/manage', disabled: false },
 ];
 </script>
 

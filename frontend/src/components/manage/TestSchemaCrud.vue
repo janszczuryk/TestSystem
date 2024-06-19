@@ -1,18 +1,18 @@
-<script setup>
-import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
+<script setup lang="ts">
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 const subjects = ref([]);
 
 const dialog = ref(false);
 const dialogDelete = ref(false);
 const headers = [
-  {title: 'Nazwa', key: 'name'},
-  {title: 'Przedmiot', key: 'subject'},
-  {title: 'Akcje', key: 'actions', sortable: false},
+  { title: 'Nazwa', key: 'name' },
+  { title: 'Przedmiot', key: 'subject' },
+  { title: 'Akcje', key: 'actions', sortable: false },
 ];
 const testSchemas = ref([]);
 const editedIndex = ref(-1);
-const editedItem = reactive({
+const editedItem = ref({
   name: '',
   subject: '',
 });
@@ -105,7 +105,7 @@ const save = () => {
   if (editedIndex.value > -1) {
     Object.assign(testSchemas.value[editedIndex.value], editedItem);
   } else {
-    testSchemas.value.push({...editedItem});
+    testSchemas.value.push({ ...editedItem });
   }
   close();
 };
@@ -139,7 +139,13 @@ const save = () => {
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-select v-model="editedItem.subject" item-value="id" :items="subjects" variant="outlined" item-title="name" label="Przedmiot">
+                    <v-select
+                      v-model="editedItem.subject"
+                      :items="subjects" variant="outlined"
+                      item-value="id"
+                      item-title="name"
+                      label="Przedmiot"
+                    >
                       <template v-slot:item="{ props, item }">
                         <v-list-item v-bind="props" :subtitle="item.raw.fieldOfStudy"></v-list-item>
                       </template>

@@ -17,6 +17,12 @@ export class TestInstanceLearnerAnswerService {
   ) {}
 
   public async create(testInstanceLearnerAnswer: TestInstanceLearnerAnswer): Promise<TestInstanceLearnerAnswer> {
+    const learnerAnswersCount = await this.testInstanceLearnerAnswerRepository.countBy({
+      instanceLearner: testInstanceLearnerAnswer.instanceLearner,
+    });
+
+    testInstanceLearnerAnswer.questionNumber = learnerAnswersCount + 1;
+
     return this.testInstanceLearnerAnswerRepository.save(testInstanceLearnerAnswer);
   }
 
@@ -53,5 +59,14 @@ export class TestInstanceLearnerAnswerService {
     testInstanceLearnerAnswer.submitAnswer(correctAnswerIndex, submittedAnswerIndex);
 
     return this.testInstanceLearnerAnswerRepository.save(testInstanceLearnerAnswer);
+  }
+
+  public async countCorrectAnswers(testInstanceLearner: TestInstanceLearner): Promise<number> {
+    return this.testInstanceLearnerAnswerRepository.count({
+      where: {
+        instanceLearner: { instanceId: testInstanceLearner.instanceId, learnerId: testInstanceLearner.learnerId },
+        status: TestInstanceLearnerAnswerStatus.CORRECT_ANSWER_SUBMITTED,
+      },
+    });
   }
 }

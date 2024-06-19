@@ -1,68 +1,163 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {TestInstanceStatus} from "@/types/test-instance";
-import {getTestInstanceStatusName} from "@/utils/test-instance";
-import {getLocalizedDate} from "@/utils/date";
+import { useAccount } from "@/composables/account";
+import { TestInstanceStatus } from "@/types/test-instance";
+import { TestInstance } from "@/types/learner/test-instance";
+import { Subject } from "@/types/learner/subject";
+import { TestInstanceLearnerStatus } from "@/types/test-instance-learner";
+import { ApiClientHttpStatusError, useApiClient, useResponse } from "@/utils/api";
+import { rules } from "@/utils/form-validation";
+import { getLocalizedDate } from "@/utils/date";
+import { getTestInstanceStatusName } from "@/utils/test-instance";
 
 const breadcrumbs = [
-  {
-    title: 'Test System',
-    disabled: true,
-    href: '/',
-  },
-  {
-    title: 'Testy',
-    disabled: false,
-    href: '/tests',
-  },
+  { title: 'Test System', href: '/', disabled: true },
+  { title: 'Testy', href: '/tests', disabled: false },
 ];
 
-const subjects = [
-  {
-    subjectName: 'Sieci komputerowe 1',
-    fieldOfStudy: '2 EF-DI',
-    instances: [
-      {
-        id: '123-123-123-123',
-        status: 'created',
-        schemaName: 'Kolokwium nr 1',
-        startedAt: null,
-        endedAt: null,
-      }
-    ]
-  },
-  {
-    subjectName: 'Sieci komputerowe 2',
-    fieldOfStudy: '3 EF-DI',
-    instances: [
-      {
-        id: '123-123-123-123',
-        status: 'ended',
-        schemaName: 'Kolokwium nr 1',
-        startedAt: new Date(),
-        endedAt: new Date(),
-      }
-    ]
-  },
-  {
-    subjectName: 'ELiAK',
-    fieldOfStudy: '1 EF-DI',
-    instances: [
-      {
-        id: '123-123-123-123',
-        status: 'started',
-        schemaName: 'Kolokwium nr 1',
-        startedAt: new Date(),
-        endedAt: null,
-      }
-    ]
-  },
-];
+const api = useApiClient();
+const router = useRouter();
+const { account, isLoggedAccount, isAccountLearner } = useAccount();
 
-const panel = ref(subjects.map((_, index) => index));
-const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceStatus.CREATED, TestInstanceStatus.STARTED].includes(instanceStatus);
+const subjects = ref<Subject[]>([]);
+const expandedSubjects = ref<number[]>([]);
+const isJoinFormValid = ref(false);
+const inputLearnerNumber = ref('');
+const inputLearnerNumberError = ref('');
 
+const canJoinInstance = (instanceStatus: TestInstanceStatus) => [ TestInstanceStatus.CREATED, TestInstanceStatus.STARTED ].includes(instanceStatus);
+
+const redirectIfNotLearner = () => {
+  if (!isLoggedAccount() || !isAccountLearner) {
+    router.push('/');
+    return true;
+  }
+
+  return false;
+};
+
+const redirectBasedOnInstance = async (testInstance: TestInstance) => {
+  // FIXME: This should be checked when fetchSubjects happens
+  //        However, backend does not handle learner property
+  //        on an instance list.
+  if (!testInstance.learner) {
+    return false;
+  }
+
+  let redirectPath: string;
+
+  switch (testInstance.learner.status) {
+    case TestInstanceLearnerStatus.JOINED:
+      redirectPath = `/tests/${ testInstance.id }`;
+      break;
+    case TestInstanceLearnerStatus.STARTED:
+      redirectPath = `/tests/${ testInstance.id }/attempt`;
+      break;
+    case TestInstanceLearnerStatus.FINISHED:
+      redirectPath = `/tests/${ testInstance.id }/results`;
+      break;
+  }
+
+  await router.push(redirectPath);
+
+  return true;
+}
+
+const onJoinFormSubmit = async (instanceId: string) => {
+  const testInstance = await getTestInstance(instanceId);
+
+  const redirected = await redirectBasedOnInstance(testInstance);
+  if (redirected) {
+    return;
+  }
+
+  await joinTestInstance(instanceId);
+};
+
+const mapTestInstancesToSubjects = (testInstances: TestInstance[]): Subject[] => {
+  const subjectsMap = new Map<string, Subject>();
+
+  for (const testInstance of testInstances) {
+    const instance = {
+      id: testInstance.id,
+      status: testInstance.status,
+      schemaName: testInstance.schema.name,
+      startedAt: testInstance.startedAt ? new Date(testInstance.startedAt) : null,
+      endedAt: testInstance.endedAt ? new Date(testInstance.endedAt) : null,
+    };
+
+    if (!subjectsMap.has(testInstance.subject.id)) {
+      subjectsMap.set(testInstance.subject.id, {
+        id: testInstance.subject.id,
+        questionsCount: testInstance.questionsCount,
+        subjectName: testInstance.subject.name,
+        fieldOfStudy: testInstance.subject.fieldOfStudy,
+        instances: [ instance ],
+      });
+    } else {
+      const subject = subjectsMap.get(testInstance.subject.id)!;
+      subject.instances.push(instance);
+      subjectsMap.set(testInstance.subject.id, subject);
+    }
+  }
+
+  return Array.from(subjectsMap.values());
+};
+
+const getSubjects = async () => {
+  const auth = { token: account.value!.jwtToken };
+  const response = await api.get('learner/instances', { auth });
+  const testInstances = await useResponse<TestInstance[]>(response);
+
+  return mapTestInstancesToSubjects(testInstances);
+};
+
+const getTestInstance = async (instanceId: string) => {
+  const url = `learner/instances/${ instanceId }`;
+  const auth = { token: account.value!.jwtToken };
+
+  const response = await api.get(url, { auth });
+  return await useResponse<TestInstance>(response);
+}
+
+const joinTestInstance = async (instanceId: string) => {
+  const url = `learner/instances/${ instanceId }/join`;
+  const auth = { token: account.value!.jwtToken };
+  const body = { learnerNumber: parseInt(inputLearnerNumber.value) };
+
+  try {
+    await api.post(url, { auth, body });
+  } catch (error) {
+    if (error instanceof ApiClientHttpStatusError) {
+      if (error.statusCode === 409) {
+        inputLearnerNumberError.value = 'Numer uczestnika jest już zajęty';
+        return;
+      }
+    }
+
+    throw error;
+  }
+
+  await router.push(`/tests/${ instanceId }`);
+}
+
+watch(subjects, (value) => {
+  expandedSubjects.value = value.map((_, index) => index);
+});
+watch(inputLearnerNumber, () => {
+  inputLearnerNumberError.value = '';
+});
+
+onMounted(async () => {
+  const redirected = redirectIfNotLearner();
+  if (redirected) {
+    return;
+  }
+
+  subjects.value = await getSubjects();
+});
 </script>
 
 <template>
@@ -83,10 +178,10 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceSta
     </v-row>
     <v-row justify="center">
       <v-col>
-        <v-expansion-panels multiple v-model="panel" class="mx-auto">
+        <v-expansion-panels multiple v-model="expandedSubjects" class="mx-auto">
           <v-expansion-panel
-              v-for="(subject, subjectIndex) in subjects"
-              :key="subjectIndex"
+            v-for="(subject, subjectIndex) in subjects"
+            :key="subjectIndex"
           >
             <v-expansion-panel-title>
               <h2 class="text-h6">{{ subject.subjectName }}</h2>
@@ -94,10 +189,9 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceSta
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <v-card
-                  v-for="(instance, instanceIndex) in subject.instances"
-                  :key="instanceIndex"
-                  class="mx-auto my-4 py-4"
-
+                v-for="(instance, instanceIndex) in subject.instances"
+                :key="instanceIndex"
+                class="mx-auto my-4 py-4"
               >
                 <v-card-item>
                   <v-card-title>{{ instance.schemaName }}</v-card-title>
@@ -130,14 +224,31 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [TestInstanceSta
                 </v-card-text>
 
                 <v-container v-if="canJoinInstance(instance.status as TestInstanceStatus)">
-                  <v-row>
-                    <v-col cols="4">
-                      <v-text-field type="number" density="compact" variant="outlined" label="Numer uczestnika"/>
-                    </v-col>
-                    <v-col cols="8">
-                      <v-btn variant="elevated" color="primary" block>Dołącz do testu</v-btn>
-                    </v-col>
-                  </v-row>
+                  <v-form v-model="isJoinFormValid" @submit.prevent="onJoinFormSubmit(instance.id)">
+                    <v-row>
+                      <v-col cols="4">
+                        <v-text-field
+                          v-model="inputLearnerNumber"
+                          type="number"
+                          density="compact"
+                          variant="outlined"
+                          label="Numer uczestnika"
+                          :rules="[rules.required, rules.isInteger, rules.learnerNumber]"
+                          :error-messages="inputLearnerNumberError"
+                        />
+                      </v-col>
+                      <v-col cols="8">
+                        <v-btn
+                          type="submit"
+                          variant="elevated"
+                          color="primary"
+                          block
+                          :disabled="!isJoinFormValid"
+                        >Dołącz do testu
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-form>
                 </v-container>
               </v-card>
             </v-expansion-panel-text>

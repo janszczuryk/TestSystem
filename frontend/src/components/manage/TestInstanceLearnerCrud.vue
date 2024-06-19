@@ -1,8 +1,8 @@
-<script setup>
-import {nextTick, onMounted, reactive, ref, watch} from 'vue';
-import {getTestInstanceStatusName} from "@/utils/test-instance";
-import {getLocalizedDate} from "@/utils/date";
-import {getTestInstanceLearnerStatusName} from "@/utils/test-instance-learner";
+<script setup lang="ts">
+import { nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { getTestInstanceStatusName } from "@/utils/test-instance";
+import { getLocalizedDate } from "@/utils/date";
+import { getTestInstanceLearnerStatusName } from "@/utils/test-instance-learner";
 import TestInstanceLearnerAnswerTable from "@/components/manage/TestInstanceLearnerAnswerTable.vue";
 
 const testInstances = ref([]);
@@ -15,13 +15,13 @@ const dialogEdit = ref(false);
 const dialogDelete = ref(false);
 const dialogAnswers = ref(false);
 const headers = [
-  {title: 'Numer uczestnika', key: 'learnerNumber'},
-  {title: 'Status', key: 'status'},
-  {title: 'Rozpoczęto podejście', key: 'startedAt'},
-  {title: 'Zakończono podejście', key: 'finishedAt'},
-  {title: 'Odpowiedzi', key: 'answersDialog'},
-  {title: 'Wynik', key: 'resultSummary'},
-  {title: 'Akcje', key: 'actions', sortable: false},
+  { title: 'Numer uczestnika', key: 'learnerNumber' },
+  { title: 'Status', key: 'status' },
+  { title: 'Rozpoczęto podejście', key: 'startedAt' },
+  { title: 'Zakończono podejście', key: 'finishedAt' },
+  { title: 'Odpowiedzi', key: 'answersDialog' },
+  { title: 'Wynik', key: 'resultSummary' },
+  { title: 'Akcje', key: 'actions', sortable: false },
 ];
 const testInstanceLearners = ref([]);
 const editedIndex = ref(-1);
@@ -233,7 +233,12 @@ const save = () => {
               <v-container>
                 <v-row>
                   <v-col>
-                    <v-text-field type="number" variant="outlined" v-model="editedItem.learnerNumber" label="Number uczestnitka"></v-text-field>
+                    <v-text-field
+                      type="number"
+                      variant="outlined"
+                      v-model="editedItem.learnerNumber"
+                      label="Number uczestnitka"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>

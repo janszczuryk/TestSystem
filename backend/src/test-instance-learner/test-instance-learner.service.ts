@@ -37,11 +37,14 @@ export class TestInstanceLearnerService {
     return this.testInstanceLearnerRepository.save(testInstanceLearner);
   }
 
-  public async findAll(findAllOptions?: FindOptionsWhere<TestInstanceLearner>): Promise<TestInstanceLearner[]> {
+  public async findAll(
+    findAllOptions?: FindOptionsWhere<TestInstanceLearner>,
+    loadRelationIds: boolean | undefined = true,
+  ): Promise<TestInstanceLearner[]> {
     return this.testInstanceLearnerRepository.find({
       where: findAllOptions,
       order: { createdAt: 'ASC' },
-      loadRelationIds: true,
+      loadRelationIds,
     });
   }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {getAnswerLetter} from "@/utils/test-instance-question";
+import { getAnswerLetter } from "@/utils/test-instance-question";
 
 defineProps<{ testInstanceQuestions: object[] }>();
 
@@ -30,7 +30,7 @@ const headers = [
         v-for="(answer, answerIndex) in item.answers"
         :key="answerIndex"
       >
-        <span>{{ getAnswerLetter(answerIndex)}}) {{ answer }}</span>&nbsp;
+        <span>{{ getAnswerLetter(answerIndex) }}) {{ answer }}</span>&nbsp;
       </span>
     </template>
   </v-data-table>

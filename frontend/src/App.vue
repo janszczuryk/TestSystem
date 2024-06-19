@@ -4,13 +4,13 @@
   </Layout>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import Layout from "@/components/Layout.vue";
-import {onMounted} from "vue";
-import {getAccount, getAuthToken, removeAccount, removeAuthToken} from "@/utils/local-storage";
-import {useAccount} from "@/composables/account";
+import { onMounted } from "vue";
+import { getAccount, getAuthToken, removeAccount, removeAuthToken } from "@/utils/local-storage";
+import { useAccount } from "@/composables/account";
 
-const {loginAccount, logoutAccount} = useAccount();
+const { loginAccount, logoutAccount } = useAccount();
 
 onMounted(() => {
   const authToken = getAuthToken();

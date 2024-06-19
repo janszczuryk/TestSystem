@@ -1,4 +1,4 @@
-import {Account} from "@/types/account";
+import { Account } from "@/types/account";
 
 export const JWT_TOKEN_KEY = 'jwtToken';
 export const ACCOUNT_KEY = 'account';

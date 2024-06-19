@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {useRouter} from "vue-router";
-import {removeAccount, removeAuthToken} from "@/utils/local-storage";
-import {useAccount} from "@/composables/account";
-import {onMounted} from "vue";
+import { useRouter } from "vue-router";
+import { removeAccount, removeAuthToken } from "@/utils/local-storage";
+import { useAccount } from "@/composables/account";
+import { onMounted } from "vue";
 
 const router = useRouter();
-const {logoutAccount, isLoggedAccount} = useAccount();
+const { logoutAccount, isLoggedAccount } = useAccount();
 
 const logout = async () => {
   removeAuthToken();

@@ -2,11 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, In, IsNull, Not, Repository } from 'typeorm';
 
+import { ResultSummaryDto } from '@module/test-instance-learner/dto/result-summary.dto';
+import {
+  TestInstanceLearner,
+  TestInstanceLearnerStatus,
+} from '@module/test-instance-learner/entities/test-instance-learner.entity';
+import { TestInstanceLearnerService } from '@module/test-instance-learner/test-instance-learner.service';
+import { TestInstanceLearnerAnswerService } from '@module/test-instance-learner-answer/test-instance-learner-answer.service';
 import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
 import { TestInstanceQuestionService } from '@module/test-instance-question/test-instance-question.service';
 import { TestSchemaQuestionService } from '@module/test-schema-question/test-schema-question.service';
 
-import { TestInstance, TestInstanceStatus, TestInstanceUpdateProps } from './entities/test-instance.entity';
+import { TestInstance, TestInstanceUpdateProps } from './entities/test-instance.entity';
 
 export class TestInstanceServiceError extends Error {}
 
@@ -25,6 +32,8 @@ export class TestInstanceService {
     private readonly testInstanceRepository: Repository<TestInstance>,
     private readonly testSchemaQuestionService: TestSchemaQuestionService,
     private readonly testInstanceQuestionService: TestInstanceQuestionService,
+    private readonly testInstanceLearnerService: TestInstanceLearnerService,
+    private readonly testInstanceLearnerAnswerService: TestInstanceLearnerAnswerService,
   ) {}
 
   public async create(testInstance: TestInstance): Promise<TestInstance> {
@@ -68,7 +77,6 @@ export class TestInstanceService {
     return this.testInstanceRepository.find({
       where: {
         isEnabled: true,
-        status: In([TestInstanceStatus.CREATED, TestInstanceStatus.STARTED]),
         schema: Not(IsNull()),
       },
       order: { createdAt: 'ASC' },
@@ -147,6 +155,38 @@ export class TestInstanceService {
   public async end(testInstance: TestInstance): Promise<TestInstance> {
     testInstance.end();
 
+    const testInstanceLearnersToFinish = await this.testInstanceLearnerService.findAll(
+      {
+        instance: { id: testInstance.id },
+        status: In([TestInstanceLearnerStatus.JOINED, TestInstanceLearnerStatus.STARTED]),
+      },
+      false,
+    );
+
+    await Promise.all(
+      testInstanceLearnersToFinish.map(async (testInstanceLearner) => {
+        if (testInstanceLearner.status === TestInstanceLearnerStatus.JOINED) {
+          await this.testInstanceLearnerService.start(testInstanceLearner);
+        }
+        await this.testInstanceLearnerService.finish(testInstanceLearner);
+      }),
+    );
+
     return this.testInstanceRepository.save(testInstance);
+  }
+
+  public async getResultSummary(
+    testInstance: TestInstance,
+    testInstanceLearner: TestInstanceLearner,
+  ): Promise<ResultSummaryDto> {
+    const { questionsCount } = testInstance;
+    const correctAnswersCount = await this.testInstanceLearnerAnswerService.countCorrectAnswers(testInstanceLearner);
+    const percentage = (correctAnswersCount / questionsCount) * 100;
+
+    return new ResultSummaryDto({
+      percentage: Math.round((percentage + Number.EPSILON) * 100) / 100,
+      pointsAchieved: correctAnswersCount,
+      pointsToAchieve: questionsCount,
+    });
   }
 }

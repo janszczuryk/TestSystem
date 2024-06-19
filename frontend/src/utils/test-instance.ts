@@ -1,4 +1,4 @@
-import {TestInstanceStatus} from "@/types/test-instance";
+import { TestInstanceStatus } from "@/types/test-instance";
 
 const statusMap: Record<TestInstanceStatus, string> = {
   [TestInstanceStatus.CREATED]: 'Oczekiwanie',

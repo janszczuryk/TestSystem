@@ -25,6 +25,7 @@ defineProps<{ breadcrumbs: BreadcrumbItem[] }>();
 .link {
   text-decoration: none;
 }
+
 .link:hover {
   text-decoration: underline;
 }

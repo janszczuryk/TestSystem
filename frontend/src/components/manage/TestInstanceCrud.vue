@@ -1,8 +1,8 @@
-<script setup>
-import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
-import {TestInstanceStatus} from "@/types/test-instance";
-import {getTestInstanceStatusName} from "@/utils/test-instance";
-import {getLocalizedDate} from "@/utils/date";
+<script setup lang="ts">
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { TestInstanceStatus } from "@/types/test-instance";
+import { getTestInstanceStatusName } from "@/utils/test-instance";
+import { getLocalizedDate } from "@/utils/date";
 import TestInstanceQuestionTable from './TestInstanceQuestionTable.vue';
 
 const testSchemas = ref([]);
@@ -15,13 +15,13 @@ const dialog = ref(false);
 const dialogDelete = ref(false);
 const dialogQuestions = ref(false);
 const headers = [
-  {title: 'Ilość pytań', key: 'questionsCount'},
-  {title: 'Pytania', key: 'questionsDialog', sortable: false},
-  {title: 'Włączona', key: 'isEnabled'},
-  {title: 'Status', key: 'status'},
-  {title: 'Rozpoczęto', key: 'startedAt'},
-  {title: 'Zakończono', key: 'endedAt'},
-  {title: 'Akcje', key: 'actions', sortable: false},
+  { title: 'Ilość pytań', key: 'questionsCount' },
+  { title: 'Pytania', key: 'questionsDialog', sortable: false },
+  { title: 'Włączona', key: 'isEnabled' },
+  { title: 'Status', key: 'status' },
+  { title: 'Rozpoczęto', key: 'startedAt' },
+  { title: 'Zakończono', key: 'endedAt' },
+  { title: 'Akcje', key: 'actions', sortable: false },
 ];
 const testInstances = ref([]);
 const editedIndex = ref(-1);
@@ -184,7 +184,7 @@ const save = () => {
   if (editedIndex.value > -1) {
     Object.assign(testInstances.value[editedIndex.value], editedItem);
   } else {
-    testInstances.value.push({...editedItem});
+    testInstances.value.push({ ...editedItem });
   }
   close();
 };

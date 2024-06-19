@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {useRouter} from "vue-router";
-import {useAccount} from "@/composables/account";
-import {ApiClientHttpStatusError, useApiClient} from "@/utils/api";
-import {AccountType} from "@/types/account";
-import {rules} from "@/utils/form-validation";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAccount } from "@/composables/account";
+import { ApiClientHttpStatusError, useApiClient } from "@/utils/api";
+import { AccountType } from "@/types/account";
+import { rules } from "@/utils/form-validation";
 
 const api = useApiClient();
 const router = useRouter();
-const {isLoggedAccount} = useAccount();
+const { isLoggedAccount } = useAccount();
 
 const isFormValid = ref(false);
 const isPasswordVisible = ref(false);
@@ -27,7 +27,7 @@ const onFormSubmit = async () => {
   };
 
   try {
-    await api.post('auth/register', {body});
+    await api.post('auth/register', { body });
   } catch (error) {
     if (error instanceof ApiClientHttpStatusError) {
       if (error.statusCode === 409) {

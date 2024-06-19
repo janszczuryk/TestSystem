@@ -1224,6 +1224,34 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "/api/v1/learner/instances/:instance_id/results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backend}}/api/v1/learner/instances/:instance_id/results",
+							"host": [
+								"{{backend}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"learner",
+								"instances",
+								":instance_id",
+								"results"
+							],
+							"variable": [
+								{
+									"key": "instance_id",
+									"value": "{{instance_id}}"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
