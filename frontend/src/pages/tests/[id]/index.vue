@@ -1,35 +1,113 @@
 <script setup lang="ts">
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import Breadcrumbs, { BreadcrumbItem } from "@/components/Breadcrumbs.vue";
+import { TestInstance } from "@/types/learner/test-instance";
+import { useAccount } from "@/composables/account";
+import { useApiClient, useResponse } from "@/utils/api";
 import { TestInstanceStatus } from "@/types/test-instance";
+import { TestInstanceLearnerStatus } from "@/types/test-instance-learner";
 import { getTestInstanceStatusName } from "@/utils/test-instance";
 import { getLocalizedDate } from "@/utils/date";
 
-const instance = {
-  id: '123-123-123-123',
-  questionsCount: 3,
-  status: 'started',
-  subjectName: 'Sieci komputerowe 1',
-  fieldOfStudy: '2 EF-DI',
-  schemaName: 'Kolokwium nr 1',
+const api = useApiClient();
+const route = useRoute();
+const router = useRouter();
+const { account, isLoggedAccount, isAccountLearner } = useAccount();
+
+const instanceId = String(route.params.id);
+const instance = ref<TestInstance>({
+  id: '',
+  questionsCount: 0,
+  isEnabled: false,
+  status: TestInstanceStatus.CREATED,
+  schema: {
+    id: '',
+    name: ''
+  },
+  subject: {
+    id: '',
+    name: '',
+    fieldOfStudy: '',
+  },
+  learner: null,
   teacher: {
-    email: 'jan.szczuryk@gmail.com',
+    id: '',
+    email: '',
+    isVerified: true,
   },
-  learner: {
-    email: 'jan.szczuryk+learner1@gmail.com',
-    number: 42,
-  },
-  startedAt: new Date(),
   endedAt: null,
+  startedAt: null,
+  createdAt: '',
+  updatedAt: ''
+});
+
+const getTestInstance = async (instanceId: string) => {
+  const url = `learner/instances/${ instanceId }`;
+  const auth = { token: account.value!.jwtToken };
+
+  const response = await api.get(url, { auth });
+  return await useResponse<TestInstance>(response);
 };
 
-const breadcrumbs = [
+const breadcrumbs = ref<BreadcrumbItem[]>([
   { title: 'Test System', href: '/', disabled: true },
   { title: 'Testy', href: '/tests', disabled: false },
-];
-breadcrumbs.push({
-  title: instance.schemaName,
-  href: `/tests/${ instance.id }`,
-  disabled: false
+]);
+
+const redirectIfNotLearner = () => {
+  if (!isLoggedAccount() || !isAccountLearner) {
+    router.push('/');
+    return true;
+  }
+  return false;
+};
+
+const redirectBasedOnInstance = async (testInstance: TestInstance) => {
+  if (!testInstance.learner) {
+    await router.push('/tests');
+    return true;
+  }
+
+  switch (testInstance.learner.status) {
+    case TestInstanceLearnerStatus.JOINED:
+      return false;
+    case TestInstanceLearnerStatus.STARTED:
+      await router.push(`/tests/${ testInstance.id }/attempt`);
+      return true;
+    case TestInstanceLearnerStatus.FINISHED:
+      await router.push(`/tests/${ testInstance.id }/results`);
+      return true;
+  }
+}
+
+const onStartAttemptClick = async (instanceId: string) => {
+  const url = `learner/instances/${ instanceId }/start`;
+  const auth = { token: account.value!.jwtToken };
+
+  await api.post(url, { auth });
+
+  await router.push(`/tests/${ instanceId }/attempt`);
+}
+
+onMounted(async () => {
+  let redirected = redirectIfNotLearner();
+  if (redirected) {
+    return;
+  }
+
+  instance.value = await getTestInstance(instanceId);
+
+  redirected = await redirectBasedOnInstance(instance.value);
+  if (redirected) {
+    return;
+  }
+
+  breadcrumbs.value.push({
+    title: instance.value.schema.name,
+    href: `/tests/${ instanceId }`,
+    disabled: false,
+  });
 });
 </script>
 
@@ -44,7 +122,7 @@ breadcrumbs.push({
       <v-col cols="12">
         <v-card class="mx-auto py-4" color="accent3" max-width="960">
           <template #title>
-            <h1 class="text-h5 font-weight-bold text-center">Test: {{ instance.schemaName }}</h1>
+            <h1 class="text-h5 font-weight-bold text-center">Test: {{ instance?.schema.name }}</h1>
           </template>
         </v-card>
       </v-col>
@@ -65,15 +143,15 @@ breadcrumbs.push({
                 <v-col>
                   <p class="text-grey-darken-1">
                     <v-icon icon="mdi-school"/>
-                    Nazwa testu: {{ instance.schemaName }}
+                    Nazwa testu: {{ instance?.schema.name }}
                   </p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col>
                   <p class="text-grey-darken-1">
-                    <v-icon icon="mdi-account-multiple"/>
-                    Kierunek studiów: {{ instance.fieldOfStudy }}
+                    <v-icon icon="mdi-table-account"/>
+                    Przedmiot: {{ instance?.subject.name }} ({{ instance?.subject.fieldOfStudy }})
                   </p>
                 </v-col>
               </v-row>
@@ -81,7 +159,7 @@ breadcrumbs.push({
                 <v-col>
                   <p class="text-grey-darken-1">
                     <v-icon icon="mdi-information"/>
-                    Status: {{ getTestInstanceStatusName(instance.status as TestInstanceStatus) }}
+                    Status: {{ getTestInstanceStatusName(instance.status) }}
                   </p>
                 </v-col>
                 <v-col>
@@ -117,7 +195,7 @@ breadcrumbs.push({
                 <v-col>
                   <p class="text-grey-darken-1">
                     <v-icon icon="mdi-account"/>
-                    Uczestnik: {{ instance.learner.email }} (Nr: {{ instance.learner.number }})
+                    Uczestnik: {{ account?.email }} (Nr: {{ instance?.learner?.learnerNumber }})
                   </p>
                 </v-col>
               </v-row>
@@ -127,7 +205,12 @@ breadcrumbs.push({
           <v-container>
             <v-row>
               <v-col>
-                <v-btn variant="elevated" color="primary" block>Rozpocznij podejście</v-btn>
+                <v-btn
+                  variant="elevated"
+                  color="primary"
+                  block
+                  @click="onStartAttemptClick(instance.id)"
+                >Rozpocznij podejście</v-btn>
               </v-col>
             </v-row>
           </v-container>
