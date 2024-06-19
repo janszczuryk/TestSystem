@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { AccountType } from '@module/account/entities/account.entity';
 import { AccountTypes } from '@module/auth/decorators';
@@ -22,6 +33,10 @@ export class TestSchemaQuestionController {
 
   @Post()
   public async create(@ParamUUID('schema_id') schemaId: string, @Body() body: CreateTestSchemaQuestionBodyDto) {
+    if (body.correctAnswerIndex > body.answers.length - 1) {
+      throw new BadRequestException('Correct answer index is invalid');
+    }
+
     const testSchema = await this.testSchemaService.get(schemaId);
     if (!testSchema) {
       throw new NotFoundException('Schema does not exist');
@@ -72,6 +87,10 @@ export class TestSchemaQuestionController {
     @ParamUUID('schema_id') schemaId: string,
     @Body() body: UpdateTestSchemaQuestionBodyDto,
   ) {
+    if (body.correctAnswerIndex > body.answers.length - 1) {
+      throw new BadRequestException('Correct answer index is invalid');
+    }
+
     let testSchemaQuestion = await this.testSchemaQuestionService.get(questionId);
     if (!testSchemaQuestion) {
       throw new NotFoundException('Schema question does not exist');
