@@ -93,7 +93,17 @@ export class TestInstanceLearnerController {
       instanceId,
     });
 
-    return testInstanceLearners.map((testInstanceLearner) => new TestInstanceLearnerResponseDto(testInstanceLearner));
+    const testInstanceLearnersWithResults = await Promise.all(
+      testInstanceLearners.map(async (testInstanceLearner) => {
+        const resultSummary = await this.testInstanceService.getResultSummary(testInstance, testInstanceLearner);
+
+        return Object.assign(testInstanceLearner, { resultSummary });
+      }),
+    );
+
+    return testInstanceLearnersWithResults.map(
+      (testInstanceLearner) => new TestInstanceLearnerResponseDto(testInstanceLearner),
+    );
   }
 
   @Get(':learner_id')
@@ -103,7 +113,14 @@ export class TestInstanceLearnerController {
       throw new NotFoundException('Instance learner does not exist');
     }
 
-    return new TestInstanceLearnerResponseDto(testInstanceLearner);
+    const testInstance = await this.testInstanceService.get(instanceId);
+    if (!testInstance) {
+      throw new Error('Instance does not exist');
+    }
+
+    const resultSummary = await this.testInstanceService.getResultSummary(testInstance, testInstanceLearner);
+
+    return new TestInstanceLearnerResponseDto(Object.assign(testInstanceLearner, { resultSummary }));
   }
 
   @Patch(':learner_id')

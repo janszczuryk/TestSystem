@@ -60,4 +60,13 @@ export class TestInstanceLearnerAnswerService {
 
     return this.testInstanceLearnerAnswerRepository.save(testInstanceLearnerAnswer);
   }
+
+  public async countCorrectAnswers(testInstanceLearner: TestInstanceLearner): Promise<number> {
+    return this.testInstanceLearnerAnswerRepository.count({
+      where: {
+        instanceLearner: { instanceId: testInstanceLearner.instanceId, learnerId: testInstanceLearner.learnerId },
+        status: TestInstanceLearnerAnswerStatus.CORRECT_ANSWER_SUBMITTED,
+      },
+    });
+  }
 }

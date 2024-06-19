@@ -2,8 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, In, IsNull, Not, Repository } from 'typeorm';
 
-import { TestInstanceLearnerStatus } from '@module/test-instance-learner/entities/test-instance-learner.entity';
+import { ResultSummaryDto } from '@module/test-instance-learner/dto/result-summary.dto';
+import {
+  TestInstanceLearner,
+  TestInstanceLearnerStatus,
+} from '@module/test-instance-learner/entities/test-instance-learner.entity';
 import { TestInstanceLearnerService } from '@module/test-instance-learner/test-instance-learner.service';
+import { TestInstanceLearnerAnswerService } from '@module/test-instance-learner-answer/test-instance-learner-answer.service';
 import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
 import { TestInstanceQuestionService } from '@module/test-instance-question/test-instance-question.service';
 import { TestSchemaQuestionService } from '@module/test-schema-question/test-schema-question.service';
@@ -28,6 +33,7 @@ export class TestInstanceService {
     private readonly testSchemaQuestionService: TestSchemaQuestionService,
     private readonly testInstanceQuestionService: TestInstanceQuestionService,
     private readonly testInstanceLearnerService: TestInstanceLearnerService,
+    private readonly testInstanceLearnerAnswerService: TestInstanceLearnerAnswerService,
   ) {}
 
   public async create(testInstance: TestInstance): Promise<TestInstance> {
@@ -167,5 +173,20 @@ export class TestInstanceService {
     );
 
     return this.testInstanceRepository.save(testInstance);
+  }
+
+  public async getResultSummary(
+    testInstance: TestInstance,
+    testInstanceLearner: TestInstanceLearner,
+  ): Promise<ResultSummaryDto> {
+    const { questionsCount } = testInstance;
+    const correctAnswersCount = await this.testInstanceLearnerAnswerService.countCorrectAnswers(testInstanceLearner);
+    const percentage = (correctAnswersCount / questionsCount) * 100;
+
+    return new ResultSummaryDto({
+      percentage: Math.round((percentage + Number.EPSILON) * 100) / 100,
+      pointsAchieved: correctAnswersCount,
+      pointsToAchieve: questionsCount,
+    });
   }
 }

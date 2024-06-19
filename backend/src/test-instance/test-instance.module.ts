@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AccountModule } from '@module/account/account.module';
 import { TestInstanceLearnerModule } from '@module/test-instance-learner/test-instance-learner.module';
+import { TestInstanceLearnerAnswerModule } from '@module/test-instance-learner-answer/test-instance-learner-answer.module';
 import { TestInstanceQuestionModule } from '@module/test-instance-question/test-instance-question.module';
 import { TestSchemaModule } from '@module/test-schema/test-schema.module';
 import { TestSchemaQuestionModule } from '@module/test-schema-question/test-schema-question.module';
@@ -19,6 +20,7 @@ import { TestInstanceService } from './test-instance.service';
     TestSchemaQuestionModule,
     TestInstanceQuestionModule,
     forwardRef(() => TestInstanceLearnerModule),
+    TestInstanceLearnerAnswerModule,
   ],
   controllers: [TestInstanceController],
   providers: [TestInstanceService],

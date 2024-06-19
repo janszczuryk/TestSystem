@@ -21,7 +21,7 @@ export class TestInstanceLearnerResponseDto {
   public updatedAt: Date;
   public createdAt: Date;
 
-  public constructor(testInstanceLearner: TestInstanceLearner, resultSummary?: ResultSummaryDto) {
+  public constructor(testInstanceLearner: TestInstanceLearner & { resultSummary?: ResultSummaryDto }) {
     this.instanceId = testInstanceLearner.instanceId;
     this.learnerId = testInstanceLearner.learnerId;
     this.instance = testInstanceLearner.instance?.id ? new TestInstanceResponseDto(testInstanceLearner.instance) : null;
@@ -33,7 +33,9 @@ export class TestInstanceLearnerResponseDto {
           ? new TestInstanceLearnerAnswerResponseDto(testInstanceLearnerAnswer)
           : { id: String(testInstanceLearnerAnswer) },
       ) ?? null;
-    this.resultSummary = resultSummary ? new ResultSummaryResponseDto(resultSummary) : null;
+    this.resultSummary = testInstanceLearner.resultSummary
+      ? new ResultSummaryResponseDto(testInstanceLearner.resultSummary)
+      : null;
     this.status = testInstanceLearner.status;
     this.startedAt = testInstanceLearner.startedAt ?? null;
     this.finishedAt = testInstanceLearner.finishedAt ?? null;
