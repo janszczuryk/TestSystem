@@ -17,6 +17,12 @@ export class TestInstanceLearnerAnswerService {
   ) {}
 
   public async create(testInstanceLearnerAnswer: TestInstanceLearnerAnswer): Promise<TestInstanceLearnerAnswer> {
+    const learnerAnswersCount = await this.testInstanceLearnerAnswerRepository.countBy({
+      instanceLearner: testInstanceLearnerAnswer.instanceLearner,
+    });
+
+    testInstanceLearnerAnswer.questionNumber = learnerAnswersCount + 1;
+
     return this.testInstanceLearnerAnswerRepository.save(testInstanceLearnerAnswer);
   }
 

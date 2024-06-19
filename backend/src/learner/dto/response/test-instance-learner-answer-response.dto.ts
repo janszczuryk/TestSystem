@@ -6,6 +6,7 @@ export class TestInstanceLearnerAnswerResponseDto {
   public instanceId: string;
   public learnerId: string;
   public question: TestInstanceQuestionResponseDto;
+  public questionNumber: number;
   public status: string;
   public submittedAnswerIndex: number | null;
   public shownAt: Date | null;
@@ -18,6 +19,7 @@ export class TestInstanceLearnerAnswerResponseDto {
     this.instanceId = testInstanceLearnerAnswer.instanceLearnerInstanceId;
     this.learnerId = testInstanceLearnerAnswer.instanceLearnerLearnerId;
     this.question = new TestInstanceQuestionResponseDto(testInstanceLearnerAnswer.instanceQuestion);
+    this.questionNumber = testInstanceLearnerAnswer.questionNumber;
     this.status = testInstanceLearnerAnswer.status;
     this.submittedAnswerIndex = testInstanceLearnerAnswer.submittedAnswerIndex ?? null;
     this.shownAt = testInstanceLearnerAnswer.shownAt ?? null;
