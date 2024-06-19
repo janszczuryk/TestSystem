@@ -1,104 +1,128 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { Subject } from "@/types/subject";
+import { useAccount } from "@/composables/account";
+import { useSubjectList } from "@/composables/subject";
+import { useApiClient } from "@/utils/api";
+import { SubjectApiService } from "@/utils/api-services/subject";
 
-const dialog = ref(false);
-const dialogDelete = ref(false);
+/**
+ *  DATA
+ */
+
+const api = useApiClient();
+const { account } = useAccount();
+
+const { subjectList } = useSubjectList();
 const headers = [
   { title: 'Nazwa', key: 'name' },
   { title: 'Kierunek studiów', key: 'fieldOfStudy' },
   { title: 'Akcje', key: 'actions', sortable: false },
 ];
-const subjects = ref([]);
-const editedIndex = ref(-1);
-const editedItem = reactive({
+
+const dialogUniversalTitle = computed(() => (actionItemIndex.value === -1 ? 'Dodaj nowy' : 'Edytuj'));
+const dialogUniversal = ref(false);
+const dialogDelete = ref(false);
+const actionItemIndex = ref(-1);
+const actionItem = ref<Subject>({
+  id: '',
   name: '',
   fieldOfStudy: '',
+  testSchemas: [],
+  createdAt: '',
+  updatedAt: '',
 });
 const defaultItem = {
   name: '',
   fieldOfStudy: '',
 };
 
-const formTitle = computed(() => (editedIndex.value === -1 ? 'Dodaj nowy' : 'Edytuj'));
+/**
+ *  API SERVICES
+ */
 
-watch(dialog, (value) => {
-  if (!value) close();
-});
-watch(dialogDelete, (value) => {
-  if (!value) closeDelete();
-});
+const subjectApiService = new SubjectApiService(account.value!, api);
 
-onMounted(() => {
-  initialize();
-});
+/**
+ *  DOM Event handlers
+ */
 
-const initialize = () => {
-  subjects.value = [
-    {
-      id: '103b07a3-e67b-4e25-95f4-6a6061add688',
-      name: 'Sieci komputerowe 1',
-      fieldOfStudy: '2 EF-DI',
-    },
-    {
-      id: '103b07a3-e67b-4e25-95f4-6a6061add689',
-      name: 'Sieci komputerowe 2',
-      fieldOfStudy: '3 EF-DI',
-    },
-    {
-      id: '103b07a3-e67b-4e25-95f4-6a6061add68a',
-      name: 'ELiAK',
-      fieldOfStudy: '1 EF-DI',
-    }
-  ];
+const onActionEditItem = (item: Subject) => {
+  actionItemIndex.value = subjectList.value.indexOf(item);
+  Object.assign(actionItem.value, item);
+  dialogUniversal.value = true;
 };
 
-const editItem = (item) => {
-  editedIndex.value = subjects.value.indexOf(item);
-  Object.assign(editedItem, item);
-  dialog.value = true;
-};
-
-const deleteItem = (item) => {
-  editedIndex.value = subjects.value.indexOf(item);
-  Object.assign(editedItem, item);
+const onActionDeleteItem = (item: Subject) => {
+  actionItemIndex.value = subjectList.value.indexOf(item);
+  Object.assign(actionItem.value, item);
   dialogDelete.value = true;
 };
 
-const deleteItemConfirm = () => {
-  subjects.value.splice(editedIndex.value, 1);
-  closeDelete();
-};
-
-const close = () => {
-  dialog.value = false;
+const onCloseUniversalDialog = () => {
+  dialogUniversal.value = false;
   nextTick(() => {
-    Object.assign(editedItem, defaultItem);
-    editedIndex.value = -1;
+    Object.assign(actionItem.value, defaultItem);
+    actionItemIndex.value = -1;
   });
 };
 
-const closeDelete = () => {
+const onCloseDeleteDialog = () => {
   dialogDelete.value = false;
   nextTick(() => {
-    Object.assign(editedItem, defaultItem);
-    editedIndex.value = -1;
+    Object.assign(actionItem.value, defaultItem);
+    actionItemIndex.value = -1;
   });
 };
 
-const save = () => {
-  if (editedIndex.value > -1) {
-    Object.assign(subjects.value[editedIndex.value], editedItem);
+const onSaveItem = async () => {
+  if (actionItemIndex.value > -1) {
+    const updatedSubject = await subjectApiService.update(actionItem.value.id, {
+      name: actionItem.value.name,
+      fieldOfStudy: actionItem.value.fieldOfStudy,
+    });
+
+    Object.assign(subjectList.value[actionItemIndex.value], updatedSubject);
   } else {
-    subjects.value.push({ ...editedItem });
+    const createdSubject = await subjectApiService.create({
+      name: actionItem.value.name,
+      fieldOfStudy: actionItem.value.fieldOfStudy,
+    });
+
+    subjectList.value.push(createdSubject);
   }
-  close();
+
+  onCloseUniversalDialog();
 };
+
+const onDeleteItem = async () => {
+  await subjectApiService.remove(actionItem.value.id);
+
+  subjectList.value.splice(actionItemIndex.value, 1);
+
+  onCloseDeleteDialog();
+};
+
+/**
+ *  HOOKS
+ */
+
+watch(dialogUniversal, (value) => {
+  if (!value) onCloseUniversalDialog();
+});
+watch(dialogDelete, (value) => {
+  if (!value) onCloseDeleteDialog();
+});
+
+onMounted(async () => {
+  subjectList.value = await subjectApiService.findAll();
+});
 </script>
 
 <template>
   <v-data-table
     :headers="headers"
-    :items="subjects"
+    :items="subjectList"
     :sort-by="[{ key: 'name', order: 'asc' }]"
   >
     <template v-slot:top>
@@ -106,26 +130,30 @@ const save = () => {
         <v-toolbar-title>Przedmioty</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="500px">
+        <v-dialog v-model="dialogUniversal" max-width="500px">
           <template v-slot:activator="{ props }">
             <v-btn class="mb-2" color="primary" variant="elevated" v-bind="props">Dodaj nowy</v-btn>
           </template>
           <v-card>
             <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
+              <span class="text-h5">{{ dialogUniversalTitle }}</span>
             </v-card-title>
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col>
-                    <v-text-field variant="outlined" v-model="editedItem.name" label="Nazwa"></v-text-field>
+                    <v-text-field
+                      v-model="actionItem.name"
+                      variant="outlined"
+                      label="Nazwa"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
                     <v-text-field
+                      v-model="actionItem.fieldOfStudy"
                       variant="outlined"
-                      v-model="editedItem.fieldOfStudy"
                       label="Kierunek studiów"
                     ></v-text-field>
                   </v-col>
@@ -134,8 +162,8 @@ const save = () => {
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="close">Anuluj</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">Zapisz</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onCloseUniversalDialog">Anuluj</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onSaveItem">Zapisz</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -144,8 +172,8 @@ const save = () => {
             <v-card-title class="text-h5">Jesteś pewien, że chcesz usunąc ten wpis?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Anuluj</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">Potwiedź</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onCloseDeleteDialog">Anuluj</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onDeleteItem">Potwiedź</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -153,10 +181,10 @@ const save = () => {
       </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon class="me-2" size="small" @click="editItem(item)">
+      <v-icon class="me-2" size="small" @click="onActionEditItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon size="small" @click="deleteItem(item)">
+      <v-icon size="small" @click="onActionDeleteItem(item)">
         mdi-delete
       </v-icon>
     </template>
