@@ -225,8 +225,8 @@ export class LearnerController {
       throw new ConflictException('Learner instance must be started status');
     }
 
-    const testInstance = testInstanceLearner.instance;
-    if (body.answerIndex > testInstance.questionsCount - 1) {
+    const possibleAnswersCount = pendingLearnerAnswer.instanceQuestion.answers.length;
+    if (body.answerIndex > possibleAnswersCount - 1) {
       throw new BadRequestException('Answer index is invalid');
     }
 
