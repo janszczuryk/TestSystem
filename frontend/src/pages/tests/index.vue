@@ -4,11 +4,11 @@ import { useRouter } from "vue-router";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import { useAccount } from "@/composables/account";
 import { TestInstanceStatus } from "@/types/test-instance";
-import { ApiClientHttpStatusError, useApiClient, useResponse } from "@/utils/api";
 import { TestInstance } from "@/types/learner/test-instance";
 import { Subject } from "@/types/learner/subject";
-import { rules } from "@/utils/form-validation";
 import { TestInstanceLearnerStatus } from "@/types/test-instance-learner";
+import { ApiClientHttpStatusError, useApiClient, useResponse } from "@/utils/api";
+import { rules } from "@/utils/form-validation";
 import { getLocalizedDate } from "@/utils/date";
 import { getTestInstanceStatusName } from "@/utils/test-instance";
 
@@ -32,15 +32,48 @@ const canJoinInstance = (instanceStatus: TestInstanceStatus) => [ TestInstanceSt
 const redirectIfNotLearner = () => {
   if (!isLoggedAccount() || !isAccountLearner) {
     router.push('/');
+    return true;
   }
+
+  return false;
 };
 
-const fetchSubjects = async () => {
-  const auth = { token: account.value!.jwtToken };
-  const response = await api.get('learner/instances', { auth });
-  const testInstances = await useResponse<TestInstance[]>(response);
+const redirectBasedOnInstance = async (testInstance: TestInstance) => {
+  // FIXME: This should be checked when fetchSubjects happens
+  //        However, backend does not handle learner property
+  //        on an instance list.
+  if (!testInstance.learner) {
+    return false;
+  }
 
-  subjects.value = mapTestInstancesToSubjects(testInstances);
+  let redirectPath: string;
+
+  switch (testInstance.learner.status) {
+    case TestInstanceLearnerStatus.JOINED:
+      redirectPath = `/tests/${ testInstance.id }`;
+      break;
+    case TestInstanceLearnerStatus.STARTED:
+      redirectPath = `/tests/${ testInstance.id }/attempt`;
+      break;
+    case TestInstanceLearnerStatus.FINISHED:
+      redirectPath = `/tests/${ testInstance.id }/results`;
+      break;
+  }
+
+  await router.push(redirectPath);
+
+  return true;
+}
+
+const onJoinFormSubmit = async (instanceId: string) => {
+  const testInstance = await getTestInstance(instanceId);
+
+  const redirected = await redirectBasedOnInstance(testInstance);
+  if (redirected) {
+    return;
+  }
+
+  await joinTestInstance(instanceId);
 };
 
 const mapTestInstancesToSubjects = (testInstances: TestInstance[]): Subject[] => {
@@ -73,32 +106,12 @@ const mapTestInstancesToSubjects = (testInstances: TestInstance[]): Subject[] =>
   return Array.from(subjectsMap.values());
 };
 
-const onJoinFormSubmit = async (instanceId: string) => {
-  const testInstance = await getTestInstance(instanceId);
+const getSubjects = async () => {
+  const auth = { token: account.value!.jwtToken };
+  const response = await api.get('learner/instances', { auth });
+  const testInstances = await useResponse<TestInstance[]>(response);
 
-  // FIXME: This should be checked when fetchSubjects happens
-  //        However, backend does not handle learner property
-  //        on an instance list.
-  if (testInstance.learner) {
-    let redirectPath: string;
-
-    switch (testInstance.learner.status) {
-      case TestInstanceLearnerStatus.JOINED:
-        redirectPath = `/tests/${ instanceId }`;
-        break;
-      case TestInstanceLearnerStatus.STARTED:
-        redirectPath = `/tests/${ instanceId }/attempt`;
-        break;
-      case TestInstanceLearnerStatus.FINISHED:
-        redirectPath = `/tests/${ instanceId }/results`;
-        break;
-    }
-
-    await router.push(redirectPath);
-    return;
-  }
-
-  await joinTestInstance(instanceId);
+  return mapTestInstancesToSubjects(testInstances);
 };
 
 const getTestInstance = async (instanceId: string) => {
@@ -137,9 +150,13 @@ watch(inputLearnerNumber, () => {
   inputLearnerNumberError.value = '';
 });
 
-onMounted(() => {
-  redirectIfNotLearner();
-  fetchSubjects();
+onMounted(async () => {
+  const redirected = redirectIfNotLearner();
+  if (redirected) {
+    return;
+  }
+
+  subjects.value = await getSubjects();
 });
 </script>
 
