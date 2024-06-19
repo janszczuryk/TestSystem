@@ -10,10 +10,10 @@ import 'vuetify/styles'
 import colors from 'vuetify/util/colors'
 
 // Composables
-import {createVuetify} from 'vuetify'
+import { createVuetify } from 'vuetify'
 
 // Translations
-import {pl} from 'vuetify/locale'
+import { pl } from 'vuetify/locale'
 
 /*
 Color palette:

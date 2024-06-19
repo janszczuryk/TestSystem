@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {TestInstanceStatus} from "@/types/test-instance";
-import {getTestInstanceStatusName} from "@/utils/test-instance";
-import {getLocalizedDate} from "@/utils/date";
+import { TestInstanceStatus } from "@/types/test-instance";
+import { getTestInstanceStatusName } from "@/utils/test-instance";
+import { getLocalizedDate } from "@/utils/date";
 
 const instance = {
   id: '123-123-123-123',
@@ -23,21 +23,13 @@ const instance = {
 };
 
 const breadcrumbs = [
-  {
-    title: 'Test System',
-    disabled: true,
-    href: '/',
-  },
-  {
-    title: 'Testy',
-    disabled: false,
-    href: '/tests',
-  },
+  { title: 'Test System', href: '/', disabled: true },
+  { title: 'Testy', href: '/tests', disabled: false },
 ];
 breadcrumbs.push({
   title: instance.schemaName,
-  disabled: false,
-  href: `/tests/${instance.id}`
+  href: `/tests/${ instance.id }`,
+  disabled: false
 });
 </script>
 
@@ -62,7 +54,9 @@ breadcrumbs.push({
         <v-card class="mx-auto my-4 py-4" max-width="960">
           <v-card-item>
             <v-card-title>Przystąpienie do testu</v-card-title>
-            <v-card-subtitle>Aby przystąpić do testu, naciśnij przycisk <span class="font-weight-bold">rozpocznij podejście</span>.</v-card-subtitle>
+            <v-card-subtitle>
+              Aby przystąpić do testu, naciśnij przycisk <span class="font-weight-bold">rozpocznij podejście</span>.
+            </v-card-subtitle>
           </v-card-item>
 
           <v-card-text>

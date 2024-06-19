@@ -2,16 +2,8 @@
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
 const breadcrumbs = [
-  {
-    title: 'Test System',
-    disabled: true,
-    href: '/',
-  },
-  {
-    title: 'Błąd',
-    disabled: true,
-    href: '/tests',
-  },
+  { title: 'Test System', href: '/', disabled: true },
+  { title: 'Błąd', href: '/tests', disabled: true },
 ];
 </script>
 

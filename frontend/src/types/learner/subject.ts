@@ -1,4 +1,4 @@
-import {TestInstanceStatus} from "@/types/test-instance";
+import { TestInstanceStatus } from "@/types/test-instance";
 
 export type Subject = {
   id: string;

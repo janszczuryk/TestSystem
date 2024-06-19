@@ -1,4 +1,4 @@
-import {TestInstanceLearnerAnswerStatus} from "@/types/test-instance-learner-answer";
+import { TestInstanceLearnerAnswerStatus } from "@/types/test-instance-learner-answer";
 
 
 const statusMap: Record<TestInstanceLearnerAnswerStatus, string> = {

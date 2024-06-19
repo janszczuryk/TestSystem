@@ -14,7 +14,8 @@ export type RequestOptions = {
   auth?: RequestAuthorization,
 };
 
-export class ApiClientError extends Error {}
+export class ApiClientError extends Error {
+}
 
 export class ApiClientHttpStatusError extends ApiClientError {
   public readonly response: Response;
@@ -22,7 +23,7 @@ export class ApiClientHttpStatusError extends ApiClientError {
   public readonly statusText: string;
 
   public constructor(response: Response) {
-    super(`HTTP Response Error: ${response.status} ${response.statusText}`);
+    super(`HTTP Response Error: ${ response.status } ${ response.statusText }`);
     this.response = response;
     this.statusCode = response.status;
     this.statusText = response.statusText;
@@ -79,16 +80,16 @@ export class ApiClient {
       'Content-Type': 'application/json',
     };
     if (auth?.token) {
-      headers['Authorization'] = `Bearer ${auth.token}`;
+      headers['Authorization'] = `Bearer ${ auth.token }`;
     }
 
     return headers;
   }
 
   private buildFullUrl(url?: string, queryParams?: RequestQueryParams): string {
-    let fullUrl = `${this.BASE_URL}/${url}`;
+    let fullUrl = `${ this.BASE_URL }/${ url }`;
     if (queryParams) {
-      fullUrl += `?${new URLSearchParams(queryParams).toString()}`
+      fullUrl += `?${ new URLSearchParams(queryParams).toString() }`
     }
 
     return fullUrl;
@@ -107,7 +108,7 @@ export class ApiClient {
   }
 }
 
-export const useApiClient = () => new ApiClient(`http://${REST_API}/api/v1`);
+export const useApiClient = () => new ApiClient(`http://${ REST_API }/api/v1`);
 
 export const useResponse = async <T>(response: Response): Promise<T> => {
   return await response.json() as T;

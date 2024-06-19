@@ -1,4 +1,4 @@
-import {TestInstanceLearnerStatus} from "@/types/test-instance-learner";
+import { TestInstanceLearnerStatus } from "@/types/test-instance-learner";
 
 const statusMap: Record<TestInstanceLearnerStatus, string> = {
   [TestInstanceLearnerStatus.JOINED]: 'Dołączono',

@@ -1,6 +1,6 @@
-<script setup>
-import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
-import {getAnswerLetter} from "@/utils/test-instance-question";
+<script setup lang="ts">
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { getAnswerLetter } from "@/utils/test-instance-question";
 
 const testSchemas = ref([]);
 const chosenTestSchema = ref(null);
@@ -8,10 +8,10 @@ const chosenTestSchema = ref(null);
 const dialog = ref(false);
 const dialogDelete = ref(false);
 const headers = [
-  {title: 'Pytanie', key: 'question'},
-  {title: 'Odpowiedzi', key: 'answers', sortable: false},
-  {title: 'Poprawna odpowiedź', key: 'correctAnswerIndex'},
-  {title: 'Akcje', key: 'actions', sortable: false},
+  { title: 'Pytanie', key: 'question' },
+  { title: 'Odpowiedzi', key: 'answers', sortable: false },
+  { title: 'Poprawna odpowiedź', key: 'correctAnswerIndex' },
+  { title: 'Akcje', key: 'actions', sortable: false },
 ];
 const testSchemaQuestions = ref([]);
 const editedIndex = ref(-1);
@@ -40,14 +40,14 @@ watch(chosenTestSchema, (value) => {
     {
       id: '1bcef399-5c17-40e0-af0f-aa62b2727f3e',
       question: 'Gdzie leży Polska?',
-      answers: ['W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.'],
+      answers: [ 'W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.' ],
       correctAnswerIndex: 0,
       schemaId: '83c630f4-a4a6-452a-8bd3-7cd9b0ba7fa1'
     },
     {
       id: '1bcef399-5c17-40e0-af0f-aa62b2727f3f',
       question: 'Gdzie leżą Czechy?',
-      answers: ['W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.'],
+      answers: [ 'W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.' ],
       correctAnswerIndex: 0,
       schemaId: '83c630f4-a4a6-452a-8bd3-7cd9b0ba7fa1'
     },
@@ -112,7 +112,7 @@ const save = () => {
   if (editedIndex.value > -1) {
     Object.assign(testSchemaQuestions.value[editedIndex.value], editedItem);
   } else {
-    testSchemaQuestions.value.push({...editedItem});
+    testSchemaQuestions.value.push({ ...editedItem });
   }
   close();
 };
@@ -142,7 +142,9 @@ const save = () => {
         </v-select>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
-            <v-btn class="mb-2 ml-4" color="primary" variant="elevated" v-bind="props" :disabled="!chosenTestSchema">Dodaj nowe</v-btn>
+            <v-btn class="mb-2 ml-4" color="primary" variant="elevated" v-bind="props" :disabled="!chosenTestSchema">
+              Dodaj nowe
+            </v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -178,7 +180,8 @@ const save = () => {
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field variant="outlined" v-model="editedItem.correctAnswerIndex" label="Poprawna odpowiedź"></v-text-field>
+                    <v-text-field variant="outlined" v-model="editedItem.correctAnswerIndex"
+                                  label="Poprawna odpowiedź"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -208,7 +211,7 @@ const save = () => {
         v-for="(answer, answerIndex) in item.answers"
         :key="answerIndex"
       >
-        <span>{{ getAnswerLetter(answerIndex)}}) {{ answer }}</span>&nbsp;
+        <span>{{ getAnswerLetter(answerIndex) }}) {{ answer }}</span>&nbsp;
       </span>
     </template>
     <template v-slot:item.actions="{ item }">

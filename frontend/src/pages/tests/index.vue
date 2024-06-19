@@ -13,8 +13,8 @@ import { getLocalizedDate } from "@/utils/date";
 import { getTestInstanceStatusName } from "@/utils/test-instance";
 
 const breadcrumbs = [
-  { title: 'Test System', disabled: true, href: '/' },
-  { title: 'Testy', disabled: false, href: '/tests' },
+  { title: 'Test System', href: '/', disabled: true },
+  { title: 'Testy', href: '/tests', disabled: false },
 ];
 
 const api = useApiClient();

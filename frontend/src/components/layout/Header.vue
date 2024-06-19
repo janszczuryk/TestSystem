@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {useRoute, useRouter} from 'vue-router'
-import {useAccount} from "@/composables/account";
+import { useRoute, useRouter } from 'vue-router'
+import { useAccount } from "@/composables/account";
 
 const router = useRouter();
 const route: any = useRoute();
-const {account, isLoggedAccount, isAccountTeacher, isAccountLearner} = useAccount();
+const { account, isLoggedAccount, isAccountTeacher, isAccountLearner } = useAccount();
 
 const handleRoute = (path: string): void => {
   router.push(path);

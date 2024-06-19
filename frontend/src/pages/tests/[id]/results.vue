@@ -26,21 +26,13 @@ const results = {
 };
 
 const breadcrumbs = [
-  {
-    title: 'Test System',
-    disabled: true,
-    href: '/',
-  },
-  {
-    title: 'Testy',
-    disabled: false,
-    href: '/tests',
-  },
+  { title: 'Test System', href: '/', disabled: true },
+  { title: 'Testy', href: '/tests', disabled: false },
 ];
 breadcrumbs.push({
   title: instance.schemaName,
-  disabled: false,
-  href: `/tests/${instance.id}/results`
+  href: `/tests/${ instance.id }/results`,
+  disabled: false
 });
 </script>
 

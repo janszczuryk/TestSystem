@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {getLocalizedDate} from "@/utils/date";
-import {getAnswerLetter} from "@/utils/test-instance-question";
-import {getTestInstanceLearnerAnswerStatusName} from "@/utils/test-instance-learner-answer";
+import { getLocalizedDate } from "@/utils/date";
+import { getAnswerLetter } from "@/utils/test-instance-question";
+import { getTestInstanceLearnerAnswerStatusName } from "@/utils/test-instance-learner-answer";
 
 defineProps<{ testInstanceLearnerAnswers: object[] }>();
 
@@ -48,7 +48,7 @@ const headers = [
         v-for="(answer, answerIndex) in item.answers"
         :key="answerIndex"
       >
-        <span>{{ getAnswerLetter(answerIndex)}}) {{ answer }}</span>&nbsp;
+        <span>{{ getAnswerLetter(answerIndex) }}) {{ answer }}</span>&nbsp;
       </span>
     </template>
     <template v-slot:item.status="{ item }">

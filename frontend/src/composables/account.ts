@@ -1,5 +1,5 @@
-import {computed, ref} from "vue";
-import {AccountAuthorized, AccountType} from "@/types/account";
+import { computed, ref } from "vue";
+import { AccountAuthorized, AccountType } from "@/types/account";
 
 const account = ref<AccountAuthorized | null>(null);
 
