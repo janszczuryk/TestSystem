@@ -1,5 +1,6 @@
 import { ResponseEntityOrId } from '@module/common/types';
 import { SubjectResponseDto } from '@module/subject/dto/response';
+import { TestInstanceResponseDto } from '@module/test-instance/dto/response';
 import { TestSchema } from '@module/test-schema/entities/test-schema.entity';
 import { TestSchemaQuestionResponseDto } from '@module/test-schema-question/dto/response';
 
@@ -8,7 +9,7 @@ export class TestSchemaResponseDto {
   public readonly name: string;
   public readonly subject: ResponseEntityOrId<SubjectResponseDto>;
   public readonly questions: ResponseEntityOrId<TestSchemaQuestionResponseDto>[];
-  public readonly instances: ResponseEntityOrId<object>[];
+  public readonly instances: ResponseEntityOrId<TestInstanceResponseDto>[];
   public readonly updatedAt: Date;
   public readonly createdAt: Date;
 
@@ -23,7 +24,9 @@ export class TestSchemaResponseDto {
         question?.id ? new TestSchemaQuestionResponseDto(question) : { id: String(question) },
       ) ?? null;
     this.instances =
-      testSchema.instances?.map((instance) => (instance?.id ? new Object(instance) : { id: String(instance) })) ?? null;
+      testSchema.instances?.map((instance) =>
+        instance?.id ? new TestInstanceResponseDto(instance) : { id: String(instance) },
+      ) ?? null;
     this.updatedAt = testSchema.updatedAt;
     this.createdAt = testSchema.createdAt;
   }

@@ -3,6 +3,9 @@ import { ResponseEntityOrId } from '@module/common/types';
 import { TestInstanceResponseDto } from '@module/test-instance/dto/response';
 import { ResultSummaryDto } from '@module/test-instance-learner/dto/result-summary.dto';
 import { TestInstanceLearner } from '@module/test-instance-learner/entities/test-instance-learner.entity';
+import { TestInstanceLearnerAnswerResponseDto } from '@module/test-instance-learner-answer/dto/response';
+
+import { ResultSummaryResponseDto } from './result-summary-response.dto';
 
 export class TestInstanceLearnerResponseDto {
   public instanceId: string;
@@ -10,7 +13,7 @@ export class TestInstanceLearnerResponseDto {
   public instance: TestInstanceResponseDto | null;
   public learner: LearnerAccountResponseDto | null;
   public learnerNumber: number;
-  public answers: ResponseEntityOrId<object>;
+  public answers: ResponseEntityOrId<TestInstanceLearnerAnswerResponseDto>[];
   public resultSummary: ResultSummaryResponseDto | null;
   public status: string;
   public startedAt: Date | null;
@@ -27,7 +30,7 @@ export class TestInstanceLearnerResponseDto {
     this.answers =
       testInstanceLearner.answers?.map((testInstanceLearnerAnswer) =>
         testInstanceLearnerAnswer?.id
-          ? new Object(testInstanceLearnerAnswer)
+          ? new TestInstanceLearnerAnswerResponseDto(testInstanceLearnerAnswer)
           : { id: String(testInstanceLearnerAnswer) },
       ) ?? null;
     this.resultSummary = resultSummary ? new ResultSummaryResponseDto(resultSummary) : null;
@@ -36,17 +39,5 @@ export class TestInstanceLearnerResponseDto {
     this.finishedAt = testInstanceLearner.finishedAt ?? null;
     this.updatedAt = testInstanceLearner.updatedAt;
     this.createdAt = testInstanceLearner.createdAt;
-  }
-}
-
-class ResultSummaryResponseDto {
-  public pointsToAchieve: number;
-  public pointsAchieved: number;
-  public percentage: number;
-
-  public constructor(resultsSummary: ResultSummaryDto) {
-    this.pointsToAchieve = resultsSummary.pointsToAchieve;
-    this.pointsAchieved = resultsSummary.pointsAchieved;
-    this.percentage = resultsSummary.percentage;
   }
 }

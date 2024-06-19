@@ -1,4 +1,5 @@
 import { ResponseEntityOrId } from '@module/common/types';
+import { TestInstanceQuestionResponseDto } from '@module/test-instance-question/dto/response';
 import { TestSchemaResponseDto } from '@module/test-schema/dto/response';
 import { TestSchemaQuestion } from '@module/test-schema-question/entities/test-schema-question.entity';
 
@@ -8,7 +9,7 @@ export class TestSchemaQuestionResponseDto {
   public readonly answers: string[];
   public readonly correctAnswerIndex: number;
   public readonly schema: ResponseEntityOrId<TestSchemaResponseDto>;
-  public readonly instanceQuestions: ResponseEntityOrId<object>[];
+  public readonly instanceQuestions: ResponseEntityOrId<TestInstanceQuestionResponseDto>[];
   public readonly updatedAt: Date;
   public readonly createdAt: Date;
 
@@ -22,7 +23,7 @@ export class TestSchemaQuestionResponseDto {
       : { id: String(testSchemaQuestion.schema) };
     this.instanceQuestions =
       testSchemaQuestion.instanceQuestions?.map((instanceQuestion) =>
-        instanceQuestion?.id ? new Object(instanceQuestion) : { id: String(instanceQuestion) },
+        instanceQuestion?.id ? new TestInstanceQuestionResponseDto(instanceQuestion) : { id: String(instanceQuestion) },
       ) ?? null;
     this.updatedAt = testSchemaQuestion.updatedAt;
     this.createdAt = testSchemaQuestion.createdAt;

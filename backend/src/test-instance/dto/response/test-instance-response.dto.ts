@@ -1,14 +1,14 @@
 import { AccountResponseDto } from '@module/account/dto/response';
 import { ResponseEntityOrId } from '@module/common/types';
 import { TestInstance } from '@module/test-instance/entities/test-instance.entity';
-import { TestInstanceQuestion } from '@module/test-instance-question/entities/test-instance-question.entity';
+import { TestInstanceQuestionResponseDto } from '@module/test-instance-question/dto/response';
 import { TestSchemaResponseDto } from '@module/test-schema/dto/response';
 
 export class TestInstanceResponseDto {
   public readonly id: string;
   public readonly schema: ResponseEntityOrId<TestSchemaResponseDto>;
   public readonly questionsCount: number;
-  public readonly questionsPool: ResponseEntityOrId<object>[];
+  public readonly questionsPool: ResponseEntityOrId<TestInstanceQuestionResponseDto>[];
   public readonly isEnabled: boolean;
   public readonly status: string;
   public readonly startedAt: Date | null;
@@ -38,27 +38,5 @@ export class TestInstanceResponseDto {
       : { id: String(testInstance.teacher) };
     this.updatedAt = testInstance.updatedAt;
     this.createdAt = testInstance.createdAt;
-  }
-}
-
-class TestInstanceQuestionResponseDto {
-  public readonly id: string;
-  public readonly schemaQuestion: { id: string } | null;
-  public readonly question: string;
-  public readonly answers: string[];
-  public readonly correctAnswerIndex: number;
-  public readonly updatedAt: Date;
-  public readonly createdAt: Date;
-
-  public constructor(testInstanceQuestion: TestInstanceQuestion) {
-    this.id = testInstanceQuestion.id;
-    this.schemaQuestion = testInstanceQuestion.schemaQuestion?.id
-      ? { id: testInstanceQuestion.schemaQuestion.id }
-      : null;
-    this.question = testInstanceQuestion.question;
-    this.answers = testInstanceQuestion.answers;
-    this.correctAnswerIndex = testInstanceQuestion.correctAnswerIndex;
-    this.updatedAt = testInstanceQuestion.updatedAt;
-    this.createdAt = testInstanceQuestion.createdAt;
   }
 }
