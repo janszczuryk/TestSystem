@@ -1,28 +1,20 @@
 <script setup lang="ts">
 import { getAnswerLetter } from "@/utils/test-instance-question";
+import { TestInstanceQuestion } from "@/types/test-instance";
 
-defineProps<{ testInstanceQuestions: object[] }>();
+defineProps<{ questionsPool: TestInstanceQuestion[] }>();
 
 const headers = [
-  {
-    title: 'Pytanie',
-    key: 'question',
-  },
-  {
-    title: 'Odpowiedzi',
-    key: 'answers',
-  },
-  {
-    title: 'Poprawna odpowiedź',
-    key: 'correctAnswerIndex',
-  },
+  { title: 'Pytanie', key: 'question' },
+  { title: 'Odpowiedzi', key: 'answers' },
+  { title: 'Poprawna odpowiedź', key: 'correctAnswerIndex' },
 ];
 </script>
 
 <template>
   <v-data-table
     :headers="headers"
-    :items="testInstanceQuestions"
+    :items="questionsPool"
     :sortBy="[{ key: 'question', order: 'asc' }]"
   >
     <template v-slot:item.answers="{ item }">
@@ -32,6 +24,9 @@ const headers = [
       >
         <span>{{ getAnswerLetter(answerIndex) }}) {{ answer }}</span>&nbsp;
       </span>
+    </template>
+    <template v-slot:item.correctAnswerIndex="{ item }">
+      <span>{{ getAnswerLetter(item.correctAnswerIndex) }}</span>&nbsp;
     </template>
   </v-data-table>
 </template>

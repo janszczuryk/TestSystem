@@ -24,3 +24,7 @@ export function deepToRaw<T extends Record<string, any>>(sourceObj: T): T {
 
   return objectIterator(sourceObj);
 }
+
+export const unrefDeep = <T extends Record<string, any>>(sourceObj: T): T => {
+  return JSON.parse(JSON.stringify(sourceObj)) as T;
+}
