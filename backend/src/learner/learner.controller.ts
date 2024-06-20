@@ -185,7 +185,9 @@ export class LearnerController {
       throw new UnprocessableEntityException('Learner already answered all questions');
     }
 
-    const excludeInstanceQuestionsIds = currentLearnerAnswers.map((learnerAnswer) => learnerAnswer.id);
+    const excludeInstanceQuestionsIds = currentLearnerAnswers.map((learnerAnswer) =>
+      String(learnerAnswer.instanceQuestion),
+    );
     const randomInstanceQuestion = await this.testInstanceQuestionService.findRandomized(
       instanceId,
       excludeInstanceQuestionsIds,

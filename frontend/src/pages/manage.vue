@@ -1,15 +1,23 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import SubjectCrud from "@/components/manage/SubjectCrud.vue";
 import TestSchemaCrud from "@/components/manage/TestSchemaCrud.vue";
 import TestSchemaQuestionCrud from "@/components/manage/TestSchemaQuestionCrud.vue";
 import TestInstanceCrud from "@/components/manage/TestInstanceCrud.vue";
 import TestInstanceLearnerCrud from "@/components/manage/TestInstanceLearnerCrud.vue";
+import { useRedirect } from "@/composables/redirect";
+
+const { redirectIfNotTeacher } = useRedirect();
 
 const breadcrumbs = [
   { title: 'Test System', href: '/', disabled: true },
   { title: 'Zarządzanie', href: '/manage', disabled: false },
 ];
+
+onMounted(async () => {
+  await redirectIfNotTeacher('/');
+});
 </script>
 
 <template>

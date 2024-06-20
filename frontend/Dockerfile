@@ -8,8 +8,6 @@ RUN npm ci
 
 RUN npm run build
 
-USER node
-
-EXPOSE 3000
+EXPOSE 8000
 
 CMD ["/bin/sh", "/app/docker/entrypoint.sh"]

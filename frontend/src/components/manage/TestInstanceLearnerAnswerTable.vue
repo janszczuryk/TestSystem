@@ -1,39 +1,19 @@
 <script setup lang="ts">
+import { TestInstanceLearnerAnswer } from "@/types/test-instance-learner-answer";
 import { getLocalizedDate } from "@/utils/date";
 import { getAnswerLetter } from "@/utils/test-instance-question";
 import { getTestInstanceLearnerAnswerStatusName } from "@/utils/test-instance-learner-answer";
 
-defineProps<{ testInstanceLearnerAnswers: object[] }>();
+defineProps<{ testInstanceLearnerAnswers: TestInstanceLearnerAnswer[] }>();
 
 const headers = [
-  {
-    title: 'Pytanie',
-    key: 'question',
-  },
-  {
-    title: 'Odpowiedzi',
-    key: 'answers',
-  },
-  {
-    title: 'Poprawna odpowiedź',
-    key: 'correctAnswerIndex',
-  },
-  {
-    title: 'Wskazana odpowiedź',
-    key: 'submittedAnswerIndex',
-  },
-  {
-    title: 'Status',
-    key: 'status',
-  },
-  {
-    title: 'Pokazano o',
-    key: 'shownAt',
-  },
-  {
-    title: 'Odpowiedziano o',
-    key: 'submittedAt',
-  },
+  { title: 'Pytanie', key: 'instanceQuestion.question' },
+  { title: 'Odpowiedzi', key: 'instanceQuestion.answers' },
+  { title: 'Poprawna odpowiedź', key: 'instanceQuestion.correctAnswerIndex' },
+  { title: 'Wskazana odpowiedź', key: 'submittedAnswerIndex' },
+  { title: 'Status', key: 'status' },
+  { title: 'Pokazano o', key: 'shownAt' },
+  { title: 'Odpowiedziano o', key: 'answerSubmittedAt' },
 ];
 </script>
 
@@ -43,13 +23,19 @@ const headers = [
     :items="testInstanceLearnerAnswers"
     :sortBy="[{ key: 'shownAt', order: 'asc' }]"
   >
-    <template v-slot:item.answers="{ item }">
+    <template v-slot:item.instanceQuestion.answers="{ item }">
       <span
-        v-for="(answer, answerIndex) in item.answers"
+        v-for="(answer, answerIndex) in item.instanceQuestion.answers"
         :key="answerIndex"
       >
         <span>{{ getAnswerLetter(answerIndex) }}) {{ answer }}</span>&nbsp;
       </span>
+    </template>
+    <template v-slot:item.instanceQuestion.correctAnswerIndex="{ item }">
+      {{ getAnswerLetter(item.instanceQuestion.correctAnswerIndex) }}
+    </template>
+    <template v-slot:item.submittedAnswerIndex="{ item }">
+      {{ getAnswerLetter(item.submittedAnswerIndex) }}
     </template>
     <template v-slot:item.status="{ item }">
       {{ getTestInstanceLearnerAnswerStatusName(item.status) }}
@@ -57,8 +43,8 @@ const headers = [
     <template v-slot:item.shownAt="{ item }">
       {{ getLocalizedDate(item.shownAt) }}
     </template>
-    <template v-slot:item.submittedAt="{ item }">
-      {{ getLocalizedDate(item.submittedAt) }}
+    <template v-slot:item.answerSubmittedAt="{ item }">
+      {{ getLocalizedDate(item.answerSubmittedAt) }}
     </template>
   </v-data-table>
 </template>

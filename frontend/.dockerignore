@@ -2,7 +2,6 @@ node_modules
 dist
 .dockerignore
 .browserslistrc
-.env
 .env.example
 .git
 .gitignore

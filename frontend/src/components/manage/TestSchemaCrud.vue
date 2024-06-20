@@ -1,120 +1,136 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useAccount } from "@/composables/account";
+import { useSubjectList } from "@/composables/subject";
+import { useTestSchemaList } from "@/composables/test-schema";
+import { TestSchema } from "@/types/test-schema";
+import { useApiClient } from "@/utils/api";
+import { deepToRaw } from "@/utils/ref";
+import { TestSchemaApiService } from "@/utils/api-services/test-schema";
 
-const subjects = ref([]);
+/**
+ *  DATA
+ */
 
-const dialog = ref(false);
-const dialogDelete = ref(false);
+const api = useApiClient();
+const { account } = useAccount();
+
+const { subjectList, subjectListGet } = useSubjectList();
+const { testSchemaList } = useTestSchemaList();
 const headers = [
   { title: 'Nazwa', key: 'name' },
-  { title: 'Przedmiot', key: 'subject' },
+  { title: 'Przedmiot', key: 'subject.id' },
   { title: 'Akcje', key: 'actions', sortable: false },
 ];
-const testSchemas = ref([]);
-const editedIndex = ref(-1);
-const editedItem = ref({
+
+const dialogUniversalTitle = computed(() => (actionItemIndex.value === -1 ? 'Dodaj nowy' : 'Edytuj'));
+const dialogUniversal = ref(false);
+const dialogDelete = ref(false);
+const actionItemIndex = ref(-1);
+const actionItem = ref<TestSchema>({
+  id: '',
   name: '',
-  subject: '',
+  subject: {
+    id: '',
+  },
+  questions: [],
+  instances: [],
+  updatedAt: '',
+  createdAt: '',
 });
 const defaultItem = {
   name: '',
-  subject: '',
+  subject: {
+    id: '',
+  },
 };
 
-const formTitle = computed(() => (editedIndex.value === -1 ? 'Dodaj nowy' : 'Edytuj'));
+/**
+ *  API SERVICES
+ */
 
-watch(dialog, (value) => {
-  if (!value) close();
-});
-watch(dialogDelete, (value) => {
-  if (!value) closeDelete();
-});
+const testSchemaApiService = new TestSchemaApiService(account.value!, api);
 
-onMounted(() => {
-  initialize();
-});
+/**
+ *  DOM Event handlers
+ */
 
-const initialize = () => {
-  testSchemas.value = [
-    {
-      id: '83c630f4-a4a6-452a-8bd3-7cd9b0ba7fa1',
-      name: 'Kolokwium nr 1',
-      subject: 'Sieci komputerowe 1',
-      subjectId: '103b07a3-e67b-4e25-95f4-6a6061add688'
-    },
-    {
-      id: '83c630f4-a4a6-452a-8bd3-7cd9b0ba7fa2',
-      name: 'Kolokwium nr 2',
-      subject: 'Sieci komputerowe 2',
-      subjectId: '103b07a3-e67b-4e25-95f4-6a6061add689'
-    },
-  ];
-  subjects.value = [
-    {
-      id: '103b07a3-e67b-4e25-95f4-6a6061add688',
-      name: 'Sieci komputerowe 1',
-      fieldOfStudy: '2 EF-DI',
-    },
-    {
-      id: '103b07a3-e67b-4e25-95f4-6a6061add689',
-      name: 'Sieci komputerowe 2',
-      fieldOfStudy: '3 EF-DI',
-    },
-    {
-      id: '103b07a3-e67b-4e25-95f4-6a6061add68a',
-      name: 'ELiAK',
-      fieldOfStudy: '1 EF-DI',
-    }
-  ];
+const onActionEditItem = (item: TestSchema) => {
+  actionItemIndex.value = testSchemaList.value.indexOf(item);
+  Object.assign(actionItem.value, deepToRaw(item));
+  dialogUniversal.value = true;
 };
 
-const editItem = (item) => {
-  editedIndex.value = testSchemas.value.indexOf(item);
-  Object.assign(editedItem, item);
-  dialog.value = true;
-};
-
-const deleteItem = (item) => {
-  editedIndex.value = testSchemas.value.indexOf(item);
-  Object.assign(editedItem, item);
+const onActionDeleteItem = (item: TestSchema) => {
+  actionItemIndex.value = testSchemaList.value.indexOf(item);
+  Object.assign(actionItem.value, deepToRaw(item));
   dialogDelete.value = true;
 };
 
-const deleteItemConfirm = () => {
-  testSchemas.value.splice(editedIndex.value, 1);
-  closeDelete();
-};
-
-const close = () => {
-  dialog.value = false;
+const onCloseUniversalDialog = () => {
+  dialogUniversal.value = false;
   nextTick(() => {
-    Object.assign(editedItem, defaultItem);
-    editedIndex.value = -1;
+    Object.assign(actionItem.value, defaultItem);
+    actionItemIndex.value = -1;
   });
 };
 
-const closeDelete = () => {
+const onCloseDeleteDialog = () => {
   dialogDelete.value = false;
   nextTick(() => {
-    Object.assign(editedItem, defaultItem);
-    editedIndex.value = -1;
+    Object.assign(actionItem.value, defaultItem);
+    actionItemIndex.value = -1;
   });
 };
 
-const save = () => {
-  if (editedIndex.value > -1) {
-    Object.assign(testSchemas.value[editedIndex.value], editedItem);
+const onSaveItem = async () => {
+  if (actionItemIndex.value > -1) {
+    const updatedTestSchema = await testSchemaApiService.update(actionItem.value.id, {
+      name: actionItem.value.name,
+      subjectId: actionItem.value.subject.id,
+    });
+
+    Object.assign(testSchemaList.value[actionItemIndex.value], updatedTestSchema);
   } else {
-    testSchemas.value.push({ ...editedItem });
+    const createdTestSchema = await testSchemaApiService.create({
+      name: actionItem.value.name,
+      subjectId: actionItem.value.subject.id,
+    });
+
+    testSchemaList.value.push(createdTestSchema);
   }
-  close();
+
+  onCloseUniversalDialog();
 };
+
+const onDeleteItem = async () => {
+  await testSchemaApiService.remove(actionItem.value.id);
+
+  testSchemaList.value.splice(actionItemIndex.value, 1);
+
+  onCloseDeleteDialog();
+};
+
+/**
+ *  HOOKS
+ */
+
+watch(dialogUniversal, (value) => {
+  if (!value) onCloseUniversalDialog();
+});
+watch(dialogDelete, (value) => {
+  if (!value) onCloseDeleteDialog();
+});
+
+onMounted(async () => {
+  testSchemaList.value = await testSchemaApiService.findAll();
+});
 </script>
 
 <template>
   <v-data-table
     :headers="headers"
-    :items="testSchemas"
+    :items="testSchemaList"
     :sort-by="[{ key: 'name', order: 'asc' }]"
   >
     <template v-slot:top>
@@ -122,28 +138,33 @@ const save = () => {
         <v-toolbar-title>Schematy testów</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="500px">
+        <v-dialog v-model="dialogUniversal" max-width="500px">
           <template v-slot:activator="{ props }">
             <v-btn class="mb-2" color="primary" variant="elevated" v-bind="props">Dodaj nowy</v-btn>
           </template>
           <v-card>
             <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
+              <span class="text-h5">{{ dialogUniversalTitle }}</span>
             </v-card-title>
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col>
-                    <v-text-field variant="outlined" v-model="editedItem.name" label="Nazwa"></v-text-field>
+                    <v-text-field
+                      v-model="actionItem.name"
+                      variant="outlined"
+                      label="Nazwa"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
                     <v-select
-                      v-model="editedItem.subject"
-                      :items="subjects" variant="outlined"
+                      v-model="actionItem.subject.id"
+                      :items="subjectList"
                       item-value="id"
                       item-title="name"
+                      variant="outlined"
                       label="Przedmiot"
                     >
                       <template v-slot:item="{ props, item }">
@@ -156,8 +177,8 @@ const save = () => {
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="close">Anuluj</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">Zapisz</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onCloseUniversalDialog">Anuluj</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onSaveItem">Zapisz</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -166,19 +187,22 @@ const save = () => {
             <v-card-title class="text-h5">Jesteś pewien, że chcesz usunąc ten wpis?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Anuluj</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">Potwiedź</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onCloseDeleteDialog">Anuluj</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onDeleteItem">Potwiedź</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-toolbar>
     </template>
+    <template v-slot:item.subject.id="{ item }">
+      {{ subjectListGet(item.subject.id)?.name }}
+    </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon class="me-2" size="small" @click="editItem(item)">
+      <v-icon class="me-2" size="small" @click="onActionEditItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon size="small" @click="deleteItem(item)">
+      <v-icon size="small" @click="onActionDeleteItem(item)">
         mdi-delete
       </v-icon>
     </template>
