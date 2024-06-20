@@ -51,14 +51,14 @@ export class TestInstanceLearnerService {
   public async find(findOptions: FindOptionsWhere<TestInstanceLearner>): Promise<TestInstanceLearner | null> {
     return this.testInstanceLearnerRepository.findOne({
       where: findOptions,
-      relations: { instance: true, answers: true, learner: true },
+      relations: { instance: true, answers: { instanceQuestion: true }, learner: true },
     });
   }
 
   public async get(instanceId: string, learnerId: string): Promise<TestInstanceLearner | null> {
     return this.testInstanceLearnerRepository.findOne({
       where: { instanceId, learnerId },
-      relations: { instance: true, answers: true, learner: true },
+      relations: { instance: true, answers: { instanceQuestion: true }, learner: true },
     });
   }
 
