@@ -1,207 +1,179 @@
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { getTestInstanceStatusName } from "@/utils/test-instance";
+import { nextTick, ref, watch } from 'vue';
+import { useAccount } from "@/composables/account";
+import { useTestInstanceLearnerAnswerList } from "@/composables/test-instance-learner-answer";
+import { useTestInstanceLearnerList } from "@/composables/test-instance-learner";
+import { useTestSchemaList } from "@/composables/test-schema";
+import { TestInstance } from "@/types/test-instance";
+import { TestInstanceLearner, TestInstanceLearnerStatus } from "@/types/test-instance-learner";
+import { useApiClient } from "@/utils/api";
+import { TestInstanceLearnerApiService } from "@/utils/api-services/test-instance-learner";
+import { TestInstanceApiService } from "@/utils/api-services/test-instance";
 import { getLocalizedDate } from "@/utils/date";
+import { unrefDeep } from "@/utils/ref";
+import { getTestInstanceStatusName } from "@/utils/test-instance";
 import { getTestInstanceLearnerStatusName } from "@/utils/test-instance-learner";
-import TestInstanceLearnerAnswerTable from "@/components/manage/TestInstanceLearnerAnswerTable.vue";
+import TestInstanceLearnerAnswerTable from "./TestInstanceLearnerAnswerTable.vue";
 
-const testInstances = ref([]);
-const chosenTestInstance = ref(null);
+/**
+ *  DATA
+ */
 
-const testInstanceLearnerAnswers = ref([]);
-const dialogAnswersLearnerId = ref(null);
+const api = useApiClient();
+const { account } = useAccount();
 
-const dialogEdit = ref(false);
-const dialogDelete = ref(false);
-const dialogAnswers = ref(false);
+const { testInstanceLearnerAnswerList } = useTestInstanceLearnerAnswerList();
+
+const { testSchemaList } = useTestSchemaList();
+const testSchemaId = ref<string | null>(null);
+const testInstanceList = ref<TestInstance[]>([]);
+const testInstanceId = ref<string | null>(null);
+
+const resultSummarySort = (a: TestInstanceLearner, b: TestInstanceLearner) => {
+  if (a.resultSummary.percentage < b.resultSummary.percentage) return -1;
+  if (a.resultSummary.percentage > b.resultSummary.percentage) return 1;
+  return 0;
+};
+const { testInstanceLearnerList } = useTestInstanceLearnerList();
 const headers = [
   { title: 'Numer uczestnika', key: 'learnerNumber' },
   { title: 'Status', key: 'status' },
   { title: 'Rozpoczęto podejście', key: 'startedAt' },
   { title: 'Zakończono podejście', key: 'finishedAt' },
-  { title: 'Odpowiedzi', key: 'answersDialog' },
-  { title: 'Wynik', key: 'resultSummary' },
+  { title: 'Odpowiedzi', key: 'answersDialog', sortable: false },
+  { title: 'Wynik', key: 'resultSummary', sortRaw: resultSummarySort },
   { title: 'Akcje', key: 'actions', sortable: false },
 ];
-const testInstanceLearners = ref([]);
-const editedIndex = ref(-1);
-const editedItem = reactive({
+
+const dialogEdit = ref(false);
+const dialogDelete = ref(false);
+const dialogAnswers = ref(false);
+const actionItemIndex = ref(-1);
+const actionItem = ref<TestInstanceLearner>({
+  instanceId: '',
+  learnerId: '',
   learnerNumber: 0,
+  answers: [],
+  resultSummary: {
+    pointsToAchieve: 0,
+    pointsAchieved: 0,
+    percentage: 0,
+  },
+  status: TestInstanceLearnerStatus.JOINED,
+  startedAt: null,
+  finishedAt: null,
+  updatedAt: '',
+  createdAt: '',
 });
 const defaultItem = {
   learnerNumber: 0,
 };
 
-watch(dialogEdit, (value) => {
-  if (!value) closeEdit();
-});
-watch(dialogDelete, (value) => {
-  if (!value) closeDelete();
-});
-watch(dialogAnswers, (value) => {
-  if (!value) closeAnswers();
-});
+/**
+ *  API SERVICES
+ */
 
-watch(chosenTestInstance, (value) => {
-  testInstanceLearners.value = [
-    {
-      instanceId: 'bf9074b8-956d-435e-9a37-7b369aee04bc',
-      learnerId: '89d26689-4eaa-4594-a546-949e358b89f1',
-      learnerNumber: 1,
-      status: 'joined',
-      startedAt: null,
-      finishedAt: null,
-      resultSummary: {
-        achieved: 0,
-        toAchieve: 10,
-        percentage: 0,
-      },
-    },
-    {
-      instanceId: 'bf9074b8-956d-435e-9a37-7b369aee04bc',
-      learnerId: '89d26689-4eaa-4594-a546-949e358b89f2',
-      learnerNumber: 2,
-      status: 'started',
-      startedAt: new Date(),
-      finishedAt: null,
-      resultSummary: {
-        achieved: 3,
-        toAchieve: 10,
-        percentage: 30,
-      },
-    },
-    {
-      instanceId: 'bf9074b8-956d-435e-9a37-7b369aee04bc',
-      learnerId: '89d26689-4eaa-4594-a546-949e358b89f3',
-      learnerNumber: 3,
-      status: 'finished',
-      startedAt: new Date(),
-      finishedAt: new Date(),
-      resultSummary: {
-        achieved: 7,
-        toAchieve: 10,
-        percentage: 70,
-      },
-    },
-  ];
-});
+const testInstanceLearnerApiService = new TestInstanceLearnerApiService(account.value!, api);
+const testInstanceApiService = new TestInstanceApiService(account.value!, api);
 
-watch(dialogAnswersLearnerId, (value) => {
-  if (!value) {
-    testInstanceLearnerAnswers.value = [];
-    return;
-  }
+/**
+ *  DOM Event handlers
+ */
 
-  testInstanceLearnerAnswers.value = [
-    {
-      id: '46d86b76-0458-4832-815b-422ae15f97ef',
-      question: 'Gdzie leży Polska?',
-      answers: [ 'W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.' ],
-      correctAnswerIndex: 0,
-      submittedAnswerIndex: 0,
-      status: 'correct_answer_submitted',
-      shownAt: new Date(),
-      submittedAt: new Date(),
-    },
-    {
-      id: '46d86b76-0458-4832-815b-422ae15f97f0',
-      question: 'Gdzie leżą Czechy?',
-      answers: [ 'W Europie', 'W Azji', 'W Afryce', 'A Ameryce Płd.' ],
-      correctAnswerIndex: 0,
-      submittedAnswerIndex: 1,
-      status: 'incorrect_answer_submitted',
-      shownAt: new Date(),
-      submittedAt: new Date(),
-    },
-  ];
-})
-
-onMounted(() => {
-  initialize();
-});
-
-const initialize = () => {
-  testInstances.value = [
-    {
-      id: '1bcef399-5c17-40e0-af0f-aa62b2727f3e',
-      schemaId: '83c630f4-a4a6-452a-8bd3-7cd9b0ba7fa1',
-      schemaName: 'Kolokwium nr 1',
-      questionsCount: 3,
-      isEnabled: true,
-      status: 'created',
-      startedAt: null,
-      endedAt: null,
-    },
-    {
-      id: '1bcef399-5c17-40e0-af0f-aa62b2727f3f',
-      schemaId: '83c630f4-a4a6-452a-8bd3-7cd9b0ba7fa1',
-      schemaName: 'Kolokwium nr 2',
-      questionsCount: 5,
-      isEnabled: true,
-      status: 'started',
-      startedAt: new Date(),
-      endedAt: null,
-    },
-  ];
-};
-
-const editItem = (item) => {
-  editedIndex.value = testInstanceLearners.value.indexOf(item);
-  Object.assign(editedItem, item);
+const onActionEditItem = (item: TestInstanceLearner) => {
+  actionItemIndex.value = testInstanceLearnerList.value.indexOf(item);
+  Object.assign(actionItem.value, unrefDeep(item));
   dialogEdit.value = true;
 };
 
-const deleteItem = (item) => {
-  editedIndex.value = testInstanceLearners.value.indexOf(item);
-  Object.assign(editedItem, item);
+const onActionDeleteItem = (item: TestInstanceLearner) => {
+  actionItemIndex.value = testInstanceLearnerList.value.indexOf(item);
+  Object.assign(actionItem.value, unrefDeep(item));
   dialogDelete.value = true;
 };
 
-const showInstanceLearnersAnswers = (item) => {
-  dialogAnswersLearnerId.value = item.learnerId;
+const onShowAnswersClick = async (item: TestInstanceLearner) => {
+  const testInstanceLearnerWithAnswers = await testInstanceLearnerApiService.get(item.instanceId, item.learnerId);
+  testInstanceLearnerAnswerList.value = testInstanceLearnerWithAnswers.answers;
+
   dialogAnswers.value = true;
 };
 
-const deleteItemConfirm = () => {
-  testInstanceLearners.value.splice(editedIndex.value, 1);
-  closeDelete();
-};
-
-const closeEdit = () => {
+const onCloseEditDialog = () => {
   dialogEdit.value = false;
   nextTick(() => {
-    Object.assign(editedItem, defaultItem);
-    editedIndex.value = -1;
+    Object.assign(actionItem.value, defaultItem);
+    actionItemIndex.value = -1;
   });
 };
 
-const closeDelete = () => {
+const onCloseDeleteDialog = () => {
   dialogDelete.value = false;
   nextTick(() => {
-    Object.assign(editedItem, defaultItem);
-    editedIndex.value = -1;
+    Object.assign(actionItem.value, defaultItem);
+    actionItemIndex.value = -1;
   });
 };
 
-const closeAnswers = () => {
+const onCloseAnswersDialog = () => {
   dialogAnswers.value = false;
-  nextTick(() => {
-    dialogAnswersLearnerId.value = null;
-  });
 };
 
-const save = () => {
-  if (editedIndex.value > -1) {
-    Object.assign(testInstanceLearners.value[editedIndex.value], editedItem);
+const onSaveItem = async () => {
+  if (actionItemIndex.value > -1) {
+    const updatedTestInstanceLearner = await testInstanceLearnerApiService.update(actionItem.value.instanceId, actionItem.value.learnerId, {
+      learnerNumber: Number(actionItem.value.learnerNumber),
+    })
+
+    Object.assign(testInstanceLearnerList.value[actionItemIndex.value], updatedTestInstanceLearner);
   }
-  closeEdit();
+
+  onCloseEditDialog();
 };
+
+const onDeleteItem = async () => {
+  await testInstanceLearnerApiService.remove(actionItem.value.instanceId, actionItem.value.learnerId);
+
+  testInstanceLearnerList.value.splice(actionItemIndex.value, 1);
+
+  onCloseDeleteDialog();
+};
+
+/**
+ *  HOOKS
+ */
+
+watch(dialogEdit, (value) => {
+  if (!value) onCloseEditDialog();
+});
+watch(dialogDelete, (value) => {
+  if (!value) onCloseDeleteDialog();
+});
+watch(dialogAnswers, (value) => {
+  if (!value) onCloseAnswersDialog();
+});
+
+watch(testSchemaId, async () => {
+  if (testSchemaId.value) {
+    testInstanceList.value = await testInstanceApiService.findAll(testSchemaId.value);
+  } else {
+    testInstanceList.value = [];
+    testInstanceId.value = null;
+  }
+});
+watch(testInstanceId, async () => {
+  if (testInstanceId.value) {
+    testInstanceLearnerList.value = await testInstanceLearnerApiService.findAll(testInstanceId.value);
+  } else {
+    testInstanceLearnerList.value = [];
+  }
+});
 </script>
 
 <template>
   <v-data-table
     :headers="headers"
-    :items="testInstanceLearners"
+    :items="testInstanceLearnerList"
     :sort-by="[{ key: 'learnerNumber', order: 'asc' }]"
   >
     <template v-slot:top>
@@ -209,21 +181,34 @@ const save = () => {
         <v-toolbar-title>Uczestnicy w instancji testu</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-select
-          v-model="chosenTestInstance"
-          :items="testInstances"
+          v-model="testSchemaId"
+          :items="testSchemaList"
+          item-value="id"
+          item-title="name"
+          variant="outlined"
+          density="compact"
+          label="Schemat testu"
+          hide-details
+          max-width="240"
+          class="mx-2 ml-0"
+        >
+        </v-select>
+        <v-select
+          v-model="testInstanceId"
+          :items="testInstanceList"
           item-value="id"
           :item-props="(item) => ({
-            title: item.schemaName,
-            subtitle: `Status: ${getTestInstanceStatusName(item.status)} (Rozpoczęto: ${getLocalizedDate(item.startedAt)})`,
+            title: `Status: ${getTestInstanceStatusName(item.status)}`,
+            subtitle: `Rozpoczęto: ${getLocalizedDate(item.startedAt)} Zakończono: ${getLocalizedDate(item.endedAt)}`,
           })"
           variant="outlined"
           density="compact"
           label="Instancja testu"
           hide-details
-          max-width="360"
+          max-width="240"
+          class="mx-2 mr-4"
         >
         </v-select>
-        <v-spacer></v-spacer>
         <v-dialog v-model="dialogEdit" max-width="500px">
           <v-card>
             <v-card-title>
@@ -234,9 +219,9 @@ const save = () => {
                 <v-row>
                   <v-col>
                     <v-text-field
+                      v-model="actionItem.learnerNumber"
                       type="number"
                       variant="outlined"
-                      v-model="editedItem.learnerNumber"
                       label="Number uczestnitka"
                     ></v-text-field>
                   </v-col>
@@ -245,8 +230,8 @@ const save = () => {
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeEdit">Anuluj</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">Zapisz</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onCloseEditDialog">Anuluj</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onSaveItem">Zapisz</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -255,8 +240,8 @@ const save = () => {
             <v-card-title class="text-h5">Jesteś pewien, że chcesz usunąc ten wpis?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Anuluj</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">Potwiedź</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onCloseDeleteDialog">Anuluj</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onDeleteItem">Potwiedź</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -265,11 +250,11 @@ const save = () => {
           <v-card>
             <v-card-title class="text-h5">Odpowiedzi uczestnika</v-card-title>
             <v-card-text>
-              <TestInstanceLearnerAnswerTable :testInstanceLearnerAnswers="testInstanceLearnerAnswers"/>
+              <TestInstanceLearnerAnswerTable :testInstanceLearnerAnswers="testInstanceLearnerAnswerList"/>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeAnswers">Zamknij</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="onCloseAnswersDialog">Zamknij</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -285,16 +270,16 @@ const save = () => {
       {{ getLocalizedDate(item.finishedAt) }}
     </template>
     <template v-slot:item.answersDialog="{ item }">
-      <v-btn density="compact" @click="showInstanceLearnersAnswers(item)">Zobacz</v-btn>
+      <v-btn density="compact" @click="onShowAnswersClick(item)">Zobacz</v-btn>
     </template>
     <template v-slot:item.resultSummary="{ item }">
-      {{ item.resultSummary.achieved }} / {{ item.resultSummary.toAchieve }} ({{ item.resultSummary.percentage }}%)
+      {{ item.resultSummary.pointsAchieved }} / {{ item.resultSummary.pointsToAchieve }} ({{ item.resultSummary.percentage }}%)
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon size="small" class="mr-2" @click="editItem(item)">
+      <v-icon size="small" class="mr-2" @click="onActionEditItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon size="small" @click="deleteItem(item)">
+      <v-icon size="small" @click="onActionDeleteItem(item)">
         mdi-delete
       </v-icon>
     </template>

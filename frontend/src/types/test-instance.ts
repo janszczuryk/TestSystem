@@ -1,3 +1,5 @@
+import { TestInstanceQuestion } from "@/types/test-instance-question";
+
 export enum TestInstanceStatus {
   CREATED = 'created',
   STARTED = 'started',
@@ -26,11 +28,3 @@ export type TestInstance = {
 
 export type TestInstanceWithQuestions = TestInstance & { questionsPool: TestInstanceQuestion[] };
 
-export type TestInstanceQuestion = {
-  id: string;
-  question: string;
-  answers: string[];
-  correctAnswerIndex: number;
-  updatedAt: string;
-  createdAt: string;
-};

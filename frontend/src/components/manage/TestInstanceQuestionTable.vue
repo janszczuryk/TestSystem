@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getAnswerLetter } from "@/utils/test-instance-question";
-import { TestInstanceQuestion } from "@/types/test-instance";
+import { TestInstanceQuestion } from "@/types/test-instance-question";
 
 defineProps<{ questionsPool: TestInstanceQuestion[] }>();
 
